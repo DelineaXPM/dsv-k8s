@@ -1,0 +1,21 @@
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: dsv-injector
+  labels:
+    app: dsv
+webhooks:
+  - name: dsv.thycotic.com
+    clientConfig:
+      service:
+        name: dsv-injector
+        namespace: default
+        path: "/inject"
+        port: 8543
+      caBundle: ""
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["secrets"]
