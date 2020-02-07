@@ -35,9 +35,11 @@ cert=$(BUILD_DIR)/$(NAME).pem
 $(cert): build
 	sh scripts/get_cert.sh -n "$(NAME)" -N "$(NAMESPACE)" -d "$(BUILD_DIR)"
 
+ca_bundle=$(shell base64 -w0 $(CA_CRT))
+
 deploy_webhook: $(cert) image
 	sed -e "s| port: [0-9]*.*$$| port: $(SERVICE_PORT)|" \
-		-e "s|caBundle:.*$$|caBundle: $(shell base64 -w0 $(CA_CRT))|" \
+		-e "s|caBundle:.*$$|caBundle: $(ca_bundle)|" \
 		deployments/webhook.yml >| $(BUILD_DIR)/webhook.yml
 	kubectl apply -f $(BUILD_DIR)/webhook.yml
 
