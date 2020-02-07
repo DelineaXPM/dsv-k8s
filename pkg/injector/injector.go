@@ -51,6 +51,14 @@ type Roles map[string]struct {
 
 // Inject adds to, updates or replaces the k8s Secret.Data with dsv Secret.Data (see above)
 func Inject(ar *v1beta1.AdmissionReview, roles Roles) error {
+	ar.Response = &v1beta1.AdmissionResponse{
+		Allowed: true,
+		Result: &metav1.Status{
+			Status: metav1.StatusSuccess,
+		},
+		UID: ar.Request.UID,
+	}
+
 	var config vault.Configuration
 	var secret corev1.Secret
 
@@ -157,15 +165,8 @@ func Inject(ar *v1beta1.AdmissionReview, roles Roles) error {
 		}
 		log.Printf("[DEBUG] JSON patch: %s", patch)
 
-		ar.Response = &v1beta1.AdmissionResponse{
-			Allowed:   true,
-			PatchType: &patchType,
-			Patch:     patch,
-			Result: &metav1.Status{
-				Status: metav1.StatusSuccess,
-			},
-			UID: ar.Request.UID,
-		}
+		ar.Response.PatchType = &patchType
+		ar.Response.Patch = patch
 	}
 	return nil
 }
