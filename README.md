@@ -125,4 +125,14 @@ secret will be overwritten; if `/test/secret` contains a `username` and
 `password` but no `domain` then the secret would contain the `username` and
 `password` from the DSV Secret Data and the `domain` field will be removed.
 
-There are more examples in the `examples` directory.
+There are more examples in the `examples` directory. Each one will show
+how each annotation works when run against an example with only a username and
+password in it.
+
+```shell
+$ thy secret read /test/secret -f .data
+{
+  "password": "alongpassword",
+  "username": "someuser"
+}
+```
