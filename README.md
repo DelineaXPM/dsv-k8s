@@ -68,6 +68,19 @@ The `Makefile` requires access to the Kubernetes CA certificate. It assumes that
 it is available in `${HOME}/.minikube/ca.crt` but that can be overridden by
 setting `$(CA_CRT)`.
 
+The location of the CA certificate can be gotten from the cluster configuration:
+
+```shell
+kubectl config view --raw -o json | jq -r '.clusters[0].cluster."certificate-authority"'
+```
+
+If the above returns `null` then the certificate is embedded in the cluster
+configuration. In that case, set `$(ca_bundle)` to the output of:
+
+```shell
+kubectl config view --raw -o json | jq -r '.clusters[0].cluster."certificate-authority-data"' | tr -d '"'
+```
+
 ## Use
 
 Once the `dsv-injector` is made available to the Kubernetes cluster and the
