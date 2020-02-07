@@ -1,8 +1,10 @@
 # Thycotic DevOps Secrets Vault Kubernetes Secret Injector
 
-A [Kubernetes](https://kubernetes.io/)
-[Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
-that injects Secret data from Thycotic DevOps Secrets Vault (DSV) into Kubernetes (k8s) cluster Secrets. The webhook is made available to the Kubernetes cluster as the `injector-svc` which can be hosted in a k8s POD or as a stand-alone service.
+A [Kubernetes](https://kubernetes.io/) [Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
+that injects Secret data from Thycotic DevOps Secrets Vault (DSV) into
+Kubernetes (k8s) cluster Secrets. The webhook is made available to the
+Kubernetes cluster as the `dsv-injector` which can be hosted in k8s or as a
+stand-alone service.
 
 The webhook intercepts `CREATE` and `UPDATE` Secret admissions and supplements
 or overwrites the Secret data with Secret data from DSV. The webhook
@@ -68,8 +70,8 @@ setting `$(CA_CRT)`.
 
 ## Use
 
-Once the `injector-svc` is made available to the Kubernetes cluster and the
-webhook is configured to call it, any appropriately annotated k8s secrets will
+Once the `dsv-injector` is made available to the Kubernetes cluster and the
+[MutatingAdmissionWebhook](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) is configured to call it, any appropriately annotated k8s Secrets will
 be modified by it whenever they are created or updated.
 
 The four annotations that affect the behavior of the webhook are:
