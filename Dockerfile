@@ -25,4 +25,4 @@ COPY --chown=dsv:dsv --from=build /b/injector-svc /b/dsv.pem /b/dsv.key /b/roles
 
 USER dsv
 
-ENTRYPOINT ["./injector-svc"]
+ENTRYPOINT ["./injector-svc", "-cert", "dsv.pem", "-key", "dsv.key", "-roles", "roles.json" ]
