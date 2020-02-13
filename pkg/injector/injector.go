@@ -78,7 +78,7 @@ func Inject(ar *v1beta1.AdmissionReview, roles Roles) error {
 		if role, ok := roles[roleName]; ok {
 			config = role.Configuration
 		} else {
-			return fmt.Errorf("no configurtion for role: %s", roleName)
+			return fmt.Errorf("no configuration for role: %s", roleName)
 		}
 	} else if role, ok := roles["default"]; ok {
 		config = role.Configuration
