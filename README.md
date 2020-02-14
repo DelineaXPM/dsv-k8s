@@ -45,13 +45,19 @@ specify a particular Role.
 
 ## Build
 
-The build requires a functional Minikube installation. It uses a the `Makefile`.
+Building the `dsv-injector` image requires docker
+
+Building and deploying the test_image requires a Kubernetes cluster.
+
+The `Makefile` defaults were set based on Minikube.
 
 To build the [Docker](https://www.docker.com/) image run:
 
 ```sh
 make image
 ```
+
+## Test
 
 To configure the Kubernetes cluster to to call the webhook as stand-alone
 service running on the host at `$(HOST_IP)`:
@@ -61,12 +67,24 @@ make deploy_host
 ```
 
 Note that `$(HOST_IP)` defaults to the IP address of the host executing the
-build. Also note that the `Makefile` does not include`docker login` or
-`docker push` as neither are required to deploy the webhook to Minikube.
+build.
 
-The `Makefile` requires access to the Kubernetes CA certificate. It assumes that
-it is available in `${HOME}/.minikube/ca.crt` but that can be overridden by
-setting `$(CA_CRT)`.
+To deploy the `dsv-injector` service as a POD and configure the webhook to call
+it, run:
+
+```sh
+make deploy
+```
+
+Note that, unless an existing `$(REGISTRY)` is specified, the build will start
+one on the cluster so it can make the release image available to the test image.
+
+Also note that the `Makefile` does not include `docker login`.
+
+## The CA Certificate
+
+The WebHook uses the cluster CA certificate. The default location is
+`${HOME}/.minikube/ca.crt` but that can be overridden by setting `$(CA_CRT)`.
 
 The location of the CA certificate can be gotten from the cluster configuration:
 
@@ -74,8 +92,8 @@ The location of the CA certificate can be gotten from the cluster configuration:
 kubectl config view --raw -o json | jq -r '.clusters[0].cluster."certificate-authority"'
 ```
 
-If the above returns `null` then the certificate is embedded in the cluster
-configuration. In that case, set `$(ca_bundle)` to the output of:
+If that returns `null` then the certificate is embedded in the cluster configuration.
+In that case, set `$(ca_bundle)` to the output of:
 
 ```shell
 kubectl config view --raw -o json | jq -r '.clusters[0].cluster."certificate-authority-data"' | tr -d '"'
