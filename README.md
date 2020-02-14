@@ -121,15 +121,15 @@ that will be used to modify the k8s Secret. If it is present then the Role
 must exist in the above mentioned Role mappings that the webhook is configured
 to use. If it is absent then the _default_ mapping is used.
 
-The `setAnnotation`, `addAnnoation` and `updateAnnotation` contain the path to
+The `setAnnotation`, `addAnnotation` and `updateAnnotation` contain the path to
 the DSV Secret that will be used to modified the k8s Secret being admitted.
 
-* `addAnnotation` adds missing fields without overrwriting or removing existing fields.
+* `addAnnotation` adds missing fields without overwriting or removing existing fields.
 * `updateAnnotation` adds and overwrites existing fields but does not remove fields.
 * `setAnnotation` overwrites fields and removes fields that do not exist in the DSV Secret.
 
 Only one of these should be specified on any given k8s Secret, however, if more
-than one are defined then the order of precendence is `setAnnotation` then
+than one are defined then the order of precedence is `setAnnotation` then
 `addAnnotation` then `updateAnnotation`.
 
 ### Examples
