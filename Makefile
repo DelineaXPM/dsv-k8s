@@ -39,13 +39,6 @@ deploy_webhook: $(BUILD_DIR)
 		deployments/webhook.yml >| $(BUILD_DIR)/webhook.yml
 	kubectl apply -f $(BUILD_DIR)/webhook.yml
 
-deploy_host: deploy_webhook
-	sed -e "s| namespace: .*$$| namespace: $(NAMESPACE)|" \
-		-e "s|- port: [0-9]*.*$$|- port: $(SERVICE_PORT)|" \
-		-e "s|- ip: *\"[0-9].*$$|- ip: \"$(HOST_IP)\"|" \
-		deployments/host.yml >| $(BUILD_DIR)/host.yml
-	kubectl apply -f $(BUILD_DIR)/host.yml
-
 # Create a test image that includes the certficate and roles.json 🔓😧
 
 $(BUILD_DIR)/$(NAME).key $(BUILD_DIR)/$(NAME).pem: $(BUILD_DIR)
@@ -63,6 +56,13 @@ endif
 $(BUILD_DIR)/Dockerfile: registry test/Dockerfile $(BUILD_DIR)
 	sed -e "s|^FROM $(NAME):.*|FROM $(REGISTRY)/$(IMAGE_TAG)|" \
 		test/Dockerfile >| $(BUILD_DIR)/Dockerfile
+
+deploy_host: deploy_webhook $(BUILD_DIR)/$(NAME).key $(BUILD_DIR)/$(NAME).pem
+	sed -e "s| namespace: .*$$| namespace: $(NAMESPACE)|" \
+		-e "s|- port: [0-9]*.*$$|- port: $(SERVICE_PORT)|" \
+		-e "s|- ip: *\"[0-9].*$$|- ip: \"$(HOST_IP)\"|" \
+		deployments/host.yml >| $(BUILD_DIR)/host.yml
+	kubectl apply -f $(BUILD_DIR)/host.yml
 
 test_image: image $(BUILD_DIR)/$(NAME).key $(BUILD_DIR)/$(NAME).pem $(BUILD_DIR)/Dockerfile
 	docker tag $(IMAGE_TAG) $(REGISTRY)/$(IMAGE_TAG)
