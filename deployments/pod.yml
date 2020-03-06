@@ -20,7 +20,7 @@ spec:
       containers:
         - name: dsv-injector
           image: dsv-injector:latest
-          imagePullPolicy: Never # No pull required in Minikube
+          imagePullPolicy: IfNotPresent # No pull required in Minikube
           resources:
             requests:
               memory: "512Mi"

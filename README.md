@@ -45,13 +45,14 @@ specify a particular Role.
 
 ## Build
 
-Building the `dsv-injector` image requires docker
+Building the `dsv-injector` image requires [Docker](https://www.docker.com/) or
+[Podman](https://podman.io/).
 
 Building and deploying the test_image requires a Kubernetes cluster.
 
-The `Makefile` defaults were set based on Minikube.
+The `Makefile` defaults are based on Minikube.
 
-To build the [Docker](https://www.docker.com/) image run:
+To build the  image run:
 
 ```sh
 make image
@@ -60,14 +61,14 @@ make image
 ## Test
 
 To configure the Kubernetes cluster to to call the webhook as stand-alone
-service running on the host at `$(HOST_IP)`:
+service running on the host at `$(SERVICE_IP)`:
 
 ```sh
 make deploy_host
 ```
 
-Note that `$(HOST_IP)` defaults to the IP address of the host executing the
-build.
+Note that `$(SERVICE_IP)` defaults to the IP address of the host executing the
+build. Also note that `localhost` will not work as an alternative.
 
 To deploy the `dsv-injector` service as a POD and configure the webhook to call
 it, run:
@@ -76,12 +77,28 @@ it, run:
 make deploy
 ```
 
-Note that, unless an existing `$(REGISTRY)` is specified, the build will start
-one on the cluster so it can make the release image available to the test image.
+### Minikube
 
-Also note that the `Makefile` does not include `docker login`.
+By default, the build uses Minikube and it must be up to build the test image.
 
-## The CA Certificate
+`minikube tunnel` must also be running so that the build can communicate with
+the registry unless the build uses an external `$(REGISTRY)`.
+
+Execute `eval $(minikube dockerenv)` in the build shell to use the Minikube
+Docker daemon.
+
+### The Registry
+
+The test image is based on the release image so the build needs to pull the
+latter to build the former.
+
+By default, the build will look for a 'registry' service on the cluster and if
+none is found it will run `minikube addons enable registry` to start one.
+
+This behavior can be overridden by specifying the registry `host:port` in
+`$(REGISTRY)`. Note that the `Makefile` does not invoke `docker login`.
+
+### The CA Certificate
 
 The WebHook uses the cluster CA certificate. The default location is
 `${HOME}/.minikube/ca.crt` but that can be overridden by setting `$(CA_CRT)`.
@@ -89,21 +106,22 @@ The WebHook uses the cluster CA certificate. The default location is
 The location of the CA certificate can be gotten from the cluster configuration:
 
 ```shell
-kubectl config view --raw -o json | jq -r '.clusters[0].cluster."certificate-authority"'
+kubectl config view -o jsonpath='{.clusters[*].cluster.certificate-authority}'
 ```
 
 If that returns `null` then the certificate is embedded in the cluster configuration.
-In that case, set `$(ca_bundle)` to the output of:
+In that case, set `$(CA_BUNDLE)` to the output of:
 
 ```shell
-kubectl config view --raw -o json | jq -r '.clusters[0].cluster."certificate-authority-data"' | tr -d '"'
+kubectl config view -o jsonpath='{.clusters[*].cluster.certificate-authority-data}' | tr -d '"'
 ```
 
 ## Use
 
-Once the `dsv-injector` is made available to the Kubernetes cluster and the
-[MutatingAdmissionWebhook](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) is configured to call it, any appropriately annotated k8s Secrets will
-be modified by it whenever they are created or updated.
+Once the `dsv-injector` is up and available to the Kubernetes cluster, and the
+[MutatingAdmissionWebhook](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) is configured to call it, any
+appropriately annotated k8s Secrets will be modified by it whenever they are
+created or updated.
 
 The four annotations that affect the behavior of the webhook are:
 
