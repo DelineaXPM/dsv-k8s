@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/thycotic/dsv-k8s/pkg/injector"
 
@@ -35,18 +36,26 @@ func main() {
 	if err := json.Unmarshal(rcj, roles); err != nil {
 		log.Fatalf("unable to parse configuration file '%s': %s", rolesFile, err)
 	}
-	log.Printf("[DEBUG] roles: %s", roles)
+
+	roleNames := make([]string, 0, len(*roles)) // for logging
+
+	for name := range *roles {
+		roleNames = append(roleNames, name)
+	}
+	log.Printf("[INFO] configured role(s): [%s]", strings.Join(roleNames, ", "))
 
 	http.HandleFunc("/inject", func(w http.ResponseWriter, r *http.Request) {
 		if request, err := ioutil.ReadAll(r.Body); err == nil {
 			defer r.Body.Close()
-			log.Printf("[DEBUG] http.Request.Body: %s", request)
+			log.Printf("[DEBUG] the request body is %d bytes", len(request))
 
 			ar := new(v1beta1.AdmissionReview)
 
 			if err := json.Unmarshal(request, ar); err == nil {
+				var response []byte
+
 				if err := injector.Inject(ar, *roles); err == nil {
-					if response, err := json.Marshal(ar); err == nil {
+					if response, err = json.Marshal(ar); err == nil {
 						w.WriteHeader(http.StatusOK)
 						w.Write(response)
 					} else {
@@ -59,15 +68,17 @@ func main() {
 						Result: &metav1.Status{Message: err.Error()},
 					}
 					response, _ := json.Marshal(ar)
+
 					w.WriteHeader(http.StatusOK)
 					w.Write(response)
 				}
+				log.Printf("[DEBUG] sent a %d byte response", len(response))
 			} else {
 				log.Printf("[DEBUG] unable to unmarshal AdmissionReview: %s", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}
 	})
-	log.Printf("[DEBUG] calling http.ListenAndServeTLS with host:port: %s", hostPort)
+	log.Printf("[INFO] listening for HTTPS requests on host:port '%s'", hostPort)
 	log.Fatal(http.ListenAndServeTLS(hostPort, certFile, keyFile, nil))
 }

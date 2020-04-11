@@ -65,7 +65,7 @@ func Inject(ar *v1beta1.AdmissionReview, roles Roles) error {
 	if err := json.Unmarshal(ar.Request.Object.Raw, &secret); err != nil {
 		return fmt.Errorf("unable to unmarshal Secret: %s", err)
 	}
-	log.Printf("[DEBUG] Secret: %v", secret)
+	log.Printf("[DEBUG] operating on k8s Secret '%s'", secret.Name)
 
 	annotations := secret.ObjectMeta.GetAnnotations()
 	/*
@@ -163,7 +163,11 @@ func Inject(ar *v1beta1.AdmissionReview, roles Roles) error {
 		if err != nil {
 			return fmt.Errorf("unable to marshal JsonPatch: %s", err)
 		}
-		log.Printf("[DEBUG] JSON patch: %s", patch)
+
+		for i := range jsonPatch {
+			jsonPatch[i].Value = "*omitted*" // omit values in the DEBUG log
+		}
+		log.Printf("[DEBUG] patching the Secret with %s", jsonPatch)
 
 		ar.Response.PatchType = &patchType
 		ar.Response.Patch = patch
