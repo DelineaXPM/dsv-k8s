@@ -112,7 +112,7 @@ func Inject(ar *v1beta1.AdmissionReview, roles Roles) error {
 		}
 
 		jsonPatch := []jsonpatch.JsonPatchOperation{
-			jsonpatch.JsonPatchOperation{
+			{
 				Operation: "add",
 				Path:      "/metadata/annotations",
 				Value: map[string]string{
