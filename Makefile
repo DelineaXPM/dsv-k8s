@@ -70,11 +70,11 @@ deploy_webhook: $(BUILD_DIR)
 $(BUILD_DIR)/$(NAME).key $(BUILD_DIR)/$(NAME).pem: $(BUILD_DIR)
 	sh scripts/get_cert.sh -n "$(NAME)" -N "$(NAMESPACE)" -d "$(BUILD_DIR)"
 
-injector-svc: cmd/injector-svc.go
+dsv-injector-svc: cmd/dsv-injector-svc.go
 	go build $<
 
 # Deploy the service that the webhook uses as a pointer to the host
-deploy_host: deploy_webhook $(BUILD_DIR)/$(NAME).key $(BUILD_DIR)/$(NAME).pem injector-svc
+deploy_host: deploy_webhook $(BUILD_DIR)/$(NAME).key $(BUILD_DIR)/$(NAME).pem dsv-injector-svc
 	sed -e "s| namespace: .*$$| namespace: $(NAMESPACE)|" \
 		-e "s|- port: [0-9]*.*$$|- port: $(SERVICE_PORT)|" \
 		-e "s|- ip: *\"[0-9].*$$|- ip: \"$(SERVICE_IP)\"|" \
@@ -110,4 +110,4 @@ deploy_clean:
 	$(KUBECTL) delete --ignore-not-found mutatingwebhookconfigurations.admissionregistration.k8s.io $(NAME)
 
 clean: deploy_clean
-	rm -rf $(BUILD_DIR) $(NAME)
+	rm -rf $(BUILD_DIR) dsv-injector-svc

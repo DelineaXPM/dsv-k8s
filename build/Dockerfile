@@ -6,13 +6,13 @@ WORKDIR /b
 COPY cmd/ ./cmd
 COPY pkg/ ./pkg
 COPY go.mod go.sum ./
-RUN go build cmd/injector-svc.go
+RUN go build cmd/dsv-injector-svc.go
 
 FROM alpine:latest
 RUN apk update && apk upgrade
 RUN addgroup dsv && adduser -S -G dsv dsv
 
 WORKDIR /home/dsv
-COPY --chown=dsv:dsv --from=build /b/injector-svc .
+COPY --from=build /b/dsv-injector-svc /usr/bin/
 
 USER dsv

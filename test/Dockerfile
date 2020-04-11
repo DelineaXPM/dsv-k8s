@@ -10,4 +10,4 @@ COPY --chown=dsv:dsv ${cert_file} ./dsv.pem
 COPY --chown=dsv:dsv ${key_file} ./dsv.key
 COPY --chown=dsv:dsv ${roles_file} ./roles.json
 
-ENTRYPOINT ["./injector-svc", "-cert", "dsv.pem", "-key", "dsv.key", "-roles", "roles.json" ]
+ENTRYPOINT ["dsv-injector-svc", "-cert", "dsv.pem", "-key", "dsv.key", "-roles", "roles.json" ]
