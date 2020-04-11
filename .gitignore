@@ -23,6 +23,8 @@
 /Godeps/
 
 # End of https://www.gitignore.io/api/go
+configs/*
+target
 
 # IDE
 .vscode
