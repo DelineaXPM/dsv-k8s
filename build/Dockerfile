@@ -12,7 +12,7 @@ FROM alpine:latest
 RUN apk update && apk upgrade
 RUN addgroup dsv && adduser -S -G dsv dsv
 
-WORKDIR /home/dsv
 COPY --from=build /b/dsv-injector-svc /usr/bin/
 
 USER dsv
+WORKDIR /home/dsv
