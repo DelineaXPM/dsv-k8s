@@ -2,6 +2,7 @@
 
 ![Docker](https://github.com/thycotic/dsv-k8s/workflows/Docker/badge.svg)
 ![GitHub Package Registry](https://github.com/thycotic/dsv-k8s/workflows/GitHub%20Package%20Registry/badge.svg)
+![Red Hat Quay](https://github.com/thycotic/dsv-k8s/workflows/Red%20Hat%20Quay/badge.svg)
 
 A [Kubernetes](https://kubernetes.io/) [Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
 that injects Secret data from Thycotic DevOps Secrets Vault (DSV) into
@@ -45,6 +46,48 @@ Tenant mappings, stored in `configs/roles.json`:
 
 The _default_ Role is used when the k8s secret being modified does not
 specify a particular Role.
+
+## Run
+
+The `thycotic/dsv-injector` image contains the `dsv-injector-svc` executable, but
+it requires a certificate, the associated key and a `roles.json` file (see above).
+
+```bash
+$ /usr/bin/dsv-injector-svc -?
+flag provided but not defined: -?
+Usage of ./dsv-injector-svc:
+  -cert string
+        the path of the certificate file in PEM format (default "injector.pem")
+  -hostport string
+        the host:port e.g. localhost:8080 (default ":18543")
+  -key string
+        the path of the certificate key file in PEM format (default "injector.key")
+  -roles string
+        the path of JSON formatted roles file (default "roles.json")
+```
+
+To get a certificate and key, ensure that [openssl]()
+and
+Use `scripts/get_cert.sh`, to get a certificate from your Kubernetes cluster:
+
+```bash
+$ sh scripts/get_cert.sh
+Usage: get_cert.sh -n NAME [OPTIONS]...
+
+        -n, -name, --name NAME
+                Maps to the host portion of the FQDN that is the subject of the
+                certificate; also the basename of the certificate and key files.
+        -d, -directory, --directory=DIRECTORY
+                The location of the resulting certificate and private-key. The
+                default is '.'
+        -N, -namespace, --namespace=NAMESPACE
+                Represents the Kubernetes cluster Namespace and maps to the
+                domain of the FQDN that is the subject of the certificate.
+                the default is 'default'
+        -b, -bits, --bits=BITS
+                the RSA key size in bits; default is 2048
+```
+
 
 ## Build
 
