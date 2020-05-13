@@ -2,7 +2,7 @@ module github.com/thycotic/dsv-k8s
 
 require (
 	github.com/mattbaird/jsonpatch v0.0.0-20171005235357-81af80346b1a
-	github.com/thycotic/dsv-sdk-go v1.0.0
+	github.com/thycotic/dsv-sdk-go v1.0.1
 	k8s.io/api v0.0.0-20190720062849-3043179095b6
 	k8s.io/apimachinery v0.0.0-20190719140911-bfcf53abc9f8
 )

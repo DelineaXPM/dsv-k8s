@@ -67,6 +67,8 @@ github.com/thycotic/dsv-sdk-go v0.0.0-20200118074348-81e52d764b28 h1:6Zn/Dlor35B
 github.com/thycotic/dsv-sdk-go v0.0.0-20200118074348-81e52d764b28/go.mod h1:i05NeloQ44JMyiVdB7jUacCiolyTVqdh+Mp8gg2WB4Y=
 github.com/thycotic/dsv-sdk-go v1.0.0 h1:20J6upxk9AsN5NnJXIokmldcG5uwnA0RhzFHR0OrAa8=
 github.com/thycotic/dsv-sdk-go v1.0.0/go.mod h1:i05NeloQ44JMyiVdB7jUacCiolyTVqdh+Mp8gg2WB4Y=
+github.com/thycotic/dsv-sdk-go v1.0.1 h1:g5ZDqnvoxORY2JTxkOcxa2Sa6cDgU+6kLbCXRj3cvfs=
+github.com/thycotic/dsv-sdk-go v1.0.1/go.mod h1:i05NeloQ44JMyiVdB7jUacCiolyTVqdh+Mp8gg2WB4Y=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/net v0.0.0-20170114055629-f2499483f923/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20180906233101-161cd47e91fd/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
