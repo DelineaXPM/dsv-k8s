@@ -36,6 +36,6 @@ jobs:
           fi
 
           registry=docker.pkg.github.com
-          echo "${{ secrets.GPR_PAT }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
           make image REGISTRY="$registry/${{ github.repository }}" VERSION=$version
           docker logout
