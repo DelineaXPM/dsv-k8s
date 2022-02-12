@@ -113,16 +113,18 @@ DNS.2 = ${name}.${namespace}
 DNS.3 = ${fqdn}
 DNS.4 = ${fqdn}.cluster.local
 EOF
-"${openssl}" req -new -key "${name}.key" -subj "/CN=${fqdn}" \
+"${openssl}" req -new -key "${name}.key" \
+  -subj "/CN=system:node:${fqdn};/O=system:nodes" \
 	-out "${name}.csr" -config "${csr_conf}" > /dev/null
 
 "${kubectl}" delete csr --ignore-not-found=true "${fqdn}" > /dev/null
 "${kubectl}" create -f - <<EOF > /dev/null
-apiVersion: certificates.k8s.io/v1beta1
+apiVersion: certificates.k8s.io/v1
 kind: CertificateSigningRequest
 metadata:
   name: ${fqdn}
 spec:
+  signerName: kubernetes.io/kubelet-serving
   groups:
   - system:authenticated
   request: $(cat "${name}.csr" | base64 | tr -d '\n')

@@ -9,7 +9,7 @@ import (
 
 	"github.com/mattbaird/jsonpatch"
 	"github.com/thycotic/dsv-sdk-go/vault"
-	"k8s.io/api/admission/v1beta1"
+	v1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -50,8 +50,8 @@ type Roles map[string]struct {
 }
 
 // Inject adds to, updates or replaces the k8s Secret.Data with dsv Secret.Data (see above)
-func Inject(ar *v1beta1.AdmissionReview, roles Roles) error {
-	ar.Response = &v1beta1.AdmissionResponse{
+func Inject(ar *v1.AdmissionReview, roles Roles) error {
+	ar.Response = &v1.AdmissionResponse{
 		Allowed: true,
 		Result: &metav1.Status{
 			Status: metav1.StatusSuccess,
@@ -157,7 +157,7 @@ func Inject(ar *v1beta1.AdmissionReview, roles Roles) error {
 			jsonPatch = append(jsonPatch, op)
 		}
 
-		patchType := v1beta1.PatchTypeJSONPatch
+		patchType := v1.PatchTypeJSONPatch
 		patch, err := json.Marshal(jsonPatch)
 
 		if err != nil {

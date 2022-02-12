@@ -10,7 +10,7 @@ import (
 
 	"github.com/thycotic/dsv-k8s/pkg/injector"
 
-	"k8s.io/api/admission/v1beta1"
+	"k8s.io/api/admission/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -49,7 +49,7 @@ func main() {
 			defer r.Body.Close()
 			log.Printf("[DEBUG] the request body is %d bytes", len(request))
 
-			ar := new(v1beta1.AdmissionReview)
+			ar := new(v1.AdmissionReview)
 
 			if err := json.Unmarshal(request, ar); err == nil {
 				var response []byte
@@ -64,7 +64,7 @@ func main() {
 					}
 				} else {
 					log.Printf("[DEBUG] injector.Inject error: %s", err)
-					ar.Response = &v1beta1.AdmissionResponse{
+					ar.Response = &v1.AdmissionResponse{
 						Result: &metav1.Status{Message: err.Error()},
 					}
 					response, _ := json.Marshal(ar)
