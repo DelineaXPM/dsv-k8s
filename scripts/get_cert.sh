@@ -142,6 +142,8 @@ while :; do
   then
     echo "no csr after ${retries} seconds; exiting"
     exit 1
+  else
+    let retries=retries+1
   fi
   sleep 1
 done
@@ -156,6 +158,8 @@ while :; do
   then
     echo "no certificate after ${retries} seconds; exiting"
     exit 1
+  else
+    let retries=retries+1
   fi
   sleep 1
 done
