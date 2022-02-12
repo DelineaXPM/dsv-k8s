@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dsv.fullname" . }}
+  labels:
+    {{- include "dsv.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.webhookPort }}
+      targetPort: {{ .Values.containerPort }}
+  selector:
+    {{- include "dsv.selectorLabels" . | nindent 4 }}
+  type: {{ .Values.service.type }}
+{{- if eq .Values.service.type "ClusterIP" -}}
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: {{ include "dsv.fullname" . }}
+  labels:
+    {{- include "dsv.labels" . | nindent 4 }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.service.ipAddress }}
+    ports:
+      - port: 8543
+{{- end -}}

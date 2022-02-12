@@ -1,0 +1,22 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: {{ include "dsv.name" . }}
+  labels:
+    {{- include "dsv.labels" . | nindent 4 }}
+webhooks:
+  - name: {{ include "dsv.fullname" . }}.default.svc
+    sideEffects: {{ default "None" .Values.sideEffects }}
+    admissionReviewVersions: ["v1", "v1beta1"]
+    clientConfig:
+      service:
+        name: {{ include "dsv.name" . }}
+        namespace: {{ .Release.Namespace }}
+        path: {{ .Values.webhookUri }}
+        port: {{ .Values.webhookPort }}
+      caBundle: {{ .Values.caBundle | b64enc }}
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["secrets"]

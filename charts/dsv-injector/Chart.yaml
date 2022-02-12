@@ -1,0 +1,14 @@
+apiVersion: v2
+name: dsv-injector
+description: A Helm chart for the Delinea DevOps Secrets Vault (DSV) Injector Mutating Webhook.
+keywords:
+  - Delinea
+  - DevOps
+  - DSV
+  - secrets
+  - vault
+type: application
+version: 0.1.0
+appVersion: latest
+maintainers:
+  - name: Adam Migus
