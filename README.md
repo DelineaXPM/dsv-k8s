@@ -49,6 +49,8 @@ specify a particular Role.
 
 ## Run
 
+The `Makefile` demonstrates a typical installation via [Helm](https://helm.sh/).
+
 The `thycotic/dsv-injector` image contains the `dsv-injector-svc` executable, but
 it requires a certificate, the associated key and a `roles.json` file (see above).
 
@@ -98,51 +100,18 @@ Building and deploying the test_image requires a Kubernetes cluster.
 
 The `Makefile` defaults are based on Minikube.
 
-To build the  image run:
+To build the image run:
 
 ```sh
 make image
-```
-
-## Test
-
-To configure the Kubernetes cluster to to call the webhook as stand-alone
-service running on the host at `$(SERVICE_IP)`:
-
-```sh
-make deploy_host
-```
-
-Note that `$(SERVICE_IP)` defaults to the IP address of the host executing the
-build. Also note that `localhost` will not work as an alternative.
-
-To deploy the `dsv-injector` service as a POD and configure the webhook to call
-it, run:
-
-```sh
-make deploy
 ```
 
 ### Minikube
 
 By default, the build uses Minikube and it must be up to build the test image.
 
-`minikube tunnel` must also be running so that the build can communicate with
-the registry unless the build uses an external `$(REGISTRY)`.
-
 Execute `eval $(minikube dockerenv)` in the build shell to use the Minikube
 Docker daemon.
-
-### The Registry
-
-The test image is based on the release image so the build needs to pull the
-latter to build the former.
-
-By default, the build will look for a 'registry' service on the cluster and if
-none is found it will run `minikube addons enable registry` to start one.
-
-This behavior can be overridden by specifying the registry `host:port` in
-`$(REGISTRY)`. Note that the `Makefile` does not invoke `docker login`.
 
 ### The CA Certificate
 
