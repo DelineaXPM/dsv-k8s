@@ -32,7 +32,7 @@ $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem:
 	-rm -f $(HELM_CHART)/$(NAME).csr
 
 # Install will use the cert and key below, no matter how they got there. 😉😇
-install: $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem image
+install: $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem
 	$(HELM) install $(HELM_INSTALL_ARGS) \
 	--set-file caBundle=$(CA_BUNDLE) \
 	--set-file rolesJson=$(ROLES_JSON) \
@@ -40,14 +40,14 @@ install: $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem image
 
 # Uninstall the Helm Chart and remove the Docker images
 uninstall:
-	$(HELM) uninstall $(NAME)
+	-$(HELM) uninstall $(NAME)
 
 # Remove the Docker images
 docker-rmi:
-	$(DOCKER) rmi -f $(IMAGE_TAG)
+	-$(DOCKER) rmi -f $(IMAGE_TAG)
 
 # Remove the X.509 certificate and RSA private key
 remove-cert:
-	rm -f $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem
+	-rm -f $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem
 
-clean: uninstall docker-rmi # remove-cert
+clean: docker-rmi remove-cert uninstall
