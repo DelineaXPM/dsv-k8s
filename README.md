@@ -1,11 +1,11 @@
-# Thycotic DevOps Secrets Vault Kubernetes Secret Injector
+# Delinea DevOps Secrets Vault Kubernetes Secret Injector
 
 ![Docker](https://github.com/thycotic/dsv-k8s/workflows/Docker/badge.svg)
 ![GitHub Package Registry](https://github.com/thycotic/dsv-k8s/workflows/GitHub%20Package%20Registry/badge.svg)
 ![Red Hat Quay](https://github.com/thycotic/dsv-k8s/workflows/Red%20Hat%20Quay/badge.svg)
 
 A [Kubernetes](https://kubernetes.io/) [Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
-that injects Secret data from Thycotic DevOps Secrets Vault (DSV) into
+that injects Secret data from Delinea DevOps Secrets Vault (DSV) into
 Kubernetes (k8s) cluster Secrets. The webhook is made available to the
 Kubernetes cluster as the `dsv-injector` which can be hosted in k8s or as a
 stand-alone service.
@@ -19,6 +19,7 @@ The webhook uses the [DSV Go SDK](https://github.com/thycotic/dsv-sdk-go) to
 communicate with DSV.
 
 It was built and tested with [Minikube](https://minikube.sigs.k8s.io/).
+It was also tested with [Minishift](https://docs.okd.io/3.11/minishift/index.html).
 
 ## Configure
 
@@ -44,15 +45,19 @@ Tenant mappings, stored in `configs/roles.json`:
 }
 ```
 
-The _default_ Role is used when the k8s secret being modified does not
-specify a particular Role.
+The injector uses the _default_ Role when it mutates a k8s _Secret_ that does not have an explicit Role annotation (see below).
 
 ## Run
 
 The `Makefile` demonstrates a typical installation via [Helm](https://helm.sh/).
+It provides the Helm chart with the CA certificate bundle `$(CA_BUNDLE)` that the
+cluster uses to authenticate the webhook.
+It provisions the certificate and associated key using `get_cert.sh`.
+It also provides a `roles.json` file.
+The Helm chart itself stores the each in their own Kubernetes _Secret_.
 
-The `thycotic/dsv-injector` image contains the `dsv-injector-svc` executable, but
-it requires a certificate, the associated key and a `roles.json` file (see above).
+The `thycotic/dsv-injector` image contains the `dsv-injector-svc` executable, however,
+the certificate, the key, and the `roles.json` file should be mounted into the container at runtime.
 
 ```bash
 $ /usr/bin/dsv-injector-svc -?
@@ -68,9 +73,10 @@ Usage of ./dsv-injector-svc:
         the path of JSON formatted roles file (default "roles.json")
 ```
 
-To get a certificate and key, ensure that [openssl]()
-and
-Use `scripts/get_cert.sh`, to get a certificate from your Kubernetes cluster:
+### Certificate
+
+To provision a certificate and key from your Kubernetes cluster,
+ensure that [openssl](https://www.openssl.org/) is available the use `scripts/get_cert.sh`.
 
 ```bash
 $ sh scripts/get_cert.sh
@@ -90,46 +96,37 @@ Usage: get_cert.sh -n NAME [OPTIONS]...
                 the RSA key size in bits; default is 2048
 ```
 
-
-## Build
-
-Building the `dsv-injector` image requires [Docker](https://www.docker.com/) or
-[Podman](https://podman.io/).
-
-Building and deploying the test_image requires a Kubernetes cluster.
-
-The `Makefile` defaults are based on Minikube.
-
-To build the image run:
-
-```sh
-make image
-```
-
-### Minikube
-
-By default, the build uses Minikube and it must be up to build the test image.
-
-Execute `eval $(minikube dockerenv)` in the build shell to use the Minikube
-Docker daemon.
-
 ### The CA Certificate
 
-The WebHook uses the cluster CA certificate. The default location is
-`${HOME}/.minikube/ca.crt` but that can be overridden by setting `$(CA_CRT)`.
+The `Makefile` assumes that it exists as `${HOME}/.minikube/ca.crt`.
+By default, it is at `${HOME}/.minishift/ca.pem` for Minishift.
 
-The location of the CA certificate can be gotten from the cluster configuration:
+To get the certificate from a running cluster, run:
 
 ```shell
 kubectl config view -o jsonpath='{.clusters[*].cluster.certificate-authority}'
 ```
 
-If that returns `null` then the certificate is embedded in the cluster configuration.
+If that returns `null`, then the certificate is embedded in the cluster configuration.
 In that case, set `$(CA_BUNDLE)` to the output of:
 
 ```shell
 kubectl config view -o jsonpath='{.clusters[*].cluster.certificate-authority-data}' | tr -d '"'
 ```
+
+## Build
+
+Building the `dsv-injector` image requires [Docker](https://www.docker.com/) or
+[Podman](https://podman.io/).
+To build it, run:
+
+```sh
+make image
+```
+
+### Minikube and Minishift
+
+Remember to execute `eval $(minikube docker-env)` (or `eval $(minishift docker-env)`) in the build shell to use that cluster's Docker daemon.
 
 ## Use
 
