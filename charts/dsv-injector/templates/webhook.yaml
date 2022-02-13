@@ -10,10 +10,12 @@ metadata:
     {{- include "dsv.labels" . | nindent 4 }}
 webhooks:
   - name: {{ include "dsv.fullname" . }}.default.svc
-{{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" -}}
-    sideEffects: {{ default "None" .Values.sideEffects }}
-    admissionReviewVersions: ["v1", "v1beta1"]
-{{- end }}
+    failurePolicy: Fail
+    rules:
+      - apiGroups: [""]
+        apiVersions: ["v1", "v1beta1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["secrets"]
     clientConfig:
       caBundle: {{ .Values.caBundle | b64enc }}
       service:
@@ -22,9 +24,6 @@ webhooks:
         path: {{ .Values.webhookUri }}
 {{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" -}}
         port: {{ .Values.webhookPort }}
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: {{ default "None" .Values.sideEffects }}
 {{- end }}
-    rules:
-      - operations: ["CREATE", "UPDATE"]
-        apiGroups: [""]
-        apiVersions: ["v1", "v1beta1"]
-        resources: ["secrets"]
