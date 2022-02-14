@@ -23,9 +23,9 @@ It was also tested with [Minishift](https://docs.okd.io/3.11/minishift/index.htm
 
 ## Configure
 
-The webhook requires a JSON formatted list of _role_ to Client Credential and Tenant mappings.
+The webhook requires a JSON formatted list of _role_ to Client Credential and Tenant mappings; [see below](#use).
 The _role_ is a simple name that does not relate to DSV or Kubernetes Roles per se.
-Declaring the _role_ annotation selects which credentials to use to get the DSV Secret.
+Declaring the role annotation selects which credentials to use to get the DSV Secret.
 Using the name of the DSV Role used to generate the credentials is good practice.
 
 ```json
@@ -47,7 +47,7 @@ Using the name of the DSV Role used to generate the credentials is good practice
 }
 ```
 
-The injector uses the _default_ Role when it mutates a k8s _Secret_ that does not have an explicit Role annotation (see below).
+NOTE: the injector uses the _default_ role when it mutates a Kubernetes _Secret_ that does not have a roleAnnotationmar.
 
 ## Run
 
@@ -131,10 +131,9 @@ Likewise for Minishift but run `eval $(minishift docker-env)` instead.
 
 ## Use
 
-Once the `dsv-injector` is up and available to the Kubernetes cluster, and the
-[MutatingAdmissionWebhook](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) is configured to call it, any
-appropriately annotated k8s Secrets will be modified by it whenever they are
-created or updated.
+Once the `dsv-injector` is available in the Kubernetes cluster, and the
+[MutatingAdmissionWebhook](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook)
+is in place, any appropriately annotated k8s Secrets are modified on create and update.
 
 The four annotations that affect the behavior of the webhook are:
 
@@ -147,19 +146,18 @@ const(
 )
 ```
 
-`roleAnnotation` sets the DSV Role that k8s should use to access the DSV Secret
-that will be used to modify the k8s Secret. If it is present then the Role
-must exist in the above mentioned Role mappings that the webhook is configured
-to use. If it is absent then the _default_ mapping is used.
+`roleAnnotation` selects the credentials that the injector uses to retrieve the DSV Secret.
+If it is present then the role must exist in the role to Client Credential and Tenant mappings.
+If it is absent then the _default_ mapping is used.
 
 The `setAnnotation`, `addAnnotation` and `updateAnnotation` contain the path to
-the DSV Secret that will be used to modified the k8s Secret being admitted.
+the DSV Secret that will be used to modified the Kubernetes Secret being admitted.
 
 * `addAnnotation` adds missing fields without overwriting or removing existing fields.
 * `updateAnnotation` adds and overwrites existing fields but does not remove fields.
 * `setAnnotation` overwrites fields and removes fields that do not exist in the DSV Secret.
 
-Only one of these should be specified on any given k8s Secret, however, if more
+Only one of these should be specified on any given Secret, however, if more
 than one are defined then the order of precedence is `setAnnotation` then
 `addAnnotation` then `updateAnnotation`.
 
@@ -181,13 +179,13 @@ data:
   password: dW5tb2RpZmllZC1wYXNzd29yZA==
 ```
 
-The above example specifies a Role so a mapping for that role must exist in the
+The above example specifies a Role, so a mapping for that role must exist in the
 current webhook configuration. It uses the `setAnnotation` so the data in the
 secret will be overwritten; if `/test/secret` contains a `username` and
 `password` but no `domain` then the secret would contain the `username` and
-`password` from the DSV Secret Data and the `domain` field will be removed.
+`password` from the DSV Secret Data and, the `domain` field is removed.
 
-There are more examples in the `examples` directory. Each one will show
+There are more examples in the `examples` directory. Each one shows
 how each annotation works when run against an example with only a username and
 password in it.
 
