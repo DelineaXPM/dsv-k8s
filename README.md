@@ -13,7 +13,7 @@ stand-alone service.
 The webhook intercepts `CREATE` and `UPDATE` Secret admissions and supplements
 or overwrites the Secret data with Secret data from DSV. The webhook
 configuration is one or more _role_ to Client Credential Tenant mappings.
-The webhook updates k8s Secrets based on annotations (see below).
+The webhook updates Kubernetes _Secrets_ based on annotations; [see below](#use).
 
 The webhook uses the [DSV Go SDK](https://github.com/thycotic/dsv-sdk-go) to
 communicate with DSV.
@@ -23,7 +23,7 @@ It was also tested with [Minishift](https://docs.okd.io/3.11/minishift/index.htm
 
 ## Configure
 
-The webhook requires a JSON formatted list of _role_ to Client Credential and Tenant mappings; [see below](#use).
+The webhook requires a JSON formatted list of _role_ to Client Credential and Tenant mappings.
 The _role_ is a simple name that does not relate to DSV or Kubernetes Roles per se.
 Declaring the role annotation selects which credentials to use to get the DSV Secret.
 Using the name of the DSV Role used to generate the credentials is good practice.
@@ -47,7 +47,7 @@ Using the name of the DSV Role used to generate the credentials is good practice
 }
 ```
 
-NOTE: the injector uses the _default_ role when it mutates a Kubernetes _Secret_ that does not have a roleAnnotationmar.
+NOTE: the injector uses the _default_ role when it mutates a Kubernetes _Secret_ that does not have a roleAnnotation.
 
 ## Run
 
