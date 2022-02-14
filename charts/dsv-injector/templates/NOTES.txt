@@ -1,0 +1,1 @@
+{{ include "dsv.fullname" . }} is now available in the {{ .Release.Namespace }} namespace on port {{ .Values.service.port }}
