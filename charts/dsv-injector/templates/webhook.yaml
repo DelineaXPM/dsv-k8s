@@ -19,10 +19,10 @@ webhooks:
     clientConfig:
       caBundle: {{ .Values.caBundle | b64enc }}
       service:
-        name: {{ include "dsv.name" . }}
         namespace: {{ .Release.Namespace }}
+        name: {{ include "dsv.name" . }}
         path: {{ .Values.webhookUri }}
-{{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" -}}
+{{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" }}
         port: {{ .Values.webhookPort }}
     admissionReviewVersions: ["v1", "v1beta1"]
     sideEffects: {{ default "None" .Values.sideEffects }}
