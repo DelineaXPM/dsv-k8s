@@ -12,8 +12,8 @@ stand-alone service.
 
 The webhook intercepts `CREATE` and `UPDATE` Secret admissions and supplements
 or overwrites the Secret data with Secret data from DSV. The webhook
-configuration is a set of DSV Role to Client Credential and Tenant mappings.
-The webhook updates k8s Secrets based on a set of annotations (see below).
+configuration is one or more _role_ to Client Credential Tenant mappings.
+The webhook updates k8s Secrets based on annotations (see below).
 
 The webhook uses the [DSV Go SDK](https://github.com/thycotic/dsv-sdk-go) to
 communicate with DSV.
@@ -23,8 +23,10 @@ It was also tested with [Minishift](https://docs.okd.io/3.11/minishift/index.htm
 
 ## Configure
 
-The webhook requires a JSON formatted list of DSV Role to Client Credential and
-Tenant mappings, stored in `configs/roles.json`:
+The webhook requires a JSON formatted list of _role_ to Client Credential and Tenant mappings.
+The _role_ is a simple name that does not relate to DSV or Kubernetes Roles per se.
+Declaring the _role_ annotation selects which credentials to use to get the DSV Secret.
+Using the name of the DSV Role used to generate the credentials is good practice.
 
 ```json
 {
@@ -50,11 +52,9 @@ The injector uses the _default_ Role when it mutates a k8s _Secret_ that does no
 ## Run
 
 The `Makefile` demonstrates a typical installation via [Helm](https://helm.sh/).
-It provides the Helm chart with the CA certificate bundle `$(CA_BUNDLE)` that the
-cluster uses to authenticate the webhook.
-It provisions the certificate and associated key using `get_cert.sh`.
-It also provides a `roles.json` file.
-The Helm chart itself stores the each in their own Kubernetes _Secret_.
+It provides the CA certificate bundle `$(CA_BUNDLE)` that the cluster uses to authenticate the webhook to the Helm Chart.
+It provisions the certificate and associated key using `get_cert.sh` and submits them as a Kubernetes Secret.
+It also provides the `roles.json` file via a Kubernetes Secret.
 
 The `thycotic/dsv-injector` image contains the `dsv-injector-svc` executable, however,
 the certificate, the key, and the `roles.json` file should be mounted into the container at runtime.
@@ -126,7 +126,8 @@ make image
 
 ### Minikube and Minishift
 
-Remember to execute `eval $(minikube docker-env)` (or `eval $(minishift docker-env)`) in the build shell to use that cluster's Docker daemon.
+Remember to run `eval $(minikube docker-env)` in the shell to push the image to Minikube's Docker daemon.
+Likewise for Minishift but run `eval $(minishift docker-env)` instead.
 
 ## Use
 
