@@ -151,14 +151,14 @@ If it is present then the role must exist in the role to Client Credential and T
 If it is absent then the _default_ mapping is used.
 
 The `setAnnotation`, `addAnnotation` and `updateAnnotation` contain the path to
-the DSV Secret that will be used to modified the Kubernetes Secret being admitted.
+the DSV Secret that the injector will use to mutate the submitted Kubernetes Secret.
 
 * `addAnnotation` adds missing fields without overwriting or removing existing fields.
 * `updateAnnotation` adds and overwrites existing fields but does not remove fields.
 * `setAnnotation` overwrites fields and removes fields that do not exist in the DSV Secret.
 
-Only one of these should be specified on any given Secret, however, if more
-than one are defined then the order of precedence is `setAnnotation` then
+A Kubernetes Secret should specify only one of these, however, if the Secret specifies more
+than one then, the order of precedence is `setAnnotation` then
 `addAnnotation` then `updateAnnotation`.
 
 ### Examples
