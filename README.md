@@ -52,7 +52,7 @@ NOTE: the injector uses the _default_ role when it mutates a Kubernetes _Secret_
 ## Run
 
 The `Makefile` demonstrates a typical installation via [Helm](https://helm.sh/).
-It provides the CA certificate bundle `$(CA_BUNDLE)` that the cluster uses to authenticate the webhook to the Helm Chart.
+It provides the CA certificate bundle `$(CA_BUNDLE)` that the cluster uses to authenticate the webhook, to the Helm Chart.
 It provisions the certificate and associated key using `get_cert.sh` and submits them as a Kubernetes Secret.
 It also provides the `roles.json` file via a Kubernetes Secret.
 
