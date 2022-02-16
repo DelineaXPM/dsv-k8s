@@ -47,17 +47,17 @@ Using the name of the DSV Role used to generate the credentials is good practice
 }
 ```
 
-NOTE: the injector uses the _default_ role when it mutates a Kubernetes _Secret_ that does not have a roleAnnotation.
+NOTE: the injector uses the _default_ role when it mutates a Kubernetes Secret that does not have a _roleAnnotation_.
 
 ## Run
 
 The `Makefile` demonstrates a typical installation via [Helm](https://helm.sh/).
-It provides the CA certificate bundle `$(CA_BUNDLE)` that the cluster uses to authenticate the webhook, to the Helm Chart.
-It provisions the certificate and associated key using `get_cert.sh` and submits them as a Kubernetes Secret.
-It also provides the `roles.json` file via a Kubernetes Secret.
+It provides the CA certificate bundle `$(CA_BUNDLE)` that the cluster uses to validate the certificate of the webhook, to the Helm Chart.
+It creates a self-signed certificate and associated key using `get_cert.sh` that the Helm Chart templates as a Kubernetes Secret.
+It also provides the `roles.json` file which, the Helm Chart also templates as a Kubernetes Secret.
 
-The `thycotic/dsv-injector` image contains the `dsv-injector-svc` executable, however,
-the certificate, the key, and the `roles.json` file should be mounted into the container at runtime.
+The `thycotic/dsv-injector` image contains the `dsv-injector-svc` executable.
+The container should access the certificate, key, and the `roles.json` via mounts.
 
 ```bash
 $ /usr/bin/dsv-injector-svc -?
@@ -75,8 +75,8 @@ Usage of ./dsv-injector-svc:
 
 ### Certificate
 
-To provision a certificate and key from your Kubernetes cluster,
-ensure that [openssl](https://www.openssl.org/) is available the use `scripts/get_cert.sh`.
+`scripts/get_cert.sh` generates a self-signed certificate and key.
+It requires [openssl](https://www.openssl.org/).
 
 ```bash
 $ sh scripts/get_cert.sh
@@ -96,24 +96,6 @@ Usage: get_cert.sh -n NAME [OPTIONS]...
                 the RSA key size in bits; default is 2048
 ```
 
-### The CA Certificate
-
-The `Makefile` assumes that it exists as `${HOME}/.minikube/ca.crt`.
-By default, it is at `${HOME}/.minishift/ca.pem` for Minishift.
-
-To get the certificate from a running cluster, run:
-
-```shell
-kubectl config view -o jsonpath='{.clusters[*].cluster.certificate-authority}'
-```
-
-If that returns `null`, then the certificate is embedded in the cluster configuration.
-In that case, set `$(CA_BUNDLE)` to the output of:
-
-```shell
-kubectl config view -o jsonpath='{.clusters[*].cluster.certificate-authority-data}' | tr -d '"'
-```
-
 ## Build
 
 Building the `dsv-injector` image requires [Docker](https://www.docker.com/) or
@@ -124,10 +106,42 @@ To build it, run:
 make image
 ```
 
+### Install
+
+Installation requires [Helm](https://helm.sh).
+
+The Helm `values.yaml` file `image.repository` is `thycotic/dsv-injector`:
+
+```yaml
+image:
+  repository: thycotic/dsv-injector
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+```
+
+So, by default, `make install` will pull from Docker, GitHub, or Quay.
+
+```sh
+make install
+```
+
+However, the `Makefile` contains an `install-image` target that configures Helm
+to use the image built with `make image`:
+
+```sh
+make install-image
+```
+
+`make cert` exists as a shortcut for making the certificate and key.
+
+`make uninstall` uninstalls the Helm Chart.
+
+`make clean` removes the Docker image  by calling `make clean-docker` then removes the certificate and key by calling `make clean-cert`
 ### Minikube and Minishift
 
 Remember to run `eval $(minikube docker-env)` in the shell to push the image to Minikube's Docker daemon.
-Likewise for Minishift but run `eval $(minishift docker-env)` instead.
+Likewise for Minishift except its `eval $(minishift docker-env)`.
 
 ## Use
 
