@@ -9,7 +9,7 @@ metadata:
   labels:
     {{- include "dsv.labels" . | nindent 4 }}
 webhooks:
-  - name: {{ include "dsv.fullname" . }}.default.svc
+  - name: {{ include "dsv.fullname" . }}.{{ .Release.Namespace }}.svc
     failurePolicy: Fail
     rules:
       - apiGroups: [""]
