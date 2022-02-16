@@ -22,22 +22,22 @@ all: install
 image:
 	$(DOCKER) build . -t $(NAME):$(VERSION) $(DOCKER_BUILD_ARGS)
 
-cert: $(HELM_CHART)/$(NAME).pem
-
-install-image: image
-	make install HELM_INSTALL_ARGS="--set image.repository=$(NAME)"
-
 # Create a self-signed SSL certificate 🔐
 $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem:
 	sh scripts/get_cert.sh -n "$(NAME)" -d "$(HELM_CHART)" -N "$(NAMESPACE)"
 
+cert: $(HELM_CHART)/$(NAME).pem
+
 # Install will use the cert and key below, no matter how they got there. 😉😇
 install: $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem
-	$(HELM) install $(HELM_INSTALL_ARGS) \
+	$(HELM) install $(HELM_INSTALL_ARGS) $(HELM_REPO_ARGS) \
 	--set-file caBundle=$(HELM_CHART)/$(NAME).pem,rolesJson=$(ROLES_JSON) \
 	$(NAME) $(HELM_CHART)
 
-# Uninstall the Helm Chart and remove the Docker images
+install-image: HELM_REPO_ARGS = --set image.pullPolicy=Never,image.repository=$(NAME)
+install-image: image install
+
+# Uninstall the Helm Chart
 uninstall:
 	-$(HELM) uninstall $(NAME)
 
