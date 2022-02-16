@@ -8,16 +8,13 @@ NAMESPACE?=default
 # Your roles.json file; see the README.md)
 ROLES_JSON?=configs/roles.json
 
-# The CA certificate (chain); we are assuming Minikube; Minishift is similar. 💡
-CA_BUNDLE?=${HOME}/.minikube/ca.crt
-
 # 👇 Podman works too
 DOCKER=docker
 
 # Helm is required to install the webhook
 HELM=helm
 
-.PHONY: image uninstall docker-rmi remove-cert clean
+.PHONY: cert clean clean-docker clean-cert image install install-image uninstall
 
 all: install
 
@@ -25,16 +22,19 @@ all: install
 image:
 	$(DOCKER) build . -t $(NAME):$(VERSION) $(DOCKER_BUILD_ARGS)
 
-# Unless it already exists, get a certificate from the Kubernetes cluster CA 🔐
+cert: $(HELM_CHART)/$(NAME).pem
+
+install-image: image
+	make install HELM_INSTALL_ARGS="--set image.repository=$(NAME)"
+
+# Create a self-signed SSL certificate 🔐
 $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem:
 	sh scripts/get_cert.sh -n "$(NAME)" -d "$(HELM_CHART)" -N "$(NAMESPACE)"
-	-rm -f $(HELM_CHART)/$(NAME).csr
 
 # Install will use the cert and key below, no matter how they got there. 😉😇
-install: $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem image
+install: $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem
 	$(HELM) install $(HELM_INSTALL_ARGS) \
-	--set-file caBundle=$(CA_BUNDLE),rolesJson=$(ROLES_JSON) \
-	--set image.repository=$(NAME),image.tag=$(VERSION) \
+	--set-file caBundle=$(HELM_CHART)/$(NAME).pem,rolesJson=$(ROLES_JSON) \
 	$(NAME) $(HELM_CHART)
 
 # Uninstall the Helm Chart and remove the Docker images
@@ -42,11 +42,11 @@ uninstall:
 	-$(HELM) uninstall $(NAME)
 
 # Remove the Docker images
-docker-rmi:
+clean-docker:
 	-$(DOCKER) rmi -f $(NAME):$(VERSION)
 
 # Remove the X.509 certificate and RSA private key
-remove-cert:
+clean-cert:
 	-rm -f $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem
 
-clean: docker-rmi remove-cert uninstall
+clean: clean-docker clean-cert
