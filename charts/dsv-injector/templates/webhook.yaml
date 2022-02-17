@@ -16,6 +16,9 @@ webhooks:
         apiVersions: ["v1", "v1beta1"]
         operations: ["CREATE", "UPDATE"]
         resources: ["secrets"]
+{{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" }}
+        scope: {{ default "*" .Values.webhookScope }}
+{{- end }}
     clientConfig:
       caBundle: {{ .Values.caBundle | b64enc }}
       service:

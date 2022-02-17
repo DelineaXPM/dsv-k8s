@@ -57,6 +57,8 @@ resources: {}
 webhookUri: /inject
 # webhookPort is the port that the webhook endpoint is listening on
 webhookPort: 8543
+# webhookScope specifies which resources are in scope, "Cluster", "Namespaced" or "*"
+webhookScope: "Namespaced"
 # containerPort is the port that the container itself listens on
 containerPort: 18543
 
