@@ -12,7 +12,7 @@ ROLES_JSON?=configs/roles.json
 DOCKER=docker
 
 # Helm is required to install the webhook
-HELM=helm
+HELM=helm --namespace $(NAMESPACE)
 
 .PHONY: cert clean clean-docker clean-cert image install install-image uninstall
 
@@ -30,7 +30,7 @@ cert: $(HELM_CHART)/$(NAME).pem
 
 # Install will use the cert and key below, no matter how they got there. 😉😇
 install: $(HELM_CHART)/$(NAME).key $(HELM_CHART)/$(NAME).pem
-	$(HELM) install $(HELM_INSTALL_ARGS) $(HELM_REPO_ARGS) \
+	$(HELM) install --create-namespace $(HELM_INSTALL_ARGS) $(HELM_REPO_ARGS) \
 	--set-file caBundle=$(HELM_CHART)/$(NAME).pem,rolesJson=$(ROLES_JSON) \
 	$(NAME) $(HELM_CHART)
 
