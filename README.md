@@ -4,22 +4,18 @@
 ![GitHub Package Registry](https://github.com/thycotic/dsv-k8s/workflows/GitHub%20Package%20Registry/badge.svg)
 ![Red Hat Quay](https://github.com/thycotic/dsv-k8s/workflows/Red%20Hat%20Quay/badge.svg)
 
-A [Kubernetes](https://kubernetes.io/) [Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
-that injects Secret data from Delinea DevOps Secrets Vault (DSV) into
-Kubernetes (k8s) cluster Secrets. The webhook is made available to the
-Kubernetes cluster as the `dsv-injector` which can be hosted in k8s or as a
-stand-alone service.
+A [Kubernetes](https://kubernetes.io/)
+[Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
+that injects Secret data from Delinea DevOps Secrets Vault (DSV) into Kubernetes Secrets.
+The webhook can be hosted as a pod or as a stand-alone service.
 
-The webhook intercepts `CREATE` and `UPDATE` Secret admissions and supplements
-or overwrites the Secret data with Secret data from DSV. The webhook
-configuration is one or more _role_ to Client Credential Tenant mappings.
-The webhook updates Kubernetes _Secrets_ based on annotations; [see below](#use).
+The webhook works by intercepting `CREATE` and `UPDATE` Secret admissions and mutating the Secret with data from DSV.
+The webhook configuration consists of one or more _role_ to Client Credential Tenant mappings.
+The webhook updates Kubernetes Secrets based on annotations on the Secret itself. [See below](#use).
 
-The webhook uses the [DSV Go SDK](https://github.com/thycotic/dsv-sdk-go) to
-communicate with DSV.
+The webhook uses the [Golang SDK](https://github.com/thycotic/dsv-sdk-go) to communicate with the DSV API.
 
-It was built and tested with [Minikube](https://minikube.sigs.k8s.io/).
-It was also tested with [Minishift](https://docs.okd.io/3.11/minishift/index.html).
+It was tested with [Minikube](https://minikube.sigs.k8s.io/) and [Minishift](https://docs.okd.io/3.11/minishift/index.html).
 
 ## Configure
 
@@ -52,12 +48,12 @@ NOTE: the injector uses the _default_ role when it mutates a Kubernetes Secret t
 ## Run
 
 The `Makefile` demonstrates a typical installation via [Helm](https://helm.sh/).
-It provides the CA certificate bundle `$(CA_BUNDLE)` that the cluster uses to validate the certificate of the webhook, to the Helm Chart.
-It creates a self-signed certificate and associated key using `get_cert.sh` that the Helm Chart templates as a Kubernetes Secret.
-It also provides the `roles.json` file which, the Helm Chart also templates as a Kubernetes Secret.
+It creates a self-signed certificate and associated key using `get_cert.sh`.
+The Helm Chart templates the certificate and key as a Kubernetes Secret.
+It also provides `roles.json`, which the chart likewise templates as a k8s Secret.
 
-The `thycotic/dsv-injector` image contains the `dsv-injector-svc` executable.
-The container should access the certificate, key, and the `roles.json` via mounts.
+The `dsv-injector` image contains the `dsv-injector-svc` executable, however,
+the container should get the certificate, key, and the `roles.json` via mounts.
 
 ```bash
 $ /usr/bin/dsv-injector-svc -?
@@ -138,6 +134,7 @@ make install-image
 `make uninstall` uninstalls the Helm Chart.
 
 `make clean` removes the Docker image  by calling `make clean-docker` then removes the certificate and key by calling `make clean-cert`
+
 ### Minikube and Minishift
 
 Remember to run `eval $(minikube docker-env)` in the shell to push the image to Minikube's Docker daemon.
