@@ -24,7 +24,14 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          command: ["dsv-injector-svc", "-cert", "/tls/cert", "-key", "/tls/key", "-roles", "/roles/json" ]
+          command:
+            - {{ include "dsv.name" . }}-svc
+            - -cert
+            - /tls/cert
+            - -key
+            - /tls/key
+            - -roles
+            - /roles/json
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
