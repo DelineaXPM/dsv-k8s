@@ -58,4 +58,4 @@ spec:
             secretName: {{ include "dsv.name" . }}-roles
         - name: cert
           secret:
-            secretName: {{ include "dsv.name" . }}-cert
+            secretName: {{ include "dsv.name" . }}-tls

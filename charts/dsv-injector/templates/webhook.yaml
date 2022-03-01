@@ -1,3 +1,5 @@
+---
+{{- $cert := genSelfSignedCert (include "dsv.dnsname" .) nil (list (include "dsv.dnsname" .) (include "dsv.name" .)) (default 365 .Values.webhookCertExpireDays | int) -}}
 {{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" -}}
 apiVersion: admissionregistration.k8s.io/v1
 {{- else -}}
@@ -20,7 +22,7 @@ webhooks:
         scope: {{ default "*" .Values.webhookScope }}
 {{- end }}
     clientConfig:
-      caBundle: {{ .Values.caBundle | b64enc }}
+      caBundle: {{ $cert.Cert | b64enc }}
       service:
         namespace: {{ .Release.Namespace }}
         name: {{ include "dsv.name" . }}
@@ -30,3 +32,12 @@ webhooks:
     admissionReviewVersions: ["v1", "v1beta1"]
     sideEffects: {{ default "None" .Values.sideEffects }}
 {{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "dsv.name" . }}-tls
+data:
+  cert: {{ $cert.Cert | b64enc }}
+  key: {{ $cert.Key | b64enc }}
+type: Opaque

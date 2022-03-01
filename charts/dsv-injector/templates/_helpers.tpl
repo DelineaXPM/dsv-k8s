@@ -24,6 +24,13 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Create a DNS name i.e. a fully-qualified domain name (FQDN) for the webhook.
+*/}}
+{{- define "dsv.dnsname" -}}
+{{- print (include "dsv.name" .) "." .Release.Namespace ".svc" -}}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "dsv.chart" -}}
