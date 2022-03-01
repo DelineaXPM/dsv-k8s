@@ -14,6 +14,12 @@ DOCKER=docker
 # Helm is required to install the webhook
 HELM=helm
 
+# Use the kubectl included with Minikube 
+KUBECTL=minikube kubectl --
+
+# Get the location of the registry from Minikube
+REGISTRY=$(shell $(KUBECTL) get -n kube-system service registry -o jsonpath="{.spec.clusterIP}{':'}{.spec.ports[0].port}")
+
 .PHONY: clean image install install-image uninstall
 
 all: install

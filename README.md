@@ -88,6 +88,38 @@ Remember to run `eval $(minikube docker-env)` in the shell to push the image to
 Minikube's Docker daemon.💡 Likewise for Minishift except its
 `eval $(minishift docker-env)`.
 
+To publish the image to the Minikube (or Minishift) registry, enable it:
+
+```sh
+minikube addons enable registry
+```
+
+Then start Minikube's [tunnel](https://minikube.sigs.k8s.io/docs/commands/tunnel/) in a separate terminal to make the service available on the host.
+
+```sh
+minikube tunnel
+```
+
+_It will run continuously. Stopping it will render the registry inaccessible._
+
+### Publish
+
+> NOTE: Publishing is _not_ required unless the cluster cannot download the image from the internet.
+
+To publish, set `$(REGISTRY)` to the target registry, e.g., registry.example.com/_myusername_:
+
+```sh
+make release REGISTRY=registry.example.com/me
+```
+
+The `Makefile` sets it using `kubectl`:
+
+```sh
+kubectl get -n kube-system service registry -o jsonpath="{.spec.clusterIP}{':'}{.spec.ports[0].port}"
+```
+
+Thus `make release` without setting `$(REGISTRY)` will assume that the cluster hosts a registry and will push the image there.
+
 ### Install
 
 Installation requires [Helm](https://helm.sh).
