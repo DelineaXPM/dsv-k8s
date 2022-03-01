@@ -36,5 +36,5 @@ jobs:
 
           registry=quay.io
           echo "${{ secrets.QUAY_PASSWORD }}" | docker login $registry -u ${{ secrets.QUAY_USERNAME }} --password-stdin
-          make image REGISTRY="$registry/${{ secrets.QUAY_USERNAME }}" VERSION=$version
+          make release REGISTRY="$registry/${{ secrets.QUAY_USERNAME }}" VERSION=$version
           docker logout

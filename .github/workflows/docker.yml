@@ -36,5 +36,5 @@ jobs:
 
           registry=registry.hub.docker.com
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login $registry -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-          make image REGISTRY="$registry/${{ secrets.DOCKER_USERNAME }}" VERSION=$version
+          make release REGISTRY="$registry/${{ secrets.DOCKER_USERNAME }}" VERSION=$version
           docker logout

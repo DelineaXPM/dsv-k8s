@@ -37,5 +37,5 @@ jobs:
 
           registry=docker.pkg.github.com
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-          make image REGISTRY="$registry/${{ github.repository }}" VERSION=$version
+          make release REGISTRY="$registry/${{ github.repository }}" VERSION=$version
           docker logout

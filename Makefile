@@ -20,7 +20,12 @@ all: install
 
 # Build the dsv-injector service container image 📦
 image:
-	$(DOCKER) $(DOCKER_ARGS) build . -t $(NAME):$(VERSION) $(DOCKER_BUILD_ARGS)
+	$(DOCKER) $(DOCKER_ARGS) build . $(DOCKER_BUILD_ARGS) -t $(NAME):$(VERSION)
+
+# Publish the image to $(REGISTRY)
+release: image
+	$(DOCKER) $(DOCKER_ARGS) tag $(DOCKER_TAG_ARGS) $(NAME):$(VERSION) $(REGISTRY)/$(NAME):$(VERSION)
+	$(DOCKER) $(DOCKER_ARGS) push $(DOCKER_PUSH_ARGS) $(REGISTRY)/$(NAME):$(VERSION)
 
 # Install the Helm chart using a roles.json file 📄
 install:
