@@ -1,5 +1,7 @@
+# The name of the image which is not normally overridden
 NAME:=dsv-injector
-HELM_CHART:=charts/$(NAME)
+
+# The version is overridden to make tagged releases, e.g., v1.0.0
 VERSION?=latest
 
 # The Kubernetes Namespace that the webhook will be deployed in 📁
@@ -14,21 +16,24 @@ DOCKER=docker
 # Helm is required to install the webhook
 HELM=helm
 
-# Use the kubectl included with Minikube 
+# The chart is in the 'charts' subfolder per Helm convention
+HELM_CHART:=charts/$(NAME)
+
+# Use the kubectl included with Minikube
 KUBECTL=minikube kubectl --
 
-# Get the location of the registry from Minikube
+# Get the location of the registry from Minikube; *it is assumed to be running* -- see the README.md ⚠️
 REGISTRY=$(shell $(KUBECTL) get -n kube-system service registry -o jsonpath="{.spec.clusterIP}{':'}{.spec.ports[0].port}")
 
-.PHONY: clean image install install-image uninstall
+.PHONY: clean image install install-image release uninstall
 
-all: install
+all: install-image
 
 # Build the dsv-injector service container image 📦
 image:
 	$(DOCKER) $(DOCKER_ARGS) build . $(DOCKER_BUILD_ARGS) -t $(NAME):$(VERSION)
 
-# Publish the image to $(REGISTRY)
+# Publish the image to $(REGISTRY); Used by GitHub Actions
 release: image
 	$(DOCKER) $(DOCKER_ARGS) tag $(DOCKER_TAG_ARGS) $(NAME):$(VERSION) $(REGISTRY)/$(NAME):$(VERSION)
 	$(DOCKER) $(DOCKER_ARGS) push $(DOCKER_PUSH_ARGS) $(REGISTRY)/$(NAME):$(VERSION)
