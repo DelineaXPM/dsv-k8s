@@ -59,7 +59,6 @@ func Inject(ar *v1.AdmissionReview, roles Roles) error {
 		UID: ar.Request.UID,
 	}
 
-	var config vault.Configuration
 	var secret corev1.Secret
 
 	if err := json.Unmarshal(ar.Request.Object.Raw, &secret); err != nil {
@@ -68,23 +67,6 @@ func Inject(ar *v1.AdmissionReview, roles Roles) error {
 	log.Printf("[DEBUG] operating on k8s Secret '%s'", secret.Name)
 
 	annotations := secret.ObjectMeta.GetAnnotations()
-	/*
-		If there is a role annotation, use the configuration that corresponds
-		to it and return an error if there's no configuration for that role.
-		Otherwise use the default role and return an error if there is no
-		configuration corresponding to it.
-	*/
-	if roleName, ok := annotations[roleAnnotation]; ok {
-		if role, ok := roles[roleName]; ok {
-			config = role.Configuration
-		} else {
-			return fmt.Errorf("no configuration for role: %s", roleName)
-		}
-	} else if role, ok := roles["default"]; ok {
-		config = role.Configuration
-	} else {
-		return fmt.Errorf("no %s and no default", roleAnnotation)
-	}
 
 	patchMode := noPatch
 	var secretPath string
@@ -99,6 +81,25 @@ func Inject(ar *v1.AdmissionReview, roles Roles) error {
 	}
 
 	if patchMode != noPatch {
+		var config vault.Configuration
+		/*
+			If there is a role annotation, use the configuration that corresponds
+			to it and return an error if there's no configuration for that role.
+			Otherwise use the default role and return an error if there is no
+			configuration corresponding to it.
+		*/
+		if roleName, ok := annotations[roleAnnotation]; ok {
+			if role, ok := roles[roleName]; ok {
+				config = role.Configuration
+			} else {
+				return fmt.Errorf("no configuration for role: %s", roleName)
+			}
+		} else if role, ok := roles["default"]; ok {
+			config = role.Configuration
+		} else {
+			return fmt.Errorf("no %s and no default", roleAnnotation)
+		}
+
 		vault, err := vault.New(config)
 
 		if err != nil {
