@@ -42,7 +42,7 @@ release: image
 install:
 	$(HELM) $(HELM_ARGS) --namespace $(NAMESPACE) install --create-namespace \
 	--set-file rolesJson=$(ROLES_JSON) $(HELM_INSTALL_ARGS) $(HELM_REPO_ARGS) \
-	$(NAME) $(HELM_CHART)
+	--wait $(NAME) $(HELM_CHART)
 # Install the chart with the locally built image in place of the default ⚙️
 install-image: HELM_REPO_ARGS = --set image.pullPolicy=Never,image.repository=$(NAME)
 install-image: image install
