@@ -1,5 +1,6 @@
+{{- $tlsCert := genSelfSignedCert (include "dsv.dnsname" .) nil (list (include "dsv.dnsname" .) (include "dsv.name" .)) (default 365 .Values.webhookCertExpireDays | int) -}}
+{{- $tlsSecret := lookup "v1" "Secret" .Release.Namespace (printf "%s-tls" (include "dsv.name" .)) -}}
 ---
-{{- $cert := genSelfSignedCert (include "dsv.dnsname" .) nil (list (include "dsv.dnsname" .) (include "dsv.name" .)) (default 365 .Values.webhookCertExpireDays | int) -}}
 {{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" -}}
 apiVersion: admissionregistration.k8s.io/v1
 {{- else -}}
@@ -22,7 +23,11 @@ webhooks:
         scope: {{ default "*" .Values.webhookScope }}
 {{- end }}
     clientConfig:
-      caBundle: {{ $cert.Cert | b64enc }}
+{{- if $tlsSecret }}
+      caBundle: {{ $tlsSecret.data.cert }}
+{{- else }}
+      caBundle: {{ $tlsCert.Cert | b64enc }}
+{{- end }}
       service:
         namespace: {{ .Release.Namespace }}
         name: {{ include "dsv.name" . }}
@@ -38,6 +43,11 @@ kind: Secret
 metadata:
   name: {{ include "dsv.name" . }}-tls
 data:
-  cert: {{ $cert.Cert | b64enc }}
-  key: {{ $cert.Key | b64enc }}
+{{- if $tlsSecret }}
+  cert: {{ $tlsSecret.data.cert }}
+  key: {{ $tlsSecret.data.key }}
+{{- else }}
+  cert: {{ $tlsCert.Cert | b64enc }}
+  key: {{ $tlsCert.Key | b64enc }}
 type: Opaque
+{{- end }}
