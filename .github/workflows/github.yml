@@ -1,5 +1,4 @@
-name: GitHub Package Registry
-
+name: GitHub
 on:
   push:
     # Publish `main` as Docker `latest` image.

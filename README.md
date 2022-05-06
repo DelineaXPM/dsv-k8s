@@ -1,6 +1,6 @@
 # Delinea DevOps Secrets Vault Kubernetes Secret Injector and Syncer
 
-[![Docker](https://github.com/thycotic/dsv-k8s/actions/workflows/docker.yml/badge.svg)](https://github.com/thycotic/dsv-k8s/actions/workflows/docker.yml) [![GitHub Package Registry](https://github.com/thycotic/dsv-k8s/actions/workflows/gpr.yml/badge.svg)](https://github.com/thycotic/dsv-k8s/actions/workflows/gpr.yml) [![Red Hat Quay](https://quay.io/repository/delinea/dsv-k8s/status "Red Hat Quay")](https://quay.io/repository/delinea/dsv-k8s)
+[![Docker](https://github.com/thycotic/dsv-k8s/actions/workflows/docker.yml/badge.svg)](https://github.com/thycotic/dsv-k8s/actions/workflows/docker.yml) [![GitHub](https://github.com/thycotic/dsv-k8s/actions/workflows/github.yml/badge.svg)](https://github.com/thycotic/dsv-k8s/actions/workflows/github.yml) [![Red Hat Quay](https://quay.io/repository/delinea/dsv-k8s/status "Red Hat Quay")](https://quay.io/repository/delinea/dsv-k8s)
 
 A [Kubernetes](https://kubernetes.io/)
 [Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
