@@ -1,0 +1,37 @@
+{{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" -}}
+apiVersion: batch/v1
+{{- else -}}
+apiVersion: batch/v1beta1
+{{- end }}
+kind: CronJob
+metadata:
+  name: {{ include "dsv.fullname" . }}
+  labels:
+    {{- include "dsv.labels" . | nindent 4 }}
+spec:
+  schedule: {{ quote .Values.cronJobSchedule }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Chart.Name }}
+            command: [{{ include "dsv.name" . }}]
+            resources:
+              {{- toYaml .Values.resources | nindent 14 }}
+            securityContext:
+              {{- toYaml .Values.securityContext | nindent 14 }}
+            image: {{ quote (printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion)) }}
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            volumeMounts:
+              - name: credentials
+                readOnly: true
+                mountPath: /home/dsv/credentials
+          restartPolicy: OnFailure
+          serviceAccountName: {{ include "dsv.serviceAccountName" . }}
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          volumes:
+            - name: credentials
+              secret:
+                secretName: {{ .Values.dsvInjectorCredentialsSecretName }}

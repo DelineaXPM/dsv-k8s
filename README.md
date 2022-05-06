@@ -1,34 +1,42 @@
-# Delinea DevOps Secrets Vault Kubernetes Secret Injector
+# Delinea DevOps Secrets Vault Kubernetes Secret Injector and Syncer
 
-![Docker](https://github.com/thycotic/dsv-k8s/workflows/Docker/badge.svg)
-![GitHub Package Registry](https://github.com/thycotic/dsv-k8s/workflows/GitHub%20Package%20Registry/badge.svg)
-![Red Hat Quay](https://github.com/thycotic/dsv-k8s/workflows/Red%20Hat%20Quay/badge.svg)
+[![Docker](https://github.com/DelineaPAM/dsv-k8s/actions/workflows/docker.yml/badge.svg)](https://github.com/DelineaPAM/dsv-k8s/actions/workflows/docker.yml) [![GitHub Package Registry](https://github.com/DelineaPAM/dsv-k8s/actions/workflows/gpr.yml/badge.svg)](https://github.com/DelineaPAM/dsv-k8s/actions/workflows/gpr.yml) [![Red Hat Quay](https://quay.io/repository/delinea/dsv-k8s/status "Red Hat Quay")](https://quay.io/repository/delinea/dsv-k8s)
 
 A [Kubernetes](https://kubernetes.io/)
 [Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
-that injects Secret data from Delinea DevOps Secrets Vault (DSV) into Kubernetes
-Secrets. The webhook can be hosted as a pod or as a stand-alone service.
+that injects Secret data from Delinea DevOps Secrets Vault (DSV) into Kubernetes Secrets and a
+[CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
+that subsequently periodically synchronizes them from the source, DSV.
+The webhook can be hosted as a pod or as a stand-alone service.
+Likewise, the cronjob can run inside or outside the cluster.
 
-The webhook works by intercepting `CREATE` and `UPDATE` Secret admissions and
-mutating the Secret with data from DSV. The webhook configuration consists of
-one or more _role_ to Client Credential Tenant mappings. It updates Kubernetes
-Secrets based on annotations on the Secret itself.
+The webhook intercepts `CREATE` Secret admissions and then mutates the Secret with data from DSV.
+The syncer scans the cluster (or a single namespace) for Secrets that were mutated and,
+upon finding a mutated secret,
+it compares the version of the DSV Secret with the version it was mutated with and,
+if the version in DSV is newer, then the mutation is repeated.
 
-The webhook uses the [Golang SDK](https://github.com/thycotic/dsv-sdk-go) to
-communicate with the DSV API.
+The common configuration consists of one or more Client Credential Tenant mappings.
+The credentials are then specified in an [Annotation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/)
+on the Kubernetes Secret to be mutated.
+See [below](#use).
 
-It was tested with [Minikube](https://minikube.sigs.k8s.io/) and
-[Minishift](https://docs.okd.io/3.11/minishift/index.html).
+The webhook and syncer use the [Golang SDK](https://github.com/thycotic/dsv-sdk-go)
+to communicate with the DSV API.
+
+They were tested with [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+and [Minikube](https://minikube.sigs.k8s.io/).
+They also work on [OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift),
+[Microk8s](https://microk8s.io/)
+and others.
 
 ## Configure
 
-The webhook requires a JSON formatted list of _role_ to Client Credential and
-Tenant mappings. The _role_ is a simple name that does not relate to Kubernetes
-Roles. It simply selects which credentials to use to get the Secret from DSV.
+The configuration requires a JSON formatted list of Client Credential and Tenant mappings.
 
 ```json
 {
-  "my-role": {
+  "app1": {
     "credentials": {
       "clientId": "93d866d4-635f-4d4e-9ce3-0ef7f879f319",
       "clientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxx-xxxxx"
@@ -45,152 +53,271 @@ Roles. It simply selects which credentials to use to get the Secret from DSV.
 }
 ```
 
-> NOTE: the injector uses the _default_ role when it mutates a Kubernetes Secret
-> that does not have a _roleAnnotation_. [See below](#use)
+> NOTE: the injector uses the _default_ credentials when mutating a Kubernetes Secret without a _credentialAnnotation_.
+> See [below](#use)
 
 ## Run
 
-The injector is a Golang executable that runs a built-in HTTPS server hosting
-the Kubernetes Mutating Webhook Webservice.
+The injector uses the HTTPS server built-in to the Golang [http](https://pkg.go.dev/net/http)
+package to host the Kubernetes Mutating Webhook Webservice.
 
 ```bash
-$ /usr/bin/dsv-injector-svc -?
-flag provided but not defined: -?
-Usage of ./dsv-injector-svc:
+$ ./dsv-injector -h
+Usage of ./dsv-injector:
+  -address string
+        the address to listen on, e.g., 'localhost:8080' or ':8443' (default ":18543")
   -cert string
-        the path of the certificate file in PEM format (default "injector.pem")
-  -hostport string
-        the host:port e.g. localhost:8080 (default ":18543")
+        the path of the public certificate file in PEM format (default "tls/cert.pem")
+  -credentials string
+        the path of JSON formatted credentials file (default "credentials/config.json")
   -key string
-        the path of the certificate key file in PEM format (default "injector.key")
-  -roles string
-        the path of JSON formatted roles file (default "roles.json")
+        the path of the private key file in PEM format (default "tls/key.pem")
 ```
 
-Thus the injector can run "anywhere," but, typically, the injector runs as a POD
-in the Kubernetes cluster that uses it.
+Thus the injector can run "anywhere," but, typically,
+the injector runs as a POD in the Kubernetes cluster that uses it.
+
+The syncer is a simple Golang executable.
+It typically runs as a Kubernetes CronJob, but it will run outside the cluster.
+
+```bash
+$ ./dsv-syncer -h
+Usage of ./dsv-syncer:
+  -credentials string
+        the path of JSON formatted credentials file (default "credentials/config.json")
+  -kubeConfig string
+        the Kubernetes Client API configuration file; ignored when running in-cluster (default "/home/user/.kube/config")
+  -namespace string
+        the Kubernetes namespace containing the Secrets to sync; "" (the default) for all namespaces
+```
 
 ## Build
 
-> NOTE: Building the `dsv-injector` image is not required to install it as it is
-> available on multiple public registries.
+> ___NOTE: Building the `dsv-injector` image is not required to install it as it is___
+> ___available on multiple public registries.___
 
-Building the injector requires [Docker](https://www.docker.com/) or
-[Podman](https://podman.io/). To build it, run:
-
-```sh
-make image
-```
-
-### Minikube and Minishift
-
-Remember to run `eval $(minikube docker-env)` in the shell to push the image to
-Minikube's Docker daemon.💡 Likewise for Minishift except its
-`eval $(minishift docker-env)`.
-
-To publish the image to the Minikube (or Minishift) registry, enable it:
+Building the image requires [Docker](https://www.docker.com/)
+or [Podman](https://podman.io/)
+and [GNU Make](https://www.gnu.org/software/make/).
+To build it, run:
 
 ```sh
-minikube addons enable registry
+make
 ```
 
-Then start Minikube's [tunnel](https://minikube.sigs.k8s.io/docs/commands/tunnel/) in a separate terminal to make the service available on the host.
+This will build the injector and syncer as platform binaries and store them in the project root.
+It will also build the image (which will build and store its own copy of the binaries) using `$(DOCKER)`.
+
+To invoke the tests, run:
 
 ```sh
-minikube tunnel
+make test
 ```
 
-_It will run continuously. Stopping it will render the registry inaccessible._
+Set `$(GO_TEST_FLAGS)` to `-v` to get DEBUG output.
 
-### Publish
+They require a `credentials.json` as either a file or a string.
+They also require the path to a secret to test to use.
+Use environment variables to specify both:
 
-> NOTE: Publishing is _not_ required unless the cluster cannot download the image from the internet.
+|Environment Variable | Default | Explanation |
+|---|---|---|
+|`DSV_K8S_TEST_CONFIG` | _none_ | Contain a JSON string containing a valid `credentials.json`|
+|`DSV_K8S_TEST_CONFIG_FILE` | `../../configs/credentials.json` | The path to a valid `credentials.json`|
+|`DSV_K8S_TEST_SECRET_PATH` | `/test/secret` | The path to the secret to test against in the vault |
 
-To publish, set `$(REGISTRY)` to the target registry, e.g., registry.example.com/_myusername_:
+ℹ️ NOTE: `DSV_K8S_TEST_CONFIG` takes precedence over `DSV_K8S_TEST_CONFIG_FILE`
+
+For example:
 
 ```sh
-make release REGISTRY=registry.example.com/me
+DSV_K8S_TEST_CONFIG='{"app1":{"credentials":{"clientId":"93d866d4-635f-4d4e-9ce3-0ef7f879f319","clientSecret":"xxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxx-xxxxx"},"tenant":"mytenant"}}' \
+DSV_K8S_TEST_SECRET_PATH=my:test:secret \
+make test GO_TEST_FLAGS='-v'
 ```
 
-The `Makefile` sets it using `kubectl`:
+To remove the binaries and Docker image so that the next build is from scratch, run:
 
 ```sh
-kubectl get -n kube-system service registry -o jsonpath="{.spec.clusterIP}{':'}{.spec.ports[0].port}"
+make clean
 ```
 
-Thus `make release` without setting `$(REGISTRY)` will assume that the cluster hosts a registry and will push the image there.
-
-### Install
+## Install
 
 Installation requires [Helm](https://helm.sh).
+There are two separate charts for the injector and the syncer.
+The `Makefile` demonstrates a typical installation of both.
 
-The `Makefile` demonstrates a typical installation via the
-[Helm](https://helm.sh/) chart. It imports `roles.json` as a file that it
-templates as a Kubernetes Secret for the injector.
+The dsv-injector chart imports `credentials.json` from the filesystem and stores it in a Kubernetes Secret.
+The dsv-syncer chart refers to that Secret instead of creating its own.
 
-The Helm `values.yaml` file `image.repository` is `thycotic/dsv-injector`:
+The Helm `values.yaml` file `image.repository` is `quay.io/delinea/dsv-k8s`:
 
 ```yaml
 image:
-  repository: thycotic/dsv-injector
+  repository: quay.io/delinea/dsv-k8s
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 ```
 
-That means, by default, `make install` will pull from Docker, GitHub, or Quay.
+That means, by default, `make install` will pull from Red Hat Quay.
 
 ```sh
 make install
 ```
 
-However, the `Makefile` contains an `install-image` target that configures Helm
-to use the image built with `make image`:
+However,
+the `Makefile` contains an `install-image` target that configures Helm to use the image built with `make image`:
 
 ```sh
 make install-image
 ```
 
-`make uninstall` uninstalls the Helm Chart.
+`make uninstall` uninstalls the Helm Charts.
 
-`make clean` removes the Docker image.
+### Docker Desktop
+
+To install the locally built image into Docker Desktop, run:
+
+```sh
+make install-image
+```
+
+ℹ️ NOTE: Kubernetes must be [enabled](https://docs.docker.com/desktop/kubernetes/)
+for this to work.
+
+### Remote Cluster
+
+Deploying the locally built image into a remote Cluster will require a container registry.
+The container registry must be accessible from the build and the cluster by the same DNS name.
+`make` will run the `release` target, which will push the image into the container registry,
+`install-cluster` will cause the cluster to pull it from there.
+
+```sh
+make install-cluster REGISTRY=internal.example.com:5000
+```
+
+### Minikube
+
+#### Docker driver
+
+To deploy to Minikube running on the [Docker driver](https://minikube.sigs.k8s.io/docs/drivers/docker/),
+run `eval $(minikube docker-env)` so that the environment shares Minikube's docker context,
+then follow the [Docker Desktop](#docker-desktop)
+instructions.
+
+#### VM driver
+
+To deploy to Minikube set-up with the VM driver, e.g., Linux [kvm2](https://minikube.sigs.k8s.io/docs/drivers/kvm2/)
+or Microsoft [Hyper-V](https://minikube.sigs.k8s.io/docs/drivers/hyperv/),
+enable the Minikube built-in registry and use it to make the image available to the Minikube VM:
+
+```sh
+minikube addons enable registry
+```
+
+❗NOTE: run Minikube [tunnel](https://minikube.sigs.k8s.io/docs/commands/tunnel/)
+in a separate terminal to make the registry service available to the host.
+
+```sh
+minikube tunnel
+```
+
+_It will run continuously, and stopping it will render the registry inaccessible._
+
+Next, get the _host:port_ of the registry:
+
+```sh
+kubectl get -n kube-system service registry -o jsonpath="{.spec.clusterIP}{':'}{.spec.ports[0].port}"
+```
+
+Finally, follow the [Remote Cluster](#remote-cluster)
+instructions using it as `$(REGISTRY)`
+
+### Host (for debugging)
+
+Per above, typically, the injector runs as a POD in the cluster but running it on the host makes debugging easier.
+
+```sh
+make install-host EXTERNAL_NAME=laptop.mywifi.net CA_BUNDLE=$(cat /path/to/ca.crt | base64 -w0 -)
+```
+
+For it to work:
+
+- The certificate that the injector presents must validate against the `$(CA_BUNDLE)`.
+- The certificate must also have a Subject Alternative Name for `$(INJECTOR_NAME).$(NAMESPACE).svc`.
+  By default that's `dsv-injector.dsv.svc`.
+
+- The `$(EXTERNAL_NAME)` is a required argument, and the name itself must be resolvable _inside_ the cluster.
+__localhost will not work__.
+
+If the `$(CA_BUNDLE)` is argument is omitted, `make` will attempt to extract it from `kubectl config`:
+
+```make
+install-host: CA_BUNDLE_KUBE_CONFIG_INDEX = 0
+install-host: CA_BUNDLE_JSON_PATH = {.clusters[$(CA_BUNDLE_KUBE_CONFIG_INDEX)].cluster.certificate-authority-data}
+install-host: CA_BUNDLE=$(shell $(KUBECTL) config view --raw -o jsonpath='$(CA_BUNDLE_JSON_PATH)' | tr -d '"')
+
+```
+
+which will make:
+
+```sh
+kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | tr -d '"'
+```
+
+Optionally set `$(CA_BUNDLE_KUBE_CONFIG_INDEX)` to use `1`, to use the second cluster in your configuration,
+`2` for the third and so on.
+
+ℹ️ All this assumes that the injector uses a certificate signed by the cluster CA.
+There are several options like [cert-manager](https://cert-manager.io/)
+for getting cluster-signed certs, however,
+this simple [bash script](https://gist.github.com/amigus/b4e6e642f88e756be1996e44a1c35349)
+will request and grant a suitable certificate from the cluster using cURL and OpenSSL.
+To use it:
+
+```sh
+get_k8s_cert.sh -n dsv-injector -N dsv
+```
+
+Now run it:
+
+```sh
+./dsv-injector -cert ./dsv-injector.pem -key ./dsv-injector.key -credentials ./configs/credentials.json -address :8543
+```
 
 ## Use
 
-Once the injector is available in the Kubernetes cluster, and the
-[MutatingAdmissionWebhook](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook)
-is in place, any appropriately annotated Kubernetes Secrets are modified on
-create and update.
+Once the injector is available in the Kubernetes cluster,
+and the webhook is in place,
+any correctly annotated Kubernetes Secrets are modified on create and update.
 
 The four annotations that affect the behavior of the webhook are:
 
 ```golang
 const(
-    roleAnnotation   = "dsv.thycotic.com/role"
-    setAnnotation    = "dsv.thycotic.com/set-secret"
-    addNotation      = "dsv.thycotic.com/add-to-secret"
-    updateAnnotation = "dsv.thycotic.com/update-secret"
+    credentialsAnnotation = "dsv.thycotic.com/credentials"
+    setAnnotation         = "dsv.thycotic.com/set-secret"
+    addAnnotation         = "dsv.thycotic.com/add-to-secret"
+    updateAnnotation      = "dsv.thycotic.com/update-secret"
 )
 ```
 
-`roleAnnotation` selects the credentials that the injector uses to retrieve the
-DSV Secret. If the role is present, it must map to Client Credential and Tenant
-mapping. If the role is absent, the injector will use the _default_ Credential
-and Tenant a mapping.
+`credentialsAnnotation` selects the credentials that the injector uses to retrieve the DSV Secret.
+If the credentials are present, it must map to Client Credential and Tenant mapping.
+The injector will use the _default_ Credential and Tenant mapping unless the `credentialsAnnotation` is declared.
 
-The `setAnnotation`, `addAnnotation` and `updateAnnotation` contain the path to
-the DSV Secret that the injector will use to mutate the Kubernetes Secret.
+The `setAnnotation`, `addAnnotation` and `updateAnnotation`,
+must contain the path to the DSV Secret that the injector will use to mutate the Kubernetes Secret.
 
-- `addAnnotation` adds missing fields without overwriting or removing existing
-  fields.
-- `updateAnnotation` adds and overwrites existing fields but does not remove
-  fields.
-- `setAnnotation` overwrites fields and removes fields that do not exist in the
-  DSV Secret.
+- `addAnnotation` adds missing fields without overwriting or removing existing fields.
+- `updateAnnotation` adds and overwrites existing fields but does not remove fields.
+- `setAnnotation` overwrites fields and removes fields that do not exist in the DSV Secret.
 
-NOTE: A Kubernetes Secret should specify only one of the "add," "update," or
-"set" annotations. The order of precedence is `setAnnotation`, then
-`addAnnotation`, then `updateAnnotation` when multiple are present.
+NOTE: A Kubernetes Secret should specify only one of the "add," "update,"
+or "set" annotations. The order of precedence is `setAnnotation`,
+then `addAnnotation`, then `updateAnnotation` when multiple are present.
 
 ### Examples
 
@@ -201,7 +328,7 @@ kind: Secret
 metadata:
   name: example-secret
   annotations:
-    dsv.thycotic.com/role: my-role
+    dsv.thycotic.com/credentials: app1
     dsv.thycotic.com/set-secret: /test/secret
 type: Opaque
 data:
@@ -210,13 +337,13 @@ data:
   password: dW5tb2RpZmllZC1wYXNzd29yZA==
 ```
 
-The above example specifies a Role, so a mapping for that role must exist in the
-current webhook configuration. It uses the `setAnnotation` so the data in the
-injector will overwrite the existing contents of the Kubernetes Secret; if
-`/test/secret` contains a `username` and `password` but no `domain`, then the
-Kubernetes Secret would get the `username` and `password` from the DSV Secret
-Data but, the injector will remove the `domain` field.
+The above example specifies credentials,
+so a mapping for those credentials must exist in the current webhook configuration.
+It uses the `setAnnotation`,
+so the data in the injector will overwrite the existing contents of the Kubernetes Secret;
+if `/test/secret` contains a `username` and `password` but no `domain`,
+then the Kubernetes Secret would get the `username` and `password` from the DSV Secret Data but,
+the injector will remove the `domain` field.
 
-There are more examples in the `examples` directory. Each one shows how each
-annotation works when run against an example with only a username and
-private-key in it but no domain.
+There are more examples in the `examples` directory.
+They show how the different annotations work.

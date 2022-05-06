@@ -1,14 +1,10 @@
 {{- $tlsCert := genSelfSignedCert (include "dsv.dnsname" .) nil (list (include "dsv.dnsname" .) (include "dsv.name" .)) (default 365 .Values.webhookCertExpireDays | int) -}}
 {{- $tlsSecret := lookup "v1" "Secret" .Release.Namespace (printf "%s-tls" (include "dsv.name" .)) -}}
 ---
-{{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" -}}
 apiVersion: admissionregistration.k8s.io/v1
-{{- else -}}
-apiVersion: admissionregistration.k8s.io/v1beta1
-{{- end }}
 kind: MutatingWebhookConfiguration
 metadata:
-  name: {{ include "dsv.name" . }}
+  name: {{ include "dsv.fullname" . }}
   labels:
     {{- include "dsv.labels" . | nindent 4 }}
 webhooks:
@@ -16,14 +12,14 @@ webhooks:
     failurePolicy: Fail
     rules:
       - apiGroups: [""]
-        apiVersions: ["v1", "v1beta1"]
-        operations: ["CREATE", "UPDATE"]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
         resources: ["secrets"]
-{{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" }}
         scope: {{ default "*" .Values.webhookScope }}
-{{- end }}
     clientConfig:
-{{- if $tlsSecret }}
+{{- if eq .Values.service.type "ExternalName" }}
+      caBundle: {{ .Values.caBundle }}
+{{- else if $tlsSecret }}
       caBundle: {{ $tlsSecret.data.cert }}
 {{- else }}
       caBundle: {{ $tlsCert.Cert | b64enc }}
@@ -32,11 +28,10 @@ webhooks:
         namespace: {{ .Release.Namespace }}
         name: {{ include "dsv.name" . }}
         path: {{ .Values.webhookUri }}
-{{- if .Capabilities.APIVersions.Has "admissionregistration.k8s.io/v1" }}
         port: {{ .Values.webhookPort }}
-    admissionReviewVersions: ["v1", "v1beta1"]
+    admissionReviewVersions: ["v1"]
     sideEffects: {{ default "None" .Values.sideEffects }}
-{{- end }}
+{{- if ne .Values.service.type "ExternalName" }}
 ---
 apiVersion: v1
 kind: Secret
@@ -44,10 +39,11 @@ metadata:
   name: {{ include "dsv.name" . }}-tls
 data:
 {{- if $tlsSecret }}
-  cert: {{ $tlsSecret.data.cert }}
-  key: {{ $tlsSecret.data.key }}
+  cert.pem: {{ $tlsSecret.data.cert }}
+  key.pem: {{ $tlsSecret.data.key }}
 {{- else }}
-  cert: {{ $tlsCert.Cert | b64enc }}
-  key: {{ $tlsCert.Key | b64enc }}
+  cert.pem: {{ $tlsCert.Cert | b64enc }}
+  key.pem: {{ $tlsCert.Key | b64enc }}
+{{- end }}
 type: Opaque
 {{- end }}

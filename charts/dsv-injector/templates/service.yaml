@@ -6,9 +6,13 @@ metadata:
   labels:
     {{- include "dsv.labels" . | nindent 4 }}
 spec:
+  type: {{ .Values.service.type }}
+{{ if eq .Values.service.type "ExternalName" }}
+  externalName: {{ lower .Values.externalName }}
+{{ else }}
   ports:
     - port: {{ .Values.webhookPort }}
       targetPort: {{ .Values.containerPort }}
   selector:
     {{- include "dsv.selectorLabels" . | nindent 4 }}
-  type: {{ .Values.service.type }}
+{{ end }}

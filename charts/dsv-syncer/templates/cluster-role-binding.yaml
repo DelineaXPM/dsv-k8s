@@ -1,0 +1,15 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "dsv.fullname" . }}
+  labels:
+    {{- include "dsv.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "dsv.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "dsv.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io

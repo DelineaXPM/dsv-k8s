@@ -1,0 +1,3 @@
+✨ Deployed: {{ include "dsv.fullname" . }}
+
+📂 Namepsace: {{ .Release.Namespace }}

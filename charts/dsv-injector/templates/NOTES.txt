@@ -1,5 +1,20 @@
-✨ The {{ include "dsv.fullname" . }} Mutating Webhook ✨
+{{- $name := (include "dsv.dnsname" .) -}}
+{{- $port := int .Values.webhookPort -}}
+{{- $uri := trimAll "/" .Values.webhookUri -}}
+✨ Deployed: {{ include "dsv.fullname" . }}
 
 📂 Namepsace: {{ .Release.Namespace }}
+{{ if eq .Values.service.type "ExternalName" }}
+🔗 The cluster will call the webhook at {{ printf "https://%s:%d/%s" .Values.externalName $port $uri }}
 
-🔗 Url: https://{{ include "dsv.dnsname" . }}:{{ .Values.service.port }}{{ .Values.webhookUri }}
+❗ IMPORTANT: the endpoint certificate must have Subject Alternative Name '{{ $name }}'
+
+🔐 The certificate chain that the cluster will use to verify the webhook is:
+{{- $cert := .Values.caBundle | b64dec -}}
+{{- $certs := split "\\n" $cert -}}
+{{ range $cert := $certs }}
+{{ $cert }}
+{{ end }}
+{{ else }}
+🔗 The cluster will call the webhook at {{ printf "https://%s:%d/%s" $name $port $uri }}
+{{ end }}

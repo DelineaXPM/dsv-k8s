@@ -1,9 +1,9 @@
 name: Docker
 on:
   push:
-    # Publish `master` as Docker `latest` image.
+    # Publish `main` as Docker `latest` image.
     branches:
-      - master
+      - main
 
     # Publish `v1.2.3` tags as releases.
     tags:
@@ -24,7 +24,7 @@ jobs:
           # Strip git ref prefix from version
           ref=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           # Convert from Git ref to image version i.e. strip the 'v'
-          if [ "$ref" == "master" ]
+          if [ "$ref" == "main" ]
           then
             version=latest
           elif [[ "${{ github.ref }}" == "refs/tags/"* ]]

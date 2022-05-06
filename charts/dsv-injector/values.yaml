@@ -6,23 +6,14 @@
 replicaCount: 1
 
 image:
-  repository: thycotic/dsv-injector
-  pullPolicy: IfNotPresent
+  repository: quay.io/delinea/dsv-k8s
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
 
 podAnnotations: {}
 
@@ -38,8 +29,17 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
   port: 8543
+# ClusterIP is typical when the webhook is running as a POD
+  type: ClusterIP
+# However, it can also be hosted externally, which is useful for debugging, by providing the following instead:
+# type: ExternalName
+#externalName: my.fqdn
+# So long as:
+# 1) my.fqdn hosts an HTTPS endpoint on port {webhookPort} that answers URI {webhookUri}
+# 2) the certificate must have a Subject Alternative Name for {name}.{namespace}.{svc}, e.g., dsv-injector.dsv.svc
+# 3) the caBundle must be a base64 string containing a PEM-encoded certificate chain that validates the certifcate
+#caBundle: ...
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -62,8 +62,8 @@ webhookScope: "Namespaced"
 # containerPort is the port that the container itself listens on
 containerPort: 18543
 
-# rolesJson contains the JSON-formatted roles file (see README.md)
-rolesJson: >-
+# credentialsJson contains the JSON-formatted credentials file (see README.md)
+credentialsJson: >-
   {
     "default": {
       "credentials": {

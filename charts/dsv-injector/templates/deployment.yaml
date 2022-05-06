@@ -1,3 +1,5 @@
+{{- if ne .Values.service.type "ExternalName" -}}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,14 +26,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          command:
-            - {{ include "dsv.name" . }}-svc
-            - -cert
-            - /tls/cert
-            - -key
-            - /tls/key
-            - -roles
-            - /roles/json
+          command: [{{ include "dsv.name" . }}]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -45,17 +40,17 @@ spec:
           volumeMounts:
             - name: cert
               readOnly: true
-              mountPath: /tls
-            - name: roles
+              mountPath: /home/dsv/tls
+            - name: credentials
               readOnly: true
-              mountPath: /roles
-      serviceAccountName: {{ include "dsv.serviceAccountName" . }}
+              mountPath: /home/dsv/credentials
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
-        - name: roles
+        - name: credentials
           secret:
-            secretName: {{ include "dsv.name" . }}-roles
+            secretName: {{ include "dsv.name" . }}-credentials
         - name: cert
           secret:
             secretName: {{ include "dsv.name" . }}-tls
+{{- end -}}

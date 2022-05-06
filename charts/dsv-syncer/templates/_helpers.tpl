@@ -24,13 +24,6 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
-Create a DNS name i.e. a fully-qualified domain name (FQDN) for the webhook.
-*/}}
-{{- define "dsv.dnsname" -}}
-{{- print (include "dsv.name" .) "." .Release.Namespace ".svc" -}}
-{{- end }}
-
-{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "dsv.chart" -}}
@@ -42,7 +35,6 @@ Common labels
 */}}
 {{- define "dsv.labels" -}}
 helm.sh/chart: {{ include "dsv.chart" . }}
-{{ include "dsv.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -50,9 +42,12 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-Selector labels
+Create the name of the service account to use
 */}}
-{{- define "dsv.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "dsv.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{- define "dsv.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "dsv.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
 {{- end }}
