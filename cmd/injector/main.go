@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -36,7 +37,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("unable to process credentials file '%s': %s", credentialsFile, err)
 	}
-	log.Printf("[INFO] success loading %d credential sets: [%s]", len(*credentials), strings.Join(credentials.Names(), ", "))
+	log.Printf("[INFO] success loading %d credential sets: [%s] from '%s'",
+		len(*credentials),
+		strings.Join(credentials.Names(), ", "),
+		credentialsFile,
+	)
 
 	if cert, err := tls.LoadX509KeyPair(certFile, keyFile); err == nil {
 		server.TLSConfig = &tls.Config{Certificates: []tls.Certificate{cert}}
@@ -63,23 +68,26 @@ func main() {
 				if err := json.Unmarshal(body, review); err != nil {
 					errorOut("unable to unmarshal v1.AdmissionReview")
 				} else {
-					fail := func(message, reason metav1.StatusReason) {
+					fail := func(action string, reason metav1.StatusReason, err error) {
+						message := fmt.Sprintf("%s: %s", action, err)
 						review.Response = &v1.AdmissionResponse{
+							UID:     review.Request.UID,
+							Allowed: true,
 							Result: &metav1.Status{
-								Message: err.Error(),
+								Message: message,
 								Reason:  reason,
 								Status:  metav1.StatusFailure,
 							},
 						}
-						log.Printf("[ERROR] %s: %s", message, err)
+						log.Printf("[ERROR] %s", message)
 					}
 
 					var secret corev1.Secret
 
 					if err := json.Unmarshal(review.Request.Object.Raw, &secret); err != nil {
-						fail("unable to unmarshal the Secret from the v1.AdmissionReview", metav1.StatusReasonBadRequest)
+						fail("unable to unmarshal the Secret from the v1.AdmissionReview", metav1.StatusReasonBadRequest, err)
 					} else if review.Response, err = injector.Inject(secret, review.Request.UID, *credentials); err != nil {
-						fail("calling injector.Inject", metav1.StatusReasonInvalid)
+						fail("calling injector.Inject", metav1.StatusReasonInvalid, err)
 					}
 
 					if response, err := json.Marshal(review); err != nil {

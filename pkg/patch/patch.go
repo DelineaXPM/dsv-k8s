@@ -46,7 +46,7 @@ const (
 // GeneratePatch generates a JSON Patch that applies changes to the k8s Secret based on the DSV Secret that it refers to
 func GenerateJsonPatch(secret v1.Secret, credentials config.Credentials) ([]byte, error) {
 	if patchOperations, err := makePatchOperations(secret, credentials); err != nil {
-		return nil, fmt.Errorf("unable to make JsonPatch: %s", err)
+		return nil, err
 	} else if patchOperations != nil {
 		if jsonPatch, err := json.Marshal(patchOperations); err != nil {
 			return nil, fmt.Errorf("unable to marshal JsonPatch: %s", err)

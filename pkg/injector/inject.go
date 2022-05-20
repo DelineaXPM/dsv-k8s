@@ -15,7 +15,7 @@ import (
 // Inject adds to, updates or replaces the k8s Secret.Data with dsv Secret.Data (see above)
 func Inject(secret corev1.Secret, UID types.UID, credentials config.Credentials) (*v1.AdmissionResponse, error) {
 	if jsonPatch, err := patch.GenerateJsonPatch(secret, credentials); err != nil {
-		return nil, fmt.Errorf("[ERROR] unable to generate JSON patch for Secret '%s': %s", secret.Name, err)
+		return nil, fmt.Errorf("unable to generate JSON patch for Secret '%s': %s", secret.Name, err)
 	} else if jsonPatch != nil {
 		patchType := v1.PatchTypeJSONPatch
 
