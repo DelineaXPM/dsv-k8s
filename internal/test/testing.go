@@ -3,7 +3,7 @@ package test
 import (
 	"os"
 
-	"github.com/thycotic/dsv-k8s/pkg/config"
+	"github.com/DelineaXPM/dsv-k8s/v2/pkg/config"
 )
 
 const (

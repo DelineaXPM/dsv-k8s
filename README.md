@@ -1,6 +1,6 @@
 # Delinea DevOps Secrets Vault Kubernetes Secret Injector and Syncer
 
-[![Tests](https://github.com/thycotic/dsv-k8s/actions/workflows/tests.yml/badge.svg)](https://github.com/thycotic/dsv-k8s/actions/workflows/tests.yml) [![Docker](https://github.com/thycotic/dsv-k8s/actions/workflows/docker.yml/badge.svg)](https://github.com/thycotic/dsv-k8s/actions/workflows/docker.yml) [![GitHub](https://github.com/thycotic/dsv-k8s/actions/workflows/github.yml/badge.svg)](https://github.com/thycotic/dsv-k8s/actions/workflows/github.yml) [![Red Hat Quay](https://quay.io/repository/delinea/dsv-k8s/status "Red Hat Quay")](https://quay.io/repository/delinea/dsv-k8s)
+[![Tests](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/tests.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/tests.yml) [![Docker](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/docker.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/docker.yml) [![GitHub](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/github.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/github.yml) [![Red Hat Quay](https://quay.io/repository/DelineaXPM/dsv-k8s/status "Red Hat Quay")](https://quay.io/repository/DelineaXPM/dsv-k8s)
 
 A [Kubernetes](https://kubernetes.io/)
 [Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
@@ -21,7 +21,7 @@ The credentials are then specified in an [Annotation](https://kubernetes.io/docs
 on the Kubernetes Secret to be mutated.
 See [below](#use).
 
-The webhook and syncer use the [Golang SDK](https://github.com/thycotic/dsv-sdk-go)
+The webhook and syncer use the [Golang SDK](https://github.com/DelineaXPM/dsv-sdk-go)
 to communicate with the DSV API.
 
 They were tested with [Docker Desktop](https://www.docker.com/products/docker-desktop/)
@@ -297,10 +297,10 @@ The four annotations that affect the behavior of the webhook are:
 
 ```golang
 const(
-    credentialsAnnotation = "dsv.thycotic.com/credentials"
-    setAnnotation         = "dsv.thycotic.com/set-secret"
-    addAnnotation         = "dsv.thycotic.com/add-to-secret"
-    updateAnnotation      = "dsv.thycotic.com/update-secret"
+    credentialsAnnotation = "dsv.secretsvaultcloud.com/credentials"
+    setAnnotation         = "dsv.secretsvaultcloud.com/set-secret"
+    addAnnotation         = "dsv.secretsvaultcloud.com/add-to-secret"
+    updateAnnotation      = "dsv.secretsvaultcloud.com/update-secret"
 )
 ```
 
@@ -328,8 +328,8 @@ kind: Secret
 metadata:
   name: example-secret
   annotations:
-    dsv.thycotic.com/credentials: app1
-    dsv.thycotic.com/set-secret: /test/secret
+    dsv.secretsvaultcloud.com/credentials: app1
+    dsv.secretsvaultcloud.com/set-secret: /test/secret
 type: Opaque
 data:
   username: dW5tb2RpZmllZC11c2VybmFtZQ==
