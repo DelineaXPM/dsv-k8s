@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/DelineaXPM/dsv-k8s/internal/test"
+	"github.com/DelineaXPM/dsv-k8s/v2/internal/test"
 	"github.com/mattbaird/jsonpatch"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
