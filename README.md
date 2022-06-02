@@ -297,10 +297,10 @@ The four annotations that affect the behavior of the webhook are:
 
 ```golang
 const(
-    credentialsAnnotation = "dsv.secretsvaultcloud.com/credentials"
-    setAnnotation         = "dsv.secretsvaultcloud.com/set-secret"
-    addAnnotation         = "dsv.secretsvaultcloud.com/add-to-secret"
-    updateAnnotation      = "dsv.secretsvaultcloud.com/update-secret"
+    credentialsAnnotation = "dsv.delinea.com/credentials"
+    setAnnotation         = "dsv.delinea.com/set-secret"
+    addAnnotation         = "dsv.delinea.com/add-to-secret"
+    updateAnnotation      = "dsv.delinea.com/update-secret"
 )
 ```
 
@@ -328,8 +328,8 @@ kind: Secret
 metadata:
   name: example-secret
   annotations:
-    dsv.secretsvaultcloud.com/credentials: app1
-    dsv.secretsvaultcloud.com/set-secret: /test/secret
+    dsv.delinea.com/credentials: app1
+    dsv.delinea.com/set-secret: /test/secret
 type: Opaque
 data:
   username: dW5tb2RpZmllZC11c2VybmFtZQ==

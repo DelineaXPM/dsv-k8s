@@ -21,12 +21,12 @@ updateAnnotation adds and overwrites existing fields but does not remove fields
 setAnnotation overwrites fields and removes fields that do not exist in the DSV Secret
 */
 const (
-	credentialsAnnotation = "dsv.secretsvaultcloud.com/credentials"
-	setAnnotation         = "dsv.secretsvaultcloud.com/set-secret"
-	addAnnotation         = "dsv.secretsvaultcloud.com/add-to-secret"
-	updateAnnotation      = "dsv.secretsvaultcloud.com/update-secret"
-	tsAnnotation          = "dsv.secretsvaultcloud.com/modified"
-	versionAnnotation     = "dsv.secretsvaultcloud.com/version"
+	credentialsAnnotation = "dsv.delinea.com/credentials"
+	setAnnotation         = "dsv.delinea.com/set-secret"
+	addAnnotation         = "dsv.delinea.com/add-to-secret"
+	updateAnnotation      = "dsv.delinea.com/update-secret"
+	tsAnnotation          = "dsv.delinea.com/modified"
+	versionAnnotation     = "dsv.delinea.com/version"
 )
 
 /*
