@@ -6,9 +6,9 @@ import (
 	"log"
 	"sync"
 
-	"github.com/thycotic/dsv-k8s/internal/k8s"
-	"github.com/thycotic/dsv-k8s/pkg/config"
-	"github.com/thycotic/dsv-k8s/pkg/patch"
+	"github.com/DelineaXPM/dsv-k8s/v2/internal/k8s"
+	"github.com/DelineaXPM/dsv-k8s/v2/pkg/config"
+	"github.com/DelineaXPM/dsv-k8s/v2/pkg/patch"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"

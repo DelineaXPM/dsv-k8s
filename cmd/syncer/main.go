@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/thycotic/dsv-k8s/pkg/config"
-	"github.com/thycotic/dsv-k8s/pkg/syncer"
+	"github.com/DelineaXPM/dsv-k8s/v2/pkg/config"
+	"github.com/DelineaXPM/dsv-k8s/v2/pkg/syncer"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"

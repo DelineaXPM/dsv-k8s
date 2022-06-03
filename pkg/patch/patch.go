@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/DelineaXPM/dsv-k8s/v2/pkg/config"
+	"github.com/DelineaXPM/dsv-sdk-go/v2/vault"
 	"github.com/mattbaird/jsonpatch"
-	"github.com/thycotic/dsv-k8s/pkg/config"
-	"github.com/thycotic/dsv-sdk-go/vault"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -21,12 +21,12 @@ updateAnnotation adds and overwrites existing fields but does not remove fields
 setAnnotation overwrites fields and removes fields that do not exist in the DSV Secret
 */
 const (
-	credentialsAnnotation = "dsv.thycotic.com/credentials"
-	setAnnotation         = "dsv.thycotic.com/set-secret"
-	addAnnotation         = "dsv.thycotic.com/add-to-secret"
-	updateAnnotation      = "dsv.thycotic.com/update-secret"
-	tsAnnotation          = "dsv.thycotic.com/modified"
-	versionAnnotation     = "dsv.thycotic.com/version"
+	credentialsAnnotation = "dsv.delinea.com/credentials"
+	setAnnotation         = "dsv.delinea.com/set-secret"
+	addAnnotation         = "dsv.delinea.com/add-to-secret"
+	updateAnnotation      = "dsv.delinea.com/update-secret"
+	tsAnnotation          = "dsv.delinea.com/modified"
+	versionAnnotation     = "dsv.delinea.com/version"
 )
 
 /*

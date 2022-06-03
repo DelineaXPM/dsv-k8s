@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/thycotic/dsv-sdk-go/vault"
+	"github.com/DelineaXPM/dsv-sdk-go/v2/vault"
 )
 
 // Credentials is a mapping of credentialName to dsv-sdk-go/vault/Configuration objects

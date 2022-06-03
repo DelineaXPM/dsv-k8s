@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/thycotic/dsv-k8s/pkg/config"
-	"github.com/thycotic/dsv-k8s/pkg/injector"
+	"github.com/DelineaXPM/dsv-k8s/v2/pkg/config"
+	"github.com/DelineaXPM/dsv-k8s/v2/pkg/injector"
 
 	v1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"
