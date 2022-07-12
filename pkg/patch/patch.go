@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/pkg/config"
@@ -160,14 +161,23 @@ func makePatchOperations(secret v1.Secret, credentials config.Credentials) ([]js
 		If there is at least one patch operation add an operation to replace update the annotations
 	*/
 	if len(ops) > 0 {
-		ops = append(ops, jsonpatch.JsonPatchOperation{
-			Operation: "replace",
-			Path:      "/metadata/annotations",
-			Value: map[string]string{
-				tsAnnotation:      time.Now().UTC().Format(time.UnixDate),
-				versionAnnotation: vaultSecret.Version,
+		var operation = "add"
+		if annotations[versionAnnotation] != "" {
+			operation = "replace"
+		}
+		annotation_ops := []jsonpatch.JsonPatchOperation{
+			{
+				Operation: operation,
+				Path:      "/metadata/annotations/" + strings.Replace(tsAnnotation, "/", "~1", -1),
+				Value:     time.Now().UTC().Format(time.UnixDate),
 			},
-		})
+			{
+				Operation: operation,
+				Path:      "/metadata/annotations/" + strings.Replace(versionAnnotation, "/", "~1", -1),
+				Value:     vaultSecret.Version,
+			},
+		}
+		ops = append(ops, annotation_ops...)
 		return ops, nil
 	}
 	return nil, nil
