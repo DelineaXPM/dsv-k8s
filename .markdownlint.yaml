@@ -1,0 +1,10 @@
+# Autoformatter friendly markdownlint config (all formatting rules disabled)
+default: true
+blank_lines: true
+bullet: false
+html: false
+indentation: false
+line_length: false
+spaces: true
+url: true
+whitespace: false

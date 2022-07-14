@@ -1,3 +1,4 @@
+---
 apiVersion: v2
 name: dsv-syncer
 description: A Helm chart for the Delinea DevOps Secrets Vault (DSV) Kubernetes Synchronizer Job.
@@ -12,3 +13,5 @@ version: 0.1.0
 appVersion: latest
 maintainers:
   - name: Adam Migus
+  - name: Sheldon Hull
+  - name: Delinea DSV Team

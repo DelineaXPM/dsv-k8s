@@ -1,0 +1,17 @@
+---
+name: lint
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  golangci-lint:
+    name: runner / golangci-lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      # Automatically caches for performance as well
+      # https://github.com/reviewdog/action-golangci-lint
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v2

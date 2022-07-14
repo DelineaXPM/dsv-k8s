@@ -1,0 +1,25 @@
+version: 0.1
+runtimes:
+  enabled:
+    - go@1.18 # make sure this matches what's in go.mod for this to work correctly.
+cli:
+  version: 0.15.0-beta
+lint:
+  enabled:
+    - actionlint@1.6.15
+    - gitleaks@8.8.12
+    - gofmt@1.16.7
+    - golangci-lint@1.46.1
+    - hadolint@2.10.0
+    - markdownlint@0.31.1
+    # - prettier@2.7.1
+    - shellcheck@0.8.0
+    - shfmt@3.5.0
+  ignore:
+    - linters: [ALL]
+      paths:
+        # Generated files
+        - .devcontainer/*
+        - configs/*
+        # Test data
+        - b/test_data/**
