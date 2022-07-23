@@ -25,7 +25,12 @@ func main() {
 
 	flag.StringVar(&certFile, "cert", "tls/cert.pem", "the path of the public certificate file in PEM format")
 	flag.StringVar(&keyFile, "key", "tls/key.pem", "the path of the private key file in PEM format")
-	flag.StringVar(&credentialsFile, "credentials", "credentials/config.json", "the path of JSON formatted credentials file")
+	flag.StringVar(
+		&credentialsFile,
+		"credentials",
+		"credentials/config.json",
+		"the path of JSON formatted credentials file",
+	)
 
 	server := new(http.Server)
 
@@ -33,7 +38,6 @@ func main() {
 	flag.Parse()
 
 	credentials, err := config.GetCredentials(credentialsFile)
-
 	if err != nil {
 		log.Fatalf("unable to process credentials file '%s': %s", credentialsFile, err)
 	}

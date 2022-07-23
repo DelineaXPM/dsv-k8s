@@ -1,29 +1,36 @@
+---
 # Default values for the Delina DevOps Secrets Vault (DSV) Secrets Injector
 # Kubernetes API Server Mutating Webhook.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- replicaCount
+# @default - 1
 replicaCount: 1
 
 image:
   repository: quay.io/delinea/dsv-k8s
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: ''
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
+  # @default - true
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
+  # @default - Adds `dsv-filter-name` to simplify log selector streaming
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  # -- The name of the service account to use.
+  # -- If not set and create is true, a name is generated using the fullname template
+  name: ''
 
+# -- default annotations to add
+# @default - Adds `dsv-filter-name` to simplify log selector streaming
 podAnnotations: {}
 
 podSecurityContext: {}
@@ -37,11 +44,12 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# -- We usually recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments with little
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# @default -- No default values, user must specify to set resource limits.
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -49,9 +57,10 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-# dsvInjectorCredentialsSecretName is the name of thecredentialsJson secret from the dsv-injector
+# -- dsvInjectorCredentialsSecretName is the name of thecredentialsJson secret from the dsv-injector
 dsvInjectorCredentialsSecretName: dsv-injector-credentials
 
-# cronJobSchedule controls when the syncer runs; five asterisks means "every minute"
-cronJobSchedule: "* * * * *"
-# see https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax
+# -- cronJobSchedule controls when the syncer runs; five asterisks means "every minute".
+# See [cronjob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax)
+# @default - every minute, ie '* * * * *'
+cronJobSchedule: '* * * * *'

@@ -47,6 +47,7 @@ helm.sh/chart: {{ include "dsv.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+dsv-filter-name: {{ .Chart.Name }}
 {{- end }}
 
 {{/*
@@ -55,4 +56,5 @@ Selector labels
 {{- define "dsv.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "dsv.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+dsv-filter-name: {{ .Chart.Name }}
 {{- end }}

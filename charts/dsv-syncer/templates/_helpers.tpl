@@ -39,6 +39,7 @@ helm.sh/chart: {{ include "dsv.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+dsv-filter-name: {{ .Chart.Name }}
 {{- end }}
 
 {{/*
@@ -50,4 +51,12 @@ Create the name of the service account to use
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
+{{- end }}
+
+{{/*
+DSV Syncing Labels for cronjob
+- Required to be able to easily follow with cron job continuing to have random suffix
+*/}}
+{{- define "cronjob.labels" -}}
+dsv-filter-name: {{ .Chart.Name }}
 {{- end }}
