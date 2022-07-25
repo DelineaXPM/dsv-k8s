@@ -2,6 +2,7 @@ package injector
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/pkg/config"
 	patch "github.com/DelineaXPM/dsv-k8s/v2/pkg/patch"
@@ -18,7 +19,7 @@ func Inject(secret corev1.Secret, UID types.UID, credentials config.Credentials)
 	} else if jsonPatch != nil {
 		patchType := v1.PatchTypeJSONPatch
 
-		fmt.Printf("[INFO] patching k8s Secret '%s'", secret.Name)
+		log.Printf("[INFO] patching k8s Secret '%s'", secret.Name)
 		return &v1.AdmissionResponse{
 			Allowed: true,
 			Result: &metav1.Status{
@@ -29,7 +30,7 @@ func Inject(secret corev1.Secret, UID types.UID, credentials config.Credentials)
 			Patch:     jsonPatch,
 		}, nil
 	} else {
-		fmt.Printf("[DEBUG] k8s Secret '%s' did not require patching", secret.Name)
+		log.Printf("[DEBUG] k8s Secret '%s' did not require patching", secret.Name)
 		return &v1.AdmissionResponse{
 			Allowed: true,
 			Result: &metav1.Status{

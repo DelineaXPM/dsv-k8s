@@ -146,16 +146,16 @@ repos:
     rev: v0.4.0
     hooks:
       - id: markdownlint-cli2
-  # - repo: https://github.com/zricethezav/gitleaks
-  #   rev: v8.8.12
-  #   hooks:
-  #     - id: gitleaks
-  #       name: gitleaks-scan
-  - repo: local
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.8.12
     hooks:
-      - id: gitleaks-docker
-        name: Detect hardcoded secrets
-        description: Detect hardcoded secrets using Gitleaks
-        entry: zricethezav/gitleaks protect --verbose --redact
-        language: docker_image
-        pass_filenames: false
+      - id: gitleaks
+        name: gitleaks-scan
+  # - repo: local
+  #   hooks:
+  #     - id: gitleaks-docker
+  #       name: Detect hardcoded secrets
+  #       description: Detect hardcoded secrets using Gitleaks
+  #       entry: zricethezav/gitleaks protect --verbose --redact
+  #       language: docker_image
+  #       pass_filenames: false

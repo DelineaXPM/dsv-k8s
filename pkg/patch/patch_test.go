@@ -10,6 +10,8 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"io"
+	"log"
 	"os"
 	"testing"
 
@@ -30,6 +32,11 @@ const (
 	// The credentials annotation used for authentication.
 	credentialsAnnotationValue = "default"
 )
+
+// Ensure log output doesn't pollute tests.
+func TestMain(m *testing.M) {
+	log.SetOutput(io.Discard)
+}
 
 // getCredentialAnnotationValue is a test helper function to get the credentialsAnnotationValue from either the environment variable or default to the constant value if not set.
 func getCredentialAnnotationValue(t *testing.T) string {

@@ -1,7 +1,10 @@
 package test
 
 import (
+	"io"
+	"log"
 	"os"
+	"testing"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/pkg/config"
 )
@@ -13,6 +16,11 @@ const (
 	DefaultSecretPath = "/test/secret"
 	SecretPathEnvVar  = "DSV_K8S_TEST_SECRET_PATH"
 )
+
+// Ensure log output doesn't pollute tests.
+func TestMain(m *testing.M) {
+	log.SetOutput(io.Discard)
+}
 
 // SecretPath returns the secret path for testing
 func SecretPath() string {

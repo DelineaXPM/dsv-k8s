@@ -3,6 +3,7 @@ package syncer
 import (
 	"context"
 	"fmt"
+	"log"
 	"sync"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/internal/k8s"
@@ -18,13 +19,13 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 	defer wg.Done()
 
 	logFailure := func(secret corev1.Secret, err error) {
-		fmt.Printf("[ERROR] unable to patch Secret '%s' in namespace '%s': %s", secret.Name, secret.Namespace, err)
+		log.Printf("[ERROR] unable to patch Secret '%s' in namespace '%s': %s", secret.Name, secret.Namespace, err)
 	}
 
 	if jsonPatch, err := patch.GenerateJsonPatch(secret, credentials); err != nil {
 		logFailure(secret, err)
 	} else if jsonPatch == nil {
-		fmt.Printf("[DEBUG] k8s Secret '%s' did not require patching", secret.Name)
+		log.Printf("[DEBUG] k8s Secret '%s' did not require patching", secret.Name)
 	} else {
 		if secretsClient, err := k8s.GetSecretsClient(config, secret.Namespace); err != nil {
 			logFailure(secret, err)
@@ -34,7 +35,7 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 			); err != nil {
 				logFailure(secret, err)
 			} else {
-				fmt.Printf("[DEBUG] patched k8s Secret '%s'", result.Name)
+				log.Printf("[DEBUG] patched k8s Secret '%s'", result.Name)
 			}
 		}
 	}
@@ -46,22 +47,22 @@ func Sync(config k8s.Config, namespace string, credentials config.Credentials) e
 	if err != nil {
 		return fmt.Errorf("[ERROR] error getting a Kubernetes Client API Secrets Client: %s", err)
 	}
-	fmt.Printf("[DEBUG] getting a list of Secrets in namespace '%s'", namespace)
+	log.Printf("[DEBUG] getting a list of Secrets in namespace '%s'", namespace)
 
 	if secrets, err := secretsClient.List(context.TODO(), metav1.ListOptions{}); err != nil {
 		return fmt.Errorf("[ERROR] unable to get a list of secrets in namespace '%s': %s", namespace, err)
 	} else {
 		wg := sync.WaitGroup{}
 
-		fmt.Printf("[INFO] processing %d Secrets", len(secrets.Items))
+		log.Printf("[INFO] processing %d Secrets", len(secrets.Items))
 		for _, secret := range secrets.Items {
-			fmt.Printf("[DEBUG] processing k8s Secret '%s'", secret.Name)
+			log.Printf("[DEBUG] processing k8s Secret '%s'", secret.Name)
 			wg.Add(1)
 			go pp(secret, credentials, config, &wg)
 		} // TODO: put an upper limit on the number of goroutines to spawn in one go
 		wg.Wait()
 		if secrets.RemainingItemCount != nil && *secrets.RemainingItemCount > 0 {
-			fmt.Printf("[WARN] this server pages; %d Secrets were not processed", secrets.RemainingItemCount)
+			log.Printf("[WARN] this server pages; %d Secrets were not processed", secrets.RemainingItemCount)
 		}
 	}
 	return nil
