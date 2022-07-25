@@ -170,7 +170,7 @@ The tests expect a few environmental conditions to be met.
 - Create the role that will allow creating a client for programmatic access: `dsv role create --name 'k8s' --desc 'test profile for k8s'`
 - `dsv secret create --path 'k8s:sync:test' --data '{"password": "admin","username": "admin"}'`
 - Create a policy that allows the local user to read the secret, modify this to the correct user/group mapping: `dsv policy create -- actions 'read' --path 'secrets:k8s' --desc 'test access to secret' --resources 'secrets:k8s:<.*>' --subjects 'roles:k8s'`
-- Create the client: `dsv client create --role k8s --beautify`
+- Create the client: `dsv client create --role k8s`
 - Use those credentials in the structure mentioned above.
 
 </details>
