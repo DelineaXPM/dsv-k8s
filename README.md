@@ -165,8 +165,8 @@ The tests expect a few environmental conditions to be met.
 <details closed>
 <summary>🧪 DSV Test Configuration Setup</summary>
 
-- Using dsv cli (grab from [downloads](https://dsv.secretsvaultcloud.com/downloads) and install with snippet adjusted to version: `$(curl -fSSL https://dsv.secretsvaultcloud.com/downloads/cli/1.35.2/dsv-linux-x64 -o ./dsv && chmod +x dsv-linux-x64 && sudo mv ./dsv-linux-x64 /usr/local/bin/dsv && dsv --version`
-- `dsv init` (Use a local user)
+- Using dsv cli (grab from [downloads](https://dsv.secretsvaultcloud.com/downloads) and install with snippet adjusted to version: `$(curl -fSSL https://dsv.secretsvaultcloud.com/downloads/cli/1.35.2/dsv-linux-x64 -o ./dsv-linux-x64 && chmod +x ./dsv-linux-x64 && sudo mv ./dsv-linux-x64 /usr/local/bin/dsv && dsv --version`
+- Run `dsv init` (Use a local user)
 - Create the role that will allow creating a client for programmatic access: `dsv role create --name 'k8s' --desc 'test profile for k8s'`
 - `dsv secret create --path 'k8s:sync:test' --data '{"password": "admin","username": "admin"}'`
 - Create a policy that allows the local user to read the secret, modify this to the correct user/group mapping: `dsv policy create -- actions 'read' --path 'secrets:k8s' --desc 'test access to secret' --resources 'secrets:k8s:<.*>' --subjects 'roles:k8s'`
