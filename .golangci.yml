@@ -7,8 +7,6 @@ output:
   # Compact format: tab
   format: tab
 linters-settings:
-  goimports:
-    local-prefixes: github.com/DelineaXPM
   misspell:
     locale: US
   gomnd:
@@ -28,15 +26,6 @@ linters-settings:
     require-explanation: true
     # Enable to require nolint directives to mention the specific linter being suppressed. Default is false.
     require-specific: true
-  gci:
-    # put imports beginning with prefix after 3rd-party packages;
-    # only support one prefix
-    # if not set, use goimports.local-prefixes
-    local-prefixes: github.com/DelineaXPM
-  gofmt:
-    # simplify code: gofmt with `-s` option, true by default
-    # simplify: true
-    simplify: false # SHELDON: 2021-09-27 disabled due to conflicts with linter and multiple formatters, will evaluate again in future
   gofumpt:
     # Select the Go version to target. The default is `1.15`.
     lang-version: '1.18'
