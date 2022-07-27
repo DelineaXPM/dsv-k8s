@@ -30,6 +30,29 @@ They also work on [OpenShift](https://www.redhat.com/en/technologies/cloud-compu
 [Microk8s](https://microk8s.io/)
 and others.
 
+## Injector and Syncer Differences
+
+- Injector: This is a mutating webhook using AdmissionController. This means it operates on the `CREATE` of a Secret, and ensures it modified before finishing the creation of the resource in Kubernetes. This only runs on the creation action triggered by the server.
+- Syncer: In contrast, the syncer is a normal cronjob operating on a schedule, checking for any variance in the data between the Secret data between the resource in Kubernetes and the expected value from DSV.
+
+## Which Should I Use?
+
+- Both: If you want a secret to be injected on creation and also synced on your cron schedule then use the Injector and Syncer.
+- Injector: If you want the secret to be static despite the change upstream in DSV, and will recreate the secret on any need to upgrade, then the injector. This will reduce the API calls to DSV as well.
+- Syncer: If you want the secret value to be updated within the targeted schedule automatically. If this is run by itself without the injector, there can be a lag of up to a minute before the syncer will update the secret. Your application should be able to handle retrying the load of the credential to avoid using the cached credential value that might have been loaded on app start-up in this case.
+
+## Local Development Tooling
+
+- Make: Makefiles provide core automation.
+- Mage: Mage is a Go based automation alternative to Make and provides newer functionality for local Kind cluster setup, Go development tooling/linting, and more. Requires Go 17+ and is easily installed via: `go install github.com/magefile/mage@latest`. Run `mage -l` to list all available tasks, and `mage init` to setup developer tooling.
+- Pre-Commit: Requires Python3. Included in project, this allows linting and formatting automation before committing, improving the feedback loop.
+- Optional:
+  - Devcontainer configuration included for VSCode to work with Devcontainers and Codespaces in a pre-built development environment that works on all platforms, and includes nested Docker + ability to run Kind kubernetes clusters without any installing any of those on the Host OS.
+  -  Direnv: Default test values are loaded on macOS/Linux based system using [direnv](https://direnv.net/docs/installation.html).
+    Run `direnv allow` in the directory to load default env configuration for testing.
+  - macOS/Linux: [Trunk.io](https://trunk.io/) to provide linting and formatting on the project. Included in recommended extensions.
+    - `trunk install`, `trunk check`, and `trunk fmt` simplifies running checks.
+
 ## Configure
 
 The configuration requires a JSON formatted list of Client Credential and Tenant mappings.
@@ -53,10 +76,13 @@ The configuration requires a JSON formatted list of Client Credential and Tenant
 }
 ```
 
-> NOTE: the injector uses the _default_ credentials when mutating a Kubernetes Secret without a _credentialAnnotation_.
+> *** note ***
+> the injector uses the _default_ credentials when mutating a Kubernetes Secret without a _credentialAnnotation_.
 > See [below](#use)
 
-## Run
+## Local
+
+### Run
 
 The injector uses the HTTPS server built-in to the Golang [http](https://pkg.go.dev/net/http)
 package to host the Kubernetes Mutating Webhook Webservice.
@@ -91,22 +117,63 @@ Usage of ./dsv-syncer:
         the Kubernetes namespace containing the Secrets to sync; "" (the default) for all namespaces
 ```
 
-## Build
+### Build
 
-> ___NOTE: Building the `dsv-injector` image is not required to install it as it is___
-> ___available on multiple public registries.___
+> *** note ***
+> Building the `dsv-injector` image is not required to install it as it is.
+> It is available on multiple public registries.
 
-Building the image requires [Docker](https://www.docker.com/)
-or [Podman](https://podman.io/)
-and [GNU Make](https://www.gnu.org/software/make/).
-To build it, run:
+Building the image requires [Docker](https://www.docker.com/) or [Podman](https://podman.io/) and [GNU Make](https://www.gnu.org/software/make/).
 
-```sh
-make
-```
+To build it, run: `make`.
 
 This will build the injector and syncer as platform binaries and store them in the project root.
 It will also build the image (which will build and store its own copy of the binaries) using `$(DOCKER)`.
+
+### Test
+
+The tests expect a few environmental conditions to be met.
+
+> *** note ***
+> For more detailed setup see collapsed section below for DSV Test Configuration Setup.
+
+- A valid DSV tenant.
+- A secret created with the data format below:
+        {
+          "data": {
+            "password": "admin",
+            "username": "admin"
+          },
+          "version": "0"
+        }
+- A `configs/credentials.json` to be created manually that contains the client credentials.
+- The `configs/credentials.json` credential to be structured like this:
+
+    {
+        "app1": {
+            "credentials": {
+                "clientId": "",
+                "clientSecret": ""
+            },
+            "tenant": "app1"
+        }
+    }
+
+> *** warning ***
+> `app1` is required and using any other will fail test conditions.
+
+<details closed>
+<summary>🧪 DSV Test Configuration Setup</summary>
+
+- Using dsv cli (grab from [downloads](https://dsv.secretsvaultcloud.com/downloads) and install with snippet adjusted to version: `$(curl -fSSL https://dsv.secretsvaultcloud.com/downloads/cli/1.35.2/dsv-linux-x64 -o ./dsv-linux-x64 && chmod +x ./dsv-linux-x64 && sudo mv ./dsv-linux-x64 /usr/local/bin/dsv && dsv --version`
+- Run `dsv init` (Use a local user)
+- Create the role that will allow creating a client for programmatic access: `dsv role create --name 'k8s' --desc 'test profile for k8s'`
+- `dsv secret create --path 'k8s:sync:test' --data '{"password": "admin","username": "admin"}'`
+- Create a policy that allows the local user to read the secret, modify this to the correct user/group mapping: `dsv policy create -- actions 'read' --path 'secrets:k8s' --desc 'test access to secret' --resources 'secrets:k8s:<.*>' --subjects 'roles:k8s'`
+- Create the client: `dsv client create --role k8s`
+- Use those credentials in the structure mentioned above.
+
+</details>
 
 To invoke the tests, run:
 
@@ -120,11 +187,11 @@ They require a `credentials.json` as either a file or a string.
 They also require the path to a secret to test to use.
 Use environment variables to specify both:
 
-|Environment Variable | Default | Explanation |
-|---|---|---|
-|`DSV_K8S_TEST_CONFIG` | _none_ | Contain a JSON string containing a valid `credentials.json`|
-|`DSV_K8S_TEST_CONFIG_FILE` | `../../configs/credentials.json` | The path to a valid `credentials.json`|
-|`DSV_K8S_TEST_SECRET_PATH` | `/test/secret` | The path to the secret to test against in the vault |
+| Environment Variable       | Default                          | Explanation                                                 |
+| -------------------------- | -------------------------------- | ----------------------------------------------------------- |
+| `DSV_K8S_TEST_CONFIG`      | _none_                           | Contain a JSON string containing a valid `credentials.json` |
+| `DSV_K8S_TEST_CONFIG_FILE` | `../../configs/credentials.json` | The path to a valid `credentials.json`                      |
+| `DSV_K8S_TEST_SECRET_PATH` | `/test/secret`                   | The path to the secret to test against in the vault         |
 
 ℹ️ NOTE: `DSV_K8S_TEST_CONFIG` takes precedence over `DSV_K8S_TEST_CONFIG_FILE`
 
@@ -140,6 +207,12 @@ To remove the binaries and Docker image so that the next build is from scratch, 
 
 ```sh
 make clean
+```
+
+For Go development, another option is to run gotestsum (installed automatically with `mage init`) with a filewatch option to get regular test output:
+
+```shell
+gotestsum --format dots-v2 --watch ./... -- -v
 ```
 
 ## Install

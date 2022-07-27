@@ -44,7 +44,6 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 // Sync does the same thing as Inject, but by iterating over the existing k8s Secrets
 func Sync(config k8s.Config, namespace string, credentials config.Credentials) error {
 	secretsClient, err := k8s.GetSecretsClient(config, namespace)
-
 	if err != nil {
 		return fmt.Errorf("[ERROR] error getting a Kubernetes Client API Secrets Client: %s", err)
 	}

@@ -23,8 +23,25 @@
 /Godeps/
 
 # End of https://www.gitignore.io/api/go
-configs/*
+configs/
 target
 
 # IDE
 .vscode
+
+/dsv-injector
+/dsv-syncer
+
+.artifacts/
+.cache/
+/aws/
+/awscli.sig
+/awscli.zip
+adhoc*
+
+# Artifact File
+mage_output_file.go
+minikube-linux-amd64
+packages-*
+*.DS_Store
+/secret-*.yaml

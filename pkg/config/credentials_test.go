@@ -1,6 +1,15 @@
 package config
 
-import "testing"
+import (
+	"io"
+	"log"
+	"testing"
+)
+
+// Ensure log output doesn't pollute tests.
+func TestMain(m *testing.M) {
+	log.SetOutput(io.Discard)
+}
 
 func TestMakeCredentialsValid(t *testing.T) {
 	if _, err := MakeCredentials([]byte(`

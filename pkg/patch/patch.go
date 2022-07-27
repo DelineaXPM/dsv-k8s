@@ -161,7 +161,7 @@ func makePatchOperations(secret v1.Secret, credentials config.Credentials) ([]js
 		If there is at least one patch operation add an operation to replace update the annotations
 	*/
 	if len(ops) > 0 {
-		var operation = "add"
+		operation := "add"
 		if annotations[versionAnnotation] != "" {
 			operation = "replace"
 		}
