@@ -442,6 +442,8 @@ They show how the different annotations work.
 
 Use Stern to easily stream cross namespace logs with the `dsv-filter-selector` by running:
 
+
+- To grab Stern binary, you can run `$(curl -fSSl https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64 -o ./stern) && sudo chmod +x ./stern && sudo mv ./stern /usr/local/bin`. (Modify version as you need)
 - For all pods in the namespace run `stern --kubeconfig .cache/config --namespace dsv  --timestamps . `
 - For pods with the selector run `stern --kubeconfig .cache/config --namespace dsv  --timestamps --selector 'dsv-filter-name in (dsv-syncer, dsv-injector)'`
 
