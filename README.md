@@ -53,6 +53,12 @@ and others.
   - macOS/Linux: [Trunk.io](https://trunk.io/) to provide linting and formatting on the project. Included in recommended extensions.
     - `trunk install`, `trunk check`, and `trunk fmt` simplifies running checks.
 
+## List of Mage Tasks
+
+- `mage -l` will give you a list of tasks.
+- `mage -h init` provides more help detail on a task when it's available.
+
+
 ## Configure
 
 The configuration requires a JSON formatted list of Client Credential and Tenant mappings.
@@ -308,6 +314,17 @@ kubectl get -n kube-system service registry -o jsonpath="{.spec.clusterIP}{':'}{
 Finally, follow the [Remote Cluster](#remote-cluster)
 instructions using it as `$(REGISTRY)`
 
+### Kind
+
+For local development, Mage tasks have been created to automate most of the setup and usage for local testing.
+
+- Run `mage init` to setup dev tooling.
+- Ensure your local `configs/credentials.json` exists.
+- run `mage kind:init k8s:init helm:init` to setup a local kind cluster, initial local copies of the helm chart and kubernetes manifest files.
+- Modify the `.cache/dsv-injector/values.yaml` with the embedded credentials.json contents matching your `configs/credentials.json`.
+- Modify the `.cache/manifests/*.yaml` files to match the credentials you want to test against.
+- To deploy (or redeploy after changes) all the helm charts and kuberenetes manifests run `mage job:redeploy`.
+
 ### Host (for debugging)
 
 Per above, typically, the injector runs as a POD in the cluster but running it on the host makes debugging easier.
@@ -420,3 +437,54 @@ the injector will remove the `domain` field.
 
 There are more examples in the `examples` directory.
 They show how the different annotations work.
+
+## Other Dev Tools
+
+Use Stern to easily stream cross namespace logs with the `dsv-filter-selector` by running:
+
+
+- To grab Stern binary, you can run `$(curl -fSSl https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64 -o ./stern) && sudo chmod +x ./stern && sudo mv ./stern /usr/local/bin`. (Modify version as you need)
+- For all pods in the namespace run `stern --kubeconfig .cache/config --namespace dsv  --timestamps . `
+- For pods with the selector run `stern --kubeconfig .cache/config --namespace dsv  --timestamps --selector 'dsv-filter-name in (dsv-syncer, dsv-injector)'`
+
+
+## Reference Mage Tasks
+
+> Manually updated, for most recent Mage tasks, run `mage -l`.
+
+
+| Target              | Description                                                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| clean               | up after yourself.                                                                                                                   |
+| gittools:init       | ⚙️ Init runs all required steps to use this package.                                                                                  |
+| go:doctor           | 🏥 Doctor will provide config details.                                                                                                |
+| go:fix              | 🔎 Run golangci-lint and apply any auto-fix.                                                                                          |
+| go:fmt              | ✨ Fmt runs gofumpt.                                                                                                                  |
+| go:init             | ⚙️ Init runs all required steps to use this package.                                                                                  |
+| go:lint             | 🔎 Run golangci-lint without fixing.                                                                                                  |
+| go:lintConfig       | 🏥 LintConfig will return output of golangci-lint config.                                                                             |
+| go:test             | 🧪 Run go test.                                                                                                                       |
+| go:testSum          | 🧪 Run gotestsum (Params: Path just like you pass to go test, ie ./..., pkg/, etc ).                                                  |
+| go:tidy             | 🧹 Tidy tidies.                                                                                                                       |
+| go:wrap             | ✨ Wrap runs golines powered by gofumpt.                                                                                              |
+| helm:docs           | generates helm documentation using `helm-doc` tool.                                                                                  |
+| helm:init           | ⚙️ Init sets up the required files to allow for local editing/overriding from CacheDirectory.                                         |
+| helm:install        | 🚀 Install uses Helm to install the chart.                                                                                            |
+| helm:lint           | 🔍 Lint uses Helm to lint the chart for issues.                                                                                       |
+| helm:render         | 💾 Render uses Helm to output rendered yaml for testing helm integration.                                                             |
+| helm:uninstall      | 🚀 Uninstall uses Helm to uninstall the chart.                                                                                        |
+| init                | runs multiple tasks to initialize all the requirements for running a project for a new contributor.                                  |
+| job:redeploy        | removes kubernetes resources and helm charts and then redeploys with log streaming by default.                                       |
+| job:setup           | initializes all the required steps for the cluster creation, initial helm chart copies, and kubeconfig copies.                       |
+| k8s:apply           | applies a kubernetes manifest.                                                                                                       |
+| k8s:delete          | Apply applies a kubernetes manifest.                                                                                                 |
+| k8s:init            | copies the k8 yaml manifest files from the examples directory to the cache directory for editing and linking in integration testing. |
+| k8s:logs            | streams logs until canceled for the dsv syncing jobs, based on the label `dsv.delinea.com: syncer`.                                  |
+| kind:destroy        | 🗑️ Destroy tears down the Kind cluster.                                                                                               |
+| kind:init           | ➕ Create creates a new Kind cluster and populates a kubeconfig in cachedirectory.                                                    |
+| precommit:commit    | 🧪 Commit runs pre-commit checks using pre-commit.                                                                                    |
+| precommit:init      | ⚙️ Init configures precommit hooks.                                                                                                   |
+| precommit:prepush   | 🧪 Push runs pre-push checks using pre-commit.                                                                                        |
+| precommit:uninstall | ✖ Uninstall removes the pre-commit hooks.                                                                                            |
+| secrets:detect      | 🔐 Detect scans for secret violations with gitleaks without git consideration.                                                        |
+| secrets:protect     | 🔐 Protect scans the staged artifacts for violations.                                                                                 |
