@@ -12,6 +12,5 @@ type: application
 version: 0.1.1
 appVersion: latest
 maintainers:
-  - name: Adam Migus
   - name: Sheldon Hull
   - name: Delinea DSV Team
