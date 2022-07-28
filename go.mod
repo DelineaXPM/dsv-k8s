@@ -5,7 +5,7 @@ require (
 	github.com/magefile/mage v1.13.0
 	github.com/mattbaird/jsonpatch v0.0.0-20171005235357-81af80346b1a
 	github.com/mittwald/go-helm-client v0.11.3
-	github.com/pterm/pterm v0.12.42
+	github.com/pterm/pterm v0.12.45
 	github.com/sheldonhull/magetools v0.0.10
 	k8s.io/api v0.24.3
 	k8s.io/apimachinery v0.24.3
