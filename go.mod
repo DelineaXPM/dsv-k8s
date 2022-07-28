@@ -4,12 +4,12 @@ require (
 	github.com/DelineaXPM/dsv-sdk-go/v2 v2.0.0
 	github.com/magefile/mage v1.13.0
 	github.com/mattbaird/jsonpatch v0.0.0-20171005235357-81af80346b1a
-	github.com/mittwald/go-helm-client v0.11.2
+	github.com/mittwald/go-helm-client v0.11.3
 	github.com/pterm/pterm v0.12.42
 	github.com/sheldonhull/magetools v0.0.10
-	k8s.io/api v0.23.5
-	k8s.io/apimachinery v0.23.5
-	k8s.io/client-go v0.23.5
+	k8s.io/api v0.24.3
+	k8s.io/apimachinery v0.24.3
+	k8s.io/client-go v0.24.3
 )
 
 replace dsv-k8s/internal/k8s => ./internal/k8s
