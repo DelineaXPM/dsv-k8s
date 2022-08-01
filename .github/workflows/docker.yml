@@ -42,5 +42,5 @@ jobs:
 
           registry=registry.hub.docker.com
           echo "${{ secrets.DSV_DOCKER_PASSWORD }}" | docker login $registry -u ${{ secrets.DSV_DOCKER_USERNAME }} --password-stdin
-          make release REGISTRY="delineaopensource" VERSION=$version
+          make release REGISTRY="${{ secrets.DSV_DOCKER_REGISTRY }}" VERSION=$version
           docker logout
