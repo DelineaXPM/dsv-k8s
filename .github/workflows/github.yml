@@ -1,6 +1,7 @@
 ---
 name: docker-publish-github
 on:
+  workflow_dispatch:
   push:
     # Publish `main` as Docker `latest` image.
     branches:
