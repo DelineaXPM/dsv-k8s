@@ -9,7 +9,7 @@ require (
 	github.com/sheldonhull/magetools v0.0.10
 	k8s.io/api v0.24.3
 	k8s.io/apimachinery v0.24.3
-	k8s.io/client-go v0.24.3
+	k8s.io/client-go v1.5.2
 )
 
 replace dsv-k8s/internal/k8s => ./internal/k8s
