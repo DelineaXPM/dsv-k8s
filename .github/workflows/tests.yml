@@ -1,6 +1,7 @@
 ---
 name: go-tests
 on:
+  pull_request:
   push:
     # Publish `main` as Docker `latest` image.
     branches:
