@@ -19,13 +19,14 @@ env:
 jobs:
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
-  push:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v3
+
       # https://github.com/magnetikonline/action-golang-cache
       - name: Setup Golang with cache
         uses: magnetikonline/action-golang-cache@v3
@@ -33,7 +34,9 @@ jobs:
           go-version-file: go.mod
 
       - name: Build
-        run: go build -v ./...
+        run: make all
 
       - name: Test
-        run: go test -v ./...
+        run: |
+          go install gotest.tools/gotestsum@latest
+          make test
