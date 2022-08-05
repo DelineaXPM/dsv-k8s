@@ -3,6 +3,7 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/constants"
 	// mage:import
@@ -54,11 +55,6 @@ func Init() error { //nolint:deadcode // Not dead, it's alive.
 		(gotools.Go{}.Tidy),
 		(gotools.Go{}.Init),
 	)
-	// These can run in parallel as different toolchains.
-	mg.Deps(
-		(gittools.Gittools{}.Init),
-		(precommit.Precommit{}.Init),
-	)
 
 	if ci.IsCI() {
 		pterm.Debug.Println("CI detected, done with init")
@@ -69,7 +65,11 @@ func Init() error { //nolint:deadcode // Not dead, it's alive.
 	if err := tooling.SilentInstallTools(toolList); err != nil {
 		return err
 	}
-
+	// These can run in parallel as different toolchains.
+	mg.Deps(
+		(gittools.Gittools{}.Init),
+		(precommit.Precommit{}.Init),
+	)
 	if err := sh.Run("docker", "pull", "alpine:latest"); err != nil {
 		return err
 	}
@@ -92,4 +92,29 @@ func Clean() {
 		pterm.Success.Printf("🧹 [%s] dir removed\n", dir)
 	}
 	mg.Deps(createDirectories)
+}
+
+// BuildAll builds all the binaries.
+func BuildAll() error { //nolint:deadcode // Not dead, it's alive.
+	pterm.DefaultSection.Println("BuildAll()")
+	mg.Deps(createDirectories)
+	spin, _ := pterm.DefaultSpinner.WithShowTimer(true).Start()
+
+	spin.UpdateText("building injector")
+	if err := sh.Run("go", "build", "-o", filepath.Join(constants.ArtifactDirectory, "injector"), "cmd/injector/main.go"); err != nil {
+		pterm.Error.Printfln("failed to build injector with error: %v\n", err)
+		return err
+	}
+	spin.Success("built injector")
+
+	spin.UpdateText("build syncer")
+	if err := sh.Run("go", "build", "-o", filepath.Join(constants.ArtifactDirectory, "syncer"), "cmd/syncer/main.go"); err != nil {
+		pterm.Error.Printfln("failed to build syncer with error: %v\n", err)
+		return err
+	}
+	spin.Success("built syncer")
+
+	spin.Success("✅  BuildAll()")
+	_ = spin.Stop()
+	return nil
 }

@@ -33,10 +33,20 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Build
-        run: make all
+      - name: mage-test
+        uses: magefile/mage-action@v2
+        with:
+          version: latest
+          args: go:tidy
 
-      - name: Test
-        run: |
-          go install gotest.tools/gotestsum@latest
-          make test
+      - name: mage-build
+        uses: magefile/mage-action@v2
+        with:
+          version: latest
+          args: buildall
+
+      - name: mage-build
+        uses: magefile/mage-action@v2
+        with:
+          version: latest
+          args: go:testsum ./...
