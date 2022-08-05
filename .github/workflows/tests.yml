@@ -33,7 +33,7 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: mage-test
+      - name: mage-tidy
         uses: magefile/mage-action@v2
         with:
           version: latest
@@ -45,7 +45,7 @@ jobs:
           version: latest
           args: buildall
 
-      - name: mage-build
+      - name: mage-test
         uses: magefile/mage-action@v2
         with:
           version: latest
