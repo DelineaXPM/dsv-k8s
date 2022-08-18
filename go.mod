@@ -7,9 +7,9 @@ require (
 	github.com/mittwald/go-helm-client v0.11.3
 	github.com/pterm/pterm v0.12.45
 	github.com/sheldonhull/magetools v0.0.12
-	k8s.io/api v0.24.3
-	k8s.io/apimachinery v0.24.3
-	k8s.io/client-go v0.24.3
+	k8s.io/api v0.24.4
+	k8s.io/apimachinery v0.24.4
+	k8s.io/client-go v0.24.4
 )
 
 require (
