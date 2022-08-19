@@ -51,7 +51,7 @@
 			"zsh-login": {
 				"args": [
 					"-l"
-				],rebuild
+				],
 				"icon": "terminal-bash",
 				"path": "zsh"
 			}
