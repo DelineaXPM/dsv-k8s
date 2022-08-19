@@ -51,7 +51,7 @@
 			"zsh-login": {
 				"args": [
 					"-l"
-				],
+				],rebuild
 				"icon": "terminal-bash",
 				"path": "zsh"
 			}
@@ -76,7 +76,9 @@
 		"GOPATH": "/home/codespace/go/",
 		"GOROOT": "/usr/local/go"
 	},
-	"initializeCommand": ".devcontainer/files/prep",
+	"initializeCommand": [
+		".devcontainer/files/prep"
+	],
 	"hostRequirements": {
 		"storage": "32gb"
 	}
