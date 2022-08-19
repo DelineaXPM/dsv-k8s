@@ -12,7 +12,19 @@ import (
 // Job is a namespace to contain chained sets of automation actions, to reduce the need to chain many commands together for common workflows.
 type Job mg.Namespace
 
+// Init runs the setup tasks to initialize the local resources and files, without trying to apply yet.
+//
 // Setup initializes all the required steps for the cluster creation, initial helm chart copies, and kubeconfig copies.
+func (Job) Init() {
+	pterm.DefaultSection.Println("(Job) Init()")
+	mg.SerialDeps(
+		kind.Kind{}.Init,
+		k8s.K8s{}.Init,
+		helm.Helm{}.Init,
+	)
+}
+
+// Setup runs all the initialization tasks, in addition to installing the helm chart and kubeconfig files.
 func (Job) Setup() {
 	pterm.DefaultSection.Println("(Job) Setup()")
 	mg.SerialDeps(

@@ -3,6 +3,13 @@
 {
 	"name": "dsv-k8s-codespace",
 	"dockerFile": "Dockerfile",
+	"build": {
+		"args": {
+			"GO_VERSION": "latest",
+			"GOPATH": "/home/codespace/go",
+			"GOROOT": "/usr/local/go"
+		}
+	},
 	"runArgs": [
 		"--cap-add=SYS_PTRACE",
 		"--security-opt",
@@ -38,10 +45,22 @@
 			]
 		}
 	},
+	"settings": {
+		"terminal.integrated.profiles.linux": {
+			"zsh-login": {
+				"args": [
+					"-l"
+				],
+				"icon": "terminal-bash",
+				"path": "zsh"
+			}
+		},
+		"terminal.integrated.defaultProfile.linux": "zsh-login"
+	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "kubectl version",
+	"postCreateCommand": "echo '🔨 running go mod download' && go mod download",
 	// Use 'postStartCommand' to run commands after the container is created like starting minikube.
 	// "postStartCommand": "nohup bash -c 'minikube start &' > minikube.log 2>&1",
 	// Minikube does not like running as root, so use a non-root user.
@@ -54,6 +73,6 @@
 	"containerEnv": {
 		"GITHUB_OATH_TOKEN": "${env:GITHUB_OATH_TOKEN}",
 		"GOPATH": "/home/codespace/go/",
-		"GOROOT": ""
+		"GOROOT": "/usr/local/go"
 	}
 }
