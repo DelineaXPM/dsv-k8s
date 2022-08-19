@@ -60,7 +60,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "echo '🔨 running go mod download' && go mod download",
+	"postCreateCommand": "echo '🔨 running go mod download' && go mod download && echo '✅ go mod download finished'",
 	// Use 'postStartCommand' to run commands after the container is created like starting minikube.
 	// "postStartCommand": "nohup bash -c 'minikube start &' > minikube.log 2>&1",
 	// Minikube does not like running as root, so use a non-root user.
@@ -74,5 +74,9 @@
 		"GITHUB_OATH_TOKEN": "${env:GITHUB_OATH_TOKEN}",
 		"GOPATH": "/home/codespace/go/",
 		"GOROOT": "/usr/local/go"
+	},
+	"initializeCommand": ".devcontainer/files/prep",
+	"hostRequirements": {
+		"storage": "32gb"
 	}
 }
