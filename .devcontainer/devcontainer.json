@@ -77,7 +77,7 @@
 		"GOROOT": "/usr/local/go"
 	},
 	"initializeCommand": [
-		".devcontainer/files/init"
+		".devcontainer/init"
 	],
 	"hostRequirements": {
 		"storage": "32gb"
