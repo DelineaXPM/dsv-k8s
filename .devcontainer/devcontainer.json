@@ -41,7 +41,8 @@
 				"ms-kubernetes-tools.kind-vscode",
 				"trunk.io",
 				"GitHub.vscode-pull-request-github",
-				"yzhang.markdown-all-in-one"
+				"yzhang.markdown-all-in-one",
+				"sheldon-hull.extension-pack-go"
 			]
 		}
 	},
