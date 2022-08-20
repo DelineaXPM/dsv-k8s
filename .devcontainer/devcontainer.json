@@ -67,11 +67,6 @@
 	// "postStartCommand": "nohup bash -c 'minikube start &' > minikube.log 2>&1",
 	// Minikube does not like running as root, so use a non-root user.
 	"remoteUser": "codespace",
-	"features": {
-		"kubectl-helm-minikube": "latest",
-		"golang": "latest",
-		"github-cli": "latest"
-	},
 	"containerEnv": {
 		"GITHUB_OATH_TOKEN": "${env:GITHUB_OATH_TOKEN}",
 		"GOPATH": "/home/codespace/go/",

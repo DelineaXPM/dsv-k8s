@@ -81,10 +81,11 @@ This includes (for updated info just look at dockerfile):
 ### After Devcontainer Loads
 
 1. Accept "Install Recommended Extensions" from popup, to automatically get all the preset tools, such as Kubernetes, Go and others setup.
-
-2. Open a new `zsh-login` terminal and allow the automatic setup to finish, as this will ensure all other required tools are setup.
+1. Open a new `zsh-login` terminal and allow the automatic setup to finish, as this will ensure all other required tools are setup.
     - Make sure to run `direnv allow` as it prompts you, to ensure all project and your personal environment variables (optional).
-3. Run setup task:
+1. Make sure Go 1.19 is the correct version running with `go version`.
+   1. If it's not, run `sudo .devcontainer/library-scripts/go-debian.sh "1.19"`
+2. Run setup task:
     - Using CLI: Run `mage init`
 
 ## Working With Kind & Stack Locally
