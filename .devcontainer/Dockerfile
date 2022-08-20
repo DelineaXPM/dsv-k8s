@@ -41,7 +41,7 @@ USER ${USERNAME}
 RUN go install github.com/magefile/mage@latest && go install github.com/charmbracelet/glow@latest
 RUN python3 -m pip install --upgrade pip --user && python3 -m pip install pre-commit --user
 COPY files/.zshrc /home/${USERNAME}/.zshrc
-COPY files/.first-run-notice.txt /home/${USERNAME}/.first-run-notice.txt
+COPY files/first-run-notice.txt /home/${USERNAME}/first-run-notice.txt
 
 # Setting the ENTRYPOINT to docker-init.sh will start up the Docker Engine
 # inside the container "overrideCommand": false is set in devcontainer.json.
