@@ -1,8 +1,0 @@
-👋 Welcome to DSV-K8S Devcontainer!
-   - This bakes in the latest version of Go and more.
-
-To get started, try running the following command to bootstrap the project tooling:
-
-> mage init
-
-After that, run: "mage" to list all available tasks.

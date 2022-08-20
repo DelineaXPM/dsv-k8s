@@ -5,7 +5,7 @@
 	"dockerFile": "Dockerfile",
 	"build": {
 		"args": {
-			"GO_VERSION": "latest",
+			"GO_VERSION": "1.19",
 			"GOPATH": "/home/codespace/go",
 			"GOROOT": "/usr/local/go"
 		}

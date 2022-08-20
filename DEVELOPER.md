@@ -82,11 +82,9 @@ This includes (for updated info just look at dockerfile):
 
 1. Accept "Install Recommended Extensions" from popup, to automatically get all the preset tools, such as Kubernetes, Go and others setup.
 
-> PROTIP: You can run all the commands in this doc with a click using the recommended Command Runner extension (`zvik.command-runner`). You'll get a button above code snippets to run with it installed. If you run into any endless terminal loading loops disable it. I had some issue in the past that I can't reproduce, so it's just an FYI.
-
-1. Open a new `zsh-login` terminal and allow the automatic setup to finish, as this will ensure all other required tools are setup.
+2. Open a new `zsh-login` terminal and allow the automatic setup to finish, as this will ensure all other required tools are setup.
     - Make sure to run `direnv allow` as it prompts you, to ensure all project and your personal environment variables (optional).
-2. Run setup task:
+3. Run setup task:
     - Using CLI: Run `mage init`
 
 ## Working With Kind & Stack Locally
