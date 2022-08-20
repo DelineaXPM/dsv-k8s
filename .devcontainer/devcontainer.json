@@ -42,7 +42,8 @@
 				"trunk.io",
 				"GitHub.vscode-pull-request-github",
 				"yzhang.markdown-all-in-one",
-				"sheldon-hull.extension-pack-go"
+				"sheldon-hull.extension-pack-go",
+				"zvik.command-runner"
 			]
 		}
 	},
@@ -61,7 +62,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "echo '🔨 running go mod download' && go mod download && echo '✅ go mod download finished'",
+	"postCreateCommand": "echo '🔨 running go mod download' && go mod download && echo '✅ go mod download finished' && echo '🔨 downloading build tooling dependencies' && mage && echo '✅ build tooling dependencies complete'",
 	// Use 'postStartCommand' to run commands after the container is created like starting minikube.
 	// "postStartCommand": "nohup bash -c 'minikube start &' > minikube.log 2>&1",
 	// Minikube does not like running as root, so use a non-root user.

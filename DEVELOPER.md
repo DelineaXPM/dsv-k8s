@@ -10,8 +10,9 @@
   - [I already use devcontainers](#i-already-use-devcontainers)
   - [Spin It Up](#spin-it-up)
     - [After Devcontainer Loads](#after-devcontainer-loads)
+  - [Working With Kind & Stack Locally](#working-with-kind--stack-locally)
+    - [Kind](#kind)
   - [Troubleshooting](#troubleshooting)
-    - [Mage or Other CLI Tool Not Found](#mage-or-other-cli-tool-not-found)
     - [Mismatch With Checksum for Go Modules](#mismatch-with-checksum-for-go-modules)
     - [Connecting to Services Outside of devcontainer](#connecting-to-services-outside-of-devcontainer)
 
@@ -49,15 +50,9 @@ Run `code --install-extension ms-vscode-remote.remote-containers`
 
 ## I already use devcontainers
 
-
-
 - Ensure you've got Remote Containers or Codespace extension installed as mentioned in directions above and you'll be good to start.
 
-
-
 ## Spin It Up
-
-
 
 > ***NOTE***
 >
@@ -94,13 +89,22 @@ This includes (for updated info just look at dockerfile):
 2. Run setup task:
     - Using CLI: Run `mage init`
 
+## Working With Kind & Stack Locally
+
+> ***NOTE***
+> For any tasks get more help with `-h`, for example, run `mage -h k8s:init`
+
+### Kind
+
+For local development, Mage tasks have been created to automate most of the setup and usage for local testing.
+
+- Ensure your local `configs/credentials.json` exists.
+- run `mage job:init` to setup a local kind cluster, initial local copies of the helm chart and kubernetes manifest files.
+- Modify the `.cache/dsv-injector/values.yaml` with the embedded credentials.json contents matching your `configs/credentials.json`.
+- Modify the `.cache/manifests/*.yaml` files to match the credentials you want to test against.
+- To deploy (or redeploy after changes) all the helm charts and kuberenetes manifests run `mage job:redeploy`.
 
 ## Troubleshooting
-
-### Mage or Other CLI Tool Not Found
-
-If mage command isn't found, just run `go run mage.go init` and it should setup mage if the other tooling failed to.
-
 
 ### Mismatch With Checksum for Go Modules
 
