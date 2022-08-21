@@ -27,7 +27,7 @@ repos:
         types_or: [yaml]
         args: [--mapping, '2', --sequence, '4', --offset, '2', --width, '999']
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.2.0
+    rev: v1.3.0
     hooks:
       - name: detect-secrets
         id: detect-secrets
@@ -107,7 +107,7 @@ repos:
       - id: golangci-lint
         name: golangci-lint
         description: Fast linters runner for Go.
-        entry: golangci-lint run --fix --new-from-rev=HEAD~
+        entry: golangci-lint run --fix --timeout 15s --new-from-rev=HEAD~
         types: [go]
         language: system
         pass_filenames: false
@@ -143,11 +143,11 @@ repos:
       # TODO: not certain why, but go work sync or go version etc doesn't work here
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.4.0
+    rev: v0.5.1
     hooks:
       - id: markdownlint-cli2
   - repo: https://github.com/zricethezav/gitleaks
-    rev: v8.8.12
+    rev: v8.11.0
     hooks:
       - id: gitleaks
         name: gitleaks-scan
