@@ -3,7 +3,7 @@ module github.com/DelineaXPM/dsv-k8s/v2
 require (
 	github.com/DelineaXPM/dsv-sdk-go/v2 v2.0.0
 	github.com/magefile/mage v1.13.0
-	github.com/mattbaird/jsonpatch v0.0.0-20171005235357-81af80346b1a
+	github.com/mattbaird/jsonpatch v0.0.0-20200820163806-098863c1fc24
 	github.com/mittwald/go-helm-client v0.11.3
 	github.com/pterm/pterm v0.12.45
 	github.com/sheldonhull/magetools v0.0.12
