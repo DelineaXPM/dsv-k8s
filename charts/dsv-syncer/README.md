@@ -8,7 +8,6 @@ A Helm chart for the Delinea DevOps Secrets Vault (DSV) Kubernetes Synchronizer 
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Adam Migus |  |  |
 | Sheldon Hull |  |  |
 | Delinea DSV Team |  |  |
 
