@@ -5,7 +5,7 @@
     "projectToken": "",
     "baseBranches": [],
     "enableLicenseViolations": true,
-    "displayLicenseViolations": false,
+    "displayLicenseViolations": false
   },
   "checkRunSettings": {
     "vulnerableCheckRunConclusionLevel": "failure",
