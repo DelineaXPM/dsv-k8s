@@ -9,7 +9,7 @@ require (
 	github.com/sheldonhull/magetools v0.0.12
 	k8s.io/api v0.24.4
 	k8s.io/apimachinery v0.24.4
-	k8s.io/client-go v0.24.4
+	k8s.io/client-go/v12 v12.0.0
 )
 
 require (
