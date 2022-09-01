@@ -3,9 +3,15 @@ name: lint
 on:
   pull_request:
   workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  pull-requests: read
+  contents: read
 jobs:
-  golangci-lint:
-    name: runner / golangci-lint
+  lint:
+    name: lint
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -14,4 +20,4 @@ jobs:
       # Automatically caches for performance as well
       # https://github.com/reviewdog/action-golangci-lint
       - name: golangci-lint
-        uses: reviewdog/action-golangci-lint@v2
+        uses: reviewdog/action-golangci-lint@70498f2d1f75a55ee9a4d719e74e21ed68aebea3 # renovate: tag=v2

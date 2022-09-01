@@ -51,17 +51,7 @@ repos:
       - id: mixed-line-ending
         name: Normalize line endings to lf
         args: [--fix=lf]
-          # - id: check-yaml
-          # - id: check-json
-          #   exclude: ^.vscode/
-          # - id: pretty-format-json
-          #   exclude: ^.vscode/
-          #   #args: [--fix]
-          # - id: detect-private-key
-
-          # - id: end-of-file-fixer
       - id: fix-byte-order-marker
-
       - id: check-added-large-files
         name: No large files, use artifacts for that
       - id: check-merge-conflict
@@ -73,28 +63,11 @@ repos:
         name: Don't commit to main
         args: [--branch, master, --branch, main]
         pass_filenames: false
-
-    # - repo: https://github.com/tekwizely/pre-commit-golang
-    #   rev: v0.8.3
-    #   hooks:
-    #     - id: go-imports   # replaces go-fmt
-    #       args: [-w]
-    #     - id: go-vet
-    #     - id: go-vet-mod
-    #     - id: go-vet-pkg
-    #     - id: go-vet-repo-mod
-    #     - id: go-vet-repo-pkg
-    #     - id: go-sec-mod
-    #     - id: go-sec-pkg
-    #     - id: go-sec-repo-mod
-    #     - id: go-sec-repo-pkg
-    #     - id: go-critic
   - repo: https://gitlab.com/bmares/check-json5
     rev: v1.0.0
     hooks:
       - id: check-json5
           # stages: ['commit']
-
   - repo: local
     hooks:
       - id: golines
@@ -123,7 +96,6 @@ repos:
       - id: go-mod-tidy
         name: go-mod-tidy
         description: Run go mod tidy
-          # entry: #env GOTEST_FLAGS='-tags integration' mage -v go:test
         entry: go mod tidy
         stages: [commit]
         types: [go]
@@ -151,11 +123,3 @@ repos:
     hooks:
       - id: gitleaks
         name: gitleaks-scan
-  # - repo: local
-  #   hooks:
-  #     - id: gitleaks-docker
-  #       name: Detect hardcoded secrets
-  #       description: Detect hardcoded secrets using Gitleaks
-  #       entry: zricethezav/gitleaks protect --verbose --redact
-  #       language: docker_image
-  #       pass_filenames: false
