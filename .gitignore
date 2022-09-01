@@ -26,9 +26,6 @@
 configs/
 target
 
-# IDE
-.vscode
-
 /dsv-injector
 /dsv-syncer
 

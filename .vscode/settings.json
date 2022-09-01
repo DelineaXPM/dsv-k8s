@@ -1,0 +1,49 @@
+{
+  // language-go
+  "[go.mod]": {
+    "editor.formatOnSave": true
+  },
+  "[go]": {
+    "debug.saveBeforeStart": "allEditorsInActiveGroup",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true,
+      "source.organizeImports": false
+    },
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true,
+  },
+  "go.coverageOptions": "showUncoveredCodeOnly",
+  // "go.coverOnSave": true,
+  "go.coverOnSingleTest": true,
+  "go.coverOnSingleTestFile": true,
+  "go.coverOnTestPackage": true,
+  "go.lintFlags": [
+    // "--fast", // this is needed to ensure performance doesn't suffer // scoping to package only so linting is more predictable
+    "--enable-all",
+    "--fix",
+    "--config=${workspaceFolder}/.golangci.yml"
+  ],
+  "go.lintOnSave": "package",
+  "go.lintTool": "golangci-lint",
+  "go.testEnvVars": {
+    "GOTESTS_TEMPLATE": "test",
+    "IS_NO_COLOR": true
+  },
+  "go.testFlags": [
+    "-v",
+    "-race",
+    "-shuffle=on",
+  ],
+  "go.testTags": "integration",
+  "go.toolsManagement.autoUpdate": true,
+  "go.useLanguageServer": true,
+  "go.formatTool": "gofumpt",
+  "gopls": {
+    "formatting.gofumpt": true,
+    "buildFlags": [
+      "-tags=mage tools integration" // required for gopls to autocomplete mage files with mage tag
+    ],
+    "build.experimentalWorkspaceModule": true,
+    "build.expandWorkspaceToModule": true
+  }
+}
