@@ -9,12 +9,14 @@ actions:
       runtime: go
       description: run go tests on pre-push
       # packages_file: "actions/commitlint/package.json"
-      run: gotestsum --format pkgname -- -shuffle=on -race -tags integration ./...
+      # CGO_ENABLED -> RACE REQUIRES -race this to be set to 1 and right now it's not
+      run: gotestsum --format pkgname -- -shuffle=on  -tags integration ./...
       triggers:
         - git_hooks: [pre-push]
 runtimes:
   definitions:
     - type: go
+      system_version: allowed
       runtime_environment:
         - name: HOME
           value: ${home}
@@ -27,8 +29,8 @@ runtimes:
           value: on
         - name: CGO_ENABLED
           value: 1
-  enabled:
-    - go@1.19 # make sure this matches what's in go.mod for this to work correctly.
+  # make sure this matches what's in go.mod for this to work correctly.
+  enabled: [go@1.19]
 cli:
   version: 0.17.0-beta
 lint:
@@ -42,7 +44,7 @@ lint:
     # - prettier@2.7.1
     - shellcheck@0.8.0
     - shfmt@3.5.0
-    - golines@SYSTEM
+    - golines@0.11.0
   definitions:
     - name: golines
       files: [go]
@@ -51,6 +53,8 @@ lint:
           formatter: true
           run: golines --base-formatter="gofumpt" --max-len=120 --reformat-tags ${target}
           success_codes: [0]
+      runtime: go
+      package: github.com/segmentio/golines
   ignore:
     - linters: [ALL]
       paths:
