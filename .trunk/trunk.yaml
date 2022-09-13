@@ -42,6 +42,15 @@ lint:
     # - prettier@2.7.1
     - shellcheck@0.8.0
     - shfmt@3.5.0
+    - golines@SYSTEM
+  definitions:
+    - name: golines
+      files: [go]
+      commands:
+        - output: rewrite
+          formatter: true
+          run: golines --base-formatter="gofumpt" --max-len=120 --reformat-tags ${target}
+          success_codes: [0]
   ignore:
     - linters: [ALL]
       paths:
