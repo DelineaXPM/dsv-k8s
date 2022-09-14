@@ -9,6 +9,7 @@ concurrency:
 permissions:
   pull-requests: read
   contents: read
+  checks: write
 jobs:
   lint:
     name: lint
