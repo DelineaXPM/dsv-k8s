@@ -508,6 +508,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="https://github.com/tylerezimmerman"><img src="https://avatars.githubusercontent.com/u/100804646?v=4?s=100" width="100px;" alt=""/><br /><sub><b>tylerezimmerman</b></sub></a><br /><a href="#maintenance-tylerezimmerman" title="Maintenance">🚧</a></td>
       <td align="center"><a href="https://github.com/delineaKrehl"><img src="https://avatars.githubusercontent.com/u/105234788?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tim Krehl</b></sub></a><br /><a href="#maintenance-delineaKrehl" title="Maintenance">🚧</a></td>
       <td align="center"><a href="http://endlesstrax.com"><img src="https://avatars.githubusercontent.com/u/17141891?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ricky White</b></sub></a><br /><a href="#maintenance-EndlessTrax" title="Maintenance">🚧</a></td>
+      <td align="center"><a href="https://github.com/forced-request"><img src="https://avatars.githubusercontent.com/u/961246?v=4?s=100" width="100px;" alt=""/><br /><sub><b>John Poulin</b></sub></a><br /><a href="#maintenance-forced-request" title="Maintenance">🚧</a></td>
     </tr>
   </tbody>
 </table>

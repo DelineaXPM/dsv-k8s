@@ -30,7 +30,7 @@
       "name": "sheldonhull",
       "avatar_url": "https://avatars.githubusercontent.com/u/3526320?v=4",
       "profile": "https://www.sheldonhull.com",
-           "contributions": [
+       "contributions": [
         "code",
         "doc",
         "test"
@@ -60,6 +60,15 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/17141891?v=4",
       "profile": "http://endlesstrax.com",
        "contributions": [
+        "maintenance"
+      ]
+    },
+    {
+      "login": "forced-request",
+      "name": "John Poulin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/961246?v=4",
+      "profile": "https://github.com/forced-request",
+      "contributions": [
         "maintenance"
       ]
     }
