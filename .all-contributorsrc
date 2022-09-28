@@ -53,6 +53,15 @@
        "contributions": [
         "maintenance"
       ]
+    },
+    {
+      "login": "EndlessTrax",
+      "name": "Ricky White",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17141891?v=4",
+      "profile": "http://endlesstrax.com",
+       "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,

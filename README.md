@@ -507,6 +507,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="https://github.com/hansboder"><img src="https://avatars.githubusercontent.com/u/36736535?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hans Boder</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/issues?q=author%3Ahansboder" title="Bug reports">🐛</a></td>
       <td align="center"><a href="https://github.com/tylerezimmerman"><img src="https://avatars.githubusercontent.com/u/100804646?v=4?s=100" width="100px;" alt=""/><br /><sub><b>tylerezimmerman</b></sub></a><br /><a href="#maintenance-tylerezimmerman" title="Maintenance">🚧</a></td>
       <td align="center"><a href="https://github.com/delineaKrehl"><img src="https://avatars.githubusercontent.com/u/105234788?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tim Krehl</b></sub></a><br /><a href="#maintenance-delineaKrehl" title="Maintenance">🚧</a></td>
+      <td align="center"><a href="http://endlesstrax.com"><img src="https://avatars.githubusercontent.com/u/17141891?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ricky White</b></sub></a><br /><a href="#maintenance-EndlessTrax" title="Maintenance">🚧</a></td>
     </tr>
   </tbody>
 </table>
