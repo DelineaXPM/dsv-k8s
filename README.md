@@ -1,4 +1,7 @@
 # Delinea DevOps Secrets Vault Kubernetes Secret Injector and Syncer
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Tests](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/tests.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/tests.yml) [![Docker](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/docker.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/docker.yml) [![GitHub](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/github.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/github.yml) [![Red Hat Quay](https://quay.io/repository/delinea/dsv-k8s/status "Red Hat Quay")](https://quay.io/repository/delinea/dsv-k8s)
 
@@ -488,3 +491,25 @@ Use Stern to easily stream cross namespace logs with the `dsv-filter-selector` b
 | precommit:uninstall | ✖ Uninstall removes the pre-commit hooks.                                                                                            |
 | secrets:detect      | 🔐 Detect scans for secret violations with gitleaks without git consideration.                                                        |
 | secrets:protect     | 🔐 Protect scans the staged artifacts for violations.                                                                                 |
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center"><a href="https://github.com/forced-request"><img src="https://avatars.githubusercontent.com/u/961246?v=4?s=100" width="100px;" alt=""/><br /><sub><b>John Poulin</b></sub></a><br /><a href="#maintenance-forced-request" title="Maintenance">🚧</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
