@@ -7,11 +7,30 @@
   "commitConvention": "angular",
   "contributors": [
     {
+      "login": "amigus",
+      "name": "Adam C. Migus",
+      "avatar_url": "https://avatars.githubusercontent.com/u/119477?v=4",
+      "profile": "https://mig.us/adam",
+      "contributions": [
+        "code",
+        "doc",
+        "test"
+      ]
+    },
+    {
+      "login": "hansboder",
+      "name": "Hans Boder",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36736535?v=4",
+      "profile": "https://github.com/hansboder",
+      "contributions": [
+        "bug"
+    },
+    {
       "login": "sheldonhull",
       "name": "sheldonhull",
       "avatar_url": "https://avatars.githubusercontent.com/u/3526320?v=4",
       "profile": "https://www.sheldonhull.com",
-      "contributions": [
+           "contributions": [
         "code",
         "doc",
         "test"
