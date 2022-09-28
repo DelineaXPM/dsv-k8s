@@ -24,6 +24,17 @@
       "profile": "https://github.com/hansboder",
       "contributions": [
         "bug"
+    },
+    {
+      "login": "sheldonhull",
+      "name": "sheldonhull",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3526320?v=4",
+      "profile": "https://www.sheldonhull.com",
+           "contributions": [
+        "code",
+        "doc",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
