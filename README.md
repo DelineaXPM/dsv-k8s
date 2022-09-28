@@ -504,6 +504,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center"><a href="https://github.com/hansboder"><img src="https://avatars.githubusercontent.com/u/36736535?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hans Boder</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/issues?q=author%3Ahansboder" title="Bug reports">🐛</a></td>
     </tr>
+    <tr>
+      <td align="center"><a href="https://mig.us/adam"><img src="https://avatars.githubusercontent.com/u/119477?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Adam C. Migus</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Code">💻</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Documentation">📖</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Tests">⚠️</a></td>
+    </tr>
   </tbody>
 </table>
 
