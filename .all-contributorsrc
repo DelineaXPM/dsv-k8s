@@ -35,6 +35,15 @@
         "doc",
         "test"
       ]
+    },
+    {
+      "login": "tylerezimmerman",
+      "name": "tylerezimmerman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/100804646?v=4",
+      "profile": "https://github.com/tylerezimmerman",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,
