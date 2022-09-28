@@ -16,6 +16,14 @@
         "doc",
         "test"
       ]
+    },
+    {
+      "login": "hansboder",
+      "name": "Hans Boder",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36736535?v=4",
+      "profile": "https://github.com/hansboder",
+      "contributions": [
+        "bug"
     }
   ],
   "contributorsPerLine": 7,
