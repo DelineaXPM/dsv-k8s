@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "delineaKrehl",
+      "name": "Tim Krehl",
+      "avatar_url": "https://avatars.githubusercontent.com/u/105234788?v=4",
+      "profile": "https://github.com/delineaKrehl",
+      "contributions": [
+        "maintenance"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "dsv-k8s",
+  "projectOwner": "DelineaXPM"
+}
