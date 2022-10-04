@@ -1,4 +1,7 @@
 # Delinea DevOps Secrets Vault Kubernetes Secret Injector and Syncer
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Tests](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/tests.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/tests.yml) [![Docker](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/docker.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/docker.yml) [![GitHub](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/github.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/github.yml) [![Red Hat Quay](https://quay.io/repository/delinea/dsv-k8s/status "Red Hat Quay")](https://quay.io/repository/delinea/dsv-k8s)
 
@@ -488,3 +491,31 @@ Use Stern to easily stream cross namespace logs with the `dsv-filter-selector` b
 | precommit:uninstall | ✖ Uninstall removes the pre-commit hooks.                                                                                            |
 | secrets:detect      | 🔐 Detect scans for secret violations with gitleaks without git consideration.                                                        |
 | secrets:protect     | 🔐 Protect scans the staged artifacts for violations.                                                                                 |
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center"><a href="https://mig.us/adam"><img src="https://avatars.githubusercontent.com/u/119477?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Adam C. Migus</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Code">💻</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Documentation">📖</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Tests">⚠️</a></td>
+      <td align="center"><a href="https://www.sheldonhull.com"><img src="https://avatars.githubusercontent.com/u/3526320?v=4?s=100" width="100px;" alt=""/><br /><sub><b>sheldonhull</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=sheldonhull" title="Code">💻</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=sheldonhull" title="Documentation">📖</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=sheldonhull" title="Tests">⚠️</a></td>
+      <td align="center"><a href="https://github.com/hansboder"><img src="https://avatars.githubusercontent.com/u/36736535?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hans Boder</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/issues?q=author%3Ahansboder" title="Bug reports">🐛</a></td>
+      <td align="center"><a href="https://github.com/tylerezimmerman"><img src="https://avatars.githubusercontent.com/u/100804646?v=4?s=100" width="100px;" alt=""/><br /><sub><b>tylerezimmerman</b></sub></a><br /><a href="#maintenance-tylerezimmerman" title="Maintenance">🚧</a></td>
+      <td align="center"><a href="https://github.com/delineaKrehl"><img src="https://avatars.githubusercontent.com/u/105234788?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tim Krehl</b></sub></a><br /><a href="#maintenance-delineaKrehl" title="Maintenance">🚧</a></td>
+      <td align="center"><a href="http://endlesstrax.com"><img src="https://avatars.githubusercontent.com/u/17141891?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ricky White</b></sub></a><br /><a href="#maintenance-EndlessTrax" title="Maintenance">🚧</a></td>
+      <td align="center"><a href="https://github.com/forced-request"><img src="https://avatars.githubusercontent.com/u/961246?v=4?s=100" width="100px;" alt=""/><br /><sub><b>John Poulin</b></sub></a><br /><a href="#maintenance-forced-request" title="Maintenance">🚧</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
