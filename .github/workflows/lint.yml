@@ -20,4 +20,4 @@ jobs:
       # Automatically caches for performance as well
       # https://github.com/reviewdog/action-golangci-lint
       - name: golangci-lint
-        uses: reviewdog/action-golangci-lint@70498f2d1f75a55ee9a4d719e74e21ed68aebea3 # renovate: tag=v2
+        uses: reviewdog/action-golangci-lint@53f8eabb87b40b1a2c63ec75b0d418bd0f4aa919 # tag=v2
