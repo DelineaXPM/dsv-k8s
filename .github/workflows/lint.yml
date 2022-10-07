@@ -30,7 +30,7 @@ jobs:
       # Automatically caches for performance as well
       # https://github.com/reviewdog/action-golangci-lint
       - name: Trunk Check
-        uses: trunk-io/trunk-action@b64e8d2c91b6bff32cad2c4445656afd942a124d  # renovate: tag=v1
+        uses: trunk-io/trunk-action@22e948f7bb9f870bc6c42625585f1ef27e9c5afc # tag=v1
 
       # - name: golangci-lint
       #   uses: reviewdog/action-golangci-lint@70498f2d1f75a55ee9a4d719e74e21ed68aebea3 # renovate: tag=v2
