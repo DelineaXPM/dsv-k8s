@@ -42,3 +42,4 @@ minikube-linux-amd64
 packages-*
 *.DS_Store
 /secret-*.yaml
+

@@ -1,9 +1,38 @@
 version: 0.1
-runtimes:
+actions:
   enabled:
-    - go@1.18 # make sure this matches what's in go.mod for this to work correctly.
+    - trunk-fmt-pre-commit
+    - trunk-check-pre-push
+    - gotestsum
+  definitions:
+    - id: gotestsum
+      runtime: go
+      description: run go tests on pre-push
+      # packages_file: "actions/commitlint/package.json"
+      # CGO_ENABLED -> RACE REQUIRES -race this to be set to 1 and right now it's not
+      run: gotestsum --format pkgname -- -shuffle=on  -tags integration ./...
+      triggers:
+        - git_hooks: [pre-push]
+runtimes:
+  definitions:
+    - type: go
+      system_version: allowed
+      runtime_environment:
+        - name: HOME
+          value: ${home}
+        - name: PATH
+          list:
+            - ${runtime}/bin
+        - name: GOROOT
+          value: ${runtime}
+        - name: GO111MODULE
+          value: on
+        - name: CGO_ENABLED
+          value: 1
+  # make sure this matches what's in go.mod for this to work correctly.
+  enabled: [go@1.19]
 cli:
-  version: 0.15.0-beta
+  version: 0.17.0-beta
 lint:
   enabled:
     - actionlint@1.6.15
@@ -15,6 +44,17 @@ lint:
     # - prettier@2.7.1
     - shellcheck@0.8.0
     - shfmt@3.5.0
+    - golines@0.11.0
+  definitions:
+    - name: golines
+      files: [go]
+      commands:
+        - output: rewrite
+          formatter: true
+          run: golines --base-formatter="gofumpt" --max-len=120 --reformat-tags ${target}
+          success_codes: [0]
+      runtime: go
+      package: github.com/segmentio/golines
   ignore:
     - linters: [ALL]
       paths:

@@ -9,6 +9,7 @@ concurrency:
 permissions:
   pull-requests: read
   contents: read
+  checks: write
 jobs:
   lint:
     name: lint
@@ -17,7 +18,19 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+      - name: Setup Golang with cache
+        uses: magnetikonline/action-golang-cache@09043845c4b214830a4ae9eb6f5c61d3d3fd37b0 # renovate: tag=v3
+        with:
+          go-version-file: go.mod
+      - name: mage-tidy
+        uses: magefile/mage-action@5f7a9a23cfef763949ca41834b868167adbd1b59 # renovate: tag=v2
+        with:
+          version: latest
+          args: go:tidy
       # Automatically caches for performance as well
       # https://github.com/reviewdog/action-golangci-lint
-      - name: golangci-lint
-        uses: reviewdog/action-golangci-lint@70498f2d1f75a55ee9a4d719e74e21ed68aebea3 # renovate: tag=v2
+      - name: Trunk Check
+        uses: trunk-io/trunk-action@b64e8d2c91b6bff32cad2c4445656afd942a124d  # renovate: tag=v1
+
+      # - name: golangci-lint
+      #   uses: reviewdog/action-golangci-lint@70498f2d1f75a55ee9a4d719e74e21ed68aebea3 # renovate: tag=v2
