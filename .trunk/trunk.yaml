@@ -1,9 +1,17 @@
 version: 0.1
+plugins:
+  sources:
+    - id: trunk
+      ref: v0.0.5
+      uri: https://github.com/trunk-io/plugins
 actions:
   enabled:
+    - trunk-cache-prune
+    - trunk-upgrade-available
     - trunk-fmt-pre-commit
     - trunk-check-pre-push
     - gotestsum
+    # - go-mod-vendor
   definitions:
     - id: gotestsum
       runtime: go
@@ -13,6 +21,13 @@ actions:
       run: gotestsum --format pkgname -- -shuffle=on  -tags integration ./...
       triggers:
         - git_hooks: [pre-push]
+    - id: go-mod-vendor
+      description: When go mod or sum is updated, go vendoring should be run to ensure it's consistent.
+      # runtime: go
+      run: .trunk/go-mod-tidy-vendor.sh
+      triggers:
+        # - git_hooks: [commit-msg]
+        - files: [go.mod, go.sum]
 runtimes:
   definitions:
     - type: go
@@ -29,10 +44,9 @@ runtimes:
           value: on
         - name: CGO_ENABLED
           value: 1
-  # make sure this matches what's in go.mod for this to work correctly.
   enabled: [go@1.19]
 cli:
-  version: 0.17.0-beta
+  version: 0.18.1-beta
 lint:
   enabled:
     - actionlint@1.6.15
@@ -44,17 +58,17 @@ lint:
     # - prettier@2.7.1
     - shellcheck@0.8.0
     - shfmt@3.5.0
-    - golines@0.11.0
-  definitions:
-    - name: golines
-      files: [go]
-      commands:
-        - output: rewrite
-          formatter: true
-          run: golines --base-formatter="gofumpt" --max-len=120 --reformat-tags ${target}
-          success_codes: [0]
-      runtime: go
-      package: github.com/segmentio/golines
+  # - golines@0.11.0
+  # definitions:
+  #   - name: golines
+  #     files: [go]
+  #     commands:
+  #       - output: rewrite
+  #         formatter: true
+  #         run: golines --base-formatter="gofumpt" --max-len=120 --reformat-tags ${target}
+  #         success_codes: [0]
+  #     runtime: go
+  #     package: github.com/segmentio/golines
   ignore:
     - linters: [ALL]
       paths:
@@ -63,3 +77,5 @@ lint:
         - configs/*
         # Test data
         - b/test_data/**
+        - vendor/*
+        - .changes/*

@@ -1,0 +1,32 @@
+---
+name: release-composite
+on:
+  push:
+    #   tags:
+    #     - 'v*'
+    branches: [main]
+    paths: [CHANGELOG.md] # your changelog file if different
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.action }}
+  cancel-in-progress: true
+
+permissions:
+  pull-requests: write
+  checks: write
+  # NOTE: individual jobs define more narrowly scoped permissions.
+  # Release requires so must be defined here
+  contents: write
+
+jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
+    secrets: inherit
+  test:
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+  release:
+    needs: [test]
+    uses: ./.github/workflows/release.yml
+    secrets: inherit

@@ -1,0 +1,33 @@
+# Why this base image?
+# FROM: https://github.com/GoogleContainerTools/distroless/blob/main/base/README.md
+# "Distroless" images contain only your application and its runtime dependencies.
+# They do not contain package managers, shells or any other programs you would expect to find in a standard Linux distribution.
+
+# Restricting what's in your runtime container to precisely what's necessary for your app is a best practice employed by Google and other tech giants that have used containers in production for many years.
+# It improves the signal to noise of scanners (e.g. CVE) and reduces the burden of establishing provenance to just what you need.
+
+# Distroless images are very small. The smallest distroless image, gcr.io/distroless/static-debian11, is around 2 MiB.
+# That's about 50% of the size of alpine (~5 MiB), and less than 2% of the size of debian (124 MiB).
+
+# This image contains a minimal Linux, glibc-based system. It is intended for use directly by "mostly-statically compiled" languages like Go, Rust or D.
+# Statically compiled applications (Go) that do not require libc can use the gcr.io/distroless/static image, which contains:
+
+# ca-certificates
+# A /etc/passwd entry for a root user
+# A /tmp directory
+# tzdata
+# Most other applications (and Go apps that require libc/cgo) should start with gcr.io/distroless/base, which contains all of the packages in gcr.io/distroless/static, and
+# glibc
+# libssl
+# openssl
+
+# To debug: change tag to debug instead of nonroot, then
+# run `docker run --rm -it --entrypoint=sh dev.local/dsv-repo-template` and take a look in the image.
+# move back to nonroot when done.
+# nonroot won't work for github actions
+# https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions#user this was for dockerfile approach, not docker image but it worked well this way.
+# trunk-ignore(hadolint/DL3007)
+FROM gcr.io/distroless/static:nonroot
+COPY dsv-syncer /app/dsv-syncer
+COPY dsv-injector /app/dsv-injector
+

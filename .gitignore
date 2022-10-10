@@ -19,7 +19,7 @@
 # vendor/
 
 ### Go Patch ###
-/vendor/
+# /vendor/
 /Godeps/
 
 # End of https://www.gitignore.io/api/go
@@ -43,3 +43,4 @@ packages-*
 *.DS_Store
 /secret-*.yaml
 
+vendor/**/*.png

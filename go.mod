@@ -1,7 +1,10 @@
 module github.com/DelineaXPM/dsv-k8s/v2
 
+go 1.19
+
 require (
 	github.com/DelineaXPM/dsv-sdk-go/v2 v2.0.0
+	github.com/bitfield/script v0.20.2
 	github.com/magefile/mage v1.13.0
 	github.com/mattbaird/jsonpatch v0.0.0-20200820163806-098863c1fc24
 	github.com/mittwald/go-helm-client v0.11.3
@@ -27,7 +30,6 @@ require (
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bitfield/script v0.20.2 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/chai2010/gettext-go v0.0.0-20160711120539-c6fed771bfd5 // indirect
 	github.com/containerd/console v1.0.3 // indirect
@@ -154,15 +156,3 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
-
-replace dsv-k8s/internal/k8s => ./internal/k8s
-
-replace dsv-k8s/pkg/config => ./pkg/config
-
-replace dsv-k8s/pkg/injector => ./pkg/injector
-
-replace dsv-k8s/pkg/patch => ./pkg/patch
-
-replace dsv-k8s/pkg/syncer => ./pkg/syncer
-
-go 1.19

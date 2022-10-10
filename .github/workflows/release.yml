@@ -1,0 +1,67 @@
+---
+name: release
+on:
+  # push:
+  #   tags:
+  #     - 'v*'
+  workflow_dispatch:
+  workflow_call:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+
+      # https://github.com/magnetikonline/action-golang-cache
+      - name: Setup Golang with cache
+        uses: magnetikonline/action-golang-cache@09043845c4b214830a4ae9eb6f5c61d3d3fd37b0 # renovate: tag=v3
+        with:
+          go-version-file: go.mod
+
+      - uses: aquaproj/aqua-installer@31c7ddc84bbb8b3b6eff822f03f544192c359bba # renovate: tag=v1.1.2
+        with:
+          aqua_version: v1.20.1
+          install_path: /tmp/bin/aqua
+          # working_directory:
+          aqua_opts: ''
+        env:
+          AQUA_CONFIG: .aqua.ci.yaml
+          AQUA_LOG_LEVEL: debug
+
+      - name: mage-tidy
+        uses: magefile/mage-action@5f7a9a23cfef763949ca41834b868167adbd1b59 # renovate: tag=v2
+        with:
+          version: latest
+          args: init
+      - name: docker-login
+        uses: docker/login-action@v2 # renovate: tag=v2
+        with:
+          username: ${{ secrets.DSV_DOCKER_USERNAME }}
+          password: ${{ secrets.DSV_DOCKER_PASSWORD }}
+      - name: mage-release
+        uses: magefile/mage-action@5f7a9a23cfef763949ca41834b868167adbd1b59 # renovate: tag=v2
+        with:
+          version: latest
+          args: release
+        env:
+          # GitHub sets this automatically
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.DSV_SLACK_CHANNEL }}
+          SLACK_WEBHOOK: ${{ secrets.DSV_SLACK_WEBHOOK }}
+          DOCKER_ORG: ${{ secrets.DSV_DOCKER_REGISTRY }}
+
+      # - name: Run GoReleaser
+      #   uses: goreleaser/goreleaser-action@ff11ca24a9b39f2d36796d1fbd7a4e39c182630a # renovate: tag=v3.1.0
+      #   with:
+      #     version: latest
+      #     args: release --rm-dist
+      #   env:
+      #     # GitHub sets this automatically
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     SLACK_CHANNEL: ${{ secrets.DSV_SLACK_CHANNEL }}
+      #     SLACK_WEBHOOK: ${{ secrets.DSV_SLACK_WEBHOOK }}
+      #     DOCKER_ORG: ${{ secrets.DSV_DOCKER_REGISTRY }}
