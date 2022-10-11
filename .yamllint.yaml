@@ -2,6 +2,7 @@
 extends: default
 rules:
   line-length: disable
+  document-start: disable
 
   comments:
     require-starting-space: false
