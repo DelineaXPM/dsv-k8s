@@ -33,10 +33,12 @@ fullnameOverride: ''
 # @default - Includes `dsv-filter-name` for easier log selector filter.
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL

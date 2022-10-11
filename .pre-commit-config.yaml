@@ -32,7 +32,15 @@ repos:
       - name: detect-secrets
         id: detect-secrets
         stages: [commit]
-        args: [--disable-plugin, KeywordDetector, --exclude-files, .gitleaks.toml, --exclude-files, .trunk/trunk.yaml]
+        args:
+          [
+            --disable-plugin,
+            KeywordDetector,
+            --exclude-files,
+            .gitleaks.toml,
+            --exclude-files,
+            .trunk/trunk.yaml,
+          ]
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.27.1 # or higher tag
     hooks:
@@ -66,7 +74,8 @@ repos:
   - repo: https://gitlab.com/bmares/check-json5
     rev: v1.0.0
     hooks:
-      - id: check-json5
+      - id:
+          check-json5
           # stages: ['commit']
   - repo: local
     hooks:

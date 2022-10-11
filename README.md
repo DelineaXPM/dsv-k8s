@@ -1,24 +1,28 @@
 # Delinea DevOps Secrets Vault Kubernetes Secret Injector and Syncer
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-[![Tests](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/tests.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/tests.yml) [![Docker](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/docker.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/docker.yml) [![GitHub](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/github.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/github.yml) [![Red Hat Quay](https://quay.io/repository/delinea/dsv-k8s/status "Red Hat Quay")](https://quay.io/repository/delinea/dsv-k8s)
+[![Tests](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/test.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/test.yml)
+
+[![Release](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/release.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/release.yml)
+
+[![Red Hat Quay](https://quay.io/repository/delinea/dsv-k8s/status 'Red Hat Quay')](https://quay.io/repository/delinea/dsv-k8s)
 
 A [Kubernetes](https://kubernetes.io/)
 [Mutating Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks)
-that injects Secret data from Delinea DevOps Secrets Vault (DSV) into Kubernetes Secrets and a
-[CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
+that injects Secret data from Delinea DevOps Secrets Vault (DSV) into Kubernetes Secrets and a [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
 that subsequently periodically synchronizes them from the source, DSV.
 The webhook can be hosted as a pod or as a stand-alone service.
 Likewise, the cronjob can run inside or outside the cluster.
-
 The webhook intercepts `CREATE` Secret admissions and then mutates the Secret with data from DSV.
 The syncer scans the cluster (or a single namespace) for Secrets that were mutated and,
 upon finding a mutated secret,
 it compares the version of the DSV Secret with the version it was mutated with and,
 if the version in DSV is newer, then the mutation is repeated.
-
 The common configuration consists of one or more Client Credential Tenant mappings.
 The credentials are then specified in an [Annotation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/)
 on the Kubernetes Secret to be mutated.
@@ -26,35 +30,43 @@ See [below](#use).
 
 The webhook and syncer use the [Golang SDK](https://github.com/DelineaXPM/dsv-sdk-go)
 to communicate with the DSV API.
-
 They were tested with [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 and [Minikube](https://minikube.sigs.k8s.io/).
 They also work on [OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift),
 [Microk8s](https://microk8s.io/)
 and others.
 
-## Injector and Syncer Differences
+## Injector & Syncer Differences
 
-- Injector: This is a mutating webhook using AdmissionController. This means it operates on the `CREATE` of a Secret, and ensures it modified before finishing the creation of the resource in Kubernetes. This only runs on the creation action triggered by the server.
-- Syncer: In contrast, the syncer is a normal cronjob operating on a schedule, checking for any variance in the data between the Secret data between the resource in Kubernetes and the expected value from DSV.
+- Injector: This is a mutating webhook using AdmissionController.
+  This means it operates on the `CREATE` of a Secret, and ensures it modified before finishing the creation of the resource in Kubernetes.
+  This only runs on the creation action triggered by the server.
+- Syncer: In contrast, the syncer is a normal cronjob operating on a schedule, checking for any variance in the data
+  between the Secret data between the resource in Kubernetes and the expected value from DSV.
 
 ## Which Should I Use?
 
 - Both: If you want a secret to be injected on creation and also synced on your cron schedule then use the Injector and Syncer.
-- Injector: If you want the secret to be static despite the change upstream in DSV, and will recreate the secret on any need to upgrade, then the injector. This will reduce the API calls to DSV as well.
-- Syncer: If you want the secret value to be updated within the targeted schedule automatically. If this is run by itself without the injector, there can be a lag of up to a minute before the syncer will update the secret. Your application should be able to handle retrying the load of the credential to avoid using the cached credential value that might have been loaded on app start-up in this case.
+- Injector: If you want the secret to be static despite the change upstream in DSV, and will recreate the secret on any need to upgrade, then the injector.
+  This will reduce the API calls to DSV as well.
+- Syncer: If you want the secret value to be updated within the targeted schedule automatically.
+  If this is run by itself without the injector, there can be a lag of up to a minute before the syncer will update the secret.
+  Your application should be able to handle retrying the load of the credential to avoid using the cached credential value that might have been loaded on app start-up in this case.
 
 ## Local Development Tooling
 
 - Make: Makefiles provide core automation.
-- Mage: Mage is a Go based automation alternative to Make and provides newer functionality for local Kind cluster setup, Go development tooling/linting, and more. Requires Go 17+ and is easily installed via: `go install github.com/magefile/mage@latest`. Run `mage -l` to list all available tasks, and `mage init` to setup developer tooling.
+- Mage: Mage is a Go based automation alternative to Make and provides newer functionality for local Kind cluster setup, Go development tooling/linting, and more.
+  Requires Go 17+ and is easily installed via: `go install github.com/magefile/mage@latest`.
+  Run `mage -l` to list all available tasks, and `mage init` to setup developer tooling.
 - Pre-Commit: Requires Python3. Included in project, this allows linting and formatting automation before committing, improving the feedback loop.
 - Optional:
-  - Devcontainer configuration included for VSCode to work with Devcontainers and Codespaces in a pre-built development environment that works on all platforms, and includes nested Docker + ability to run Kind kubernetes clusters without any installing any of those on the Host OS.
-  - Direnv: Default test values are loaded on macOS/Linux based system using [direnv](https://direnv.net/docs/installation.html).
-    Run `direnv allow` in the directory to load default env configuration for testing.
-  - macOS/Linux: [Trunk.io](https://trunk.io/) to provide linting and formatting on the project. Included in recommended extensions.
-    - `trunk install`, `trunk check`, and `trunk fmt` simplifies running checks.
+  - Devcontainer configuration included for VSCode to work with Devcontainers and Codespaces in a pre-built development environment that works on all platforms, and includes nested Docker and ability to run Kind kubernetes clusters without any installing any of those on the Host OS.
+- Direnv: Default test values are loaded on macOS/Linux based system using [direnv](https://direnv.net/docs/installation.html).
+  Run `direnv allow` in the directory to load default env configuration for testing.
+- macOS/Linux: [Trunk.io](https://trunk.io/) to provide linting and formatting on the project.
+  Included in recommended extensions.
+- `trunk install`, `trunk check`, and `trunk fmt` simplifies running checks.
 
 ## List of Mage Tasks
 
@@ -84,7 +96,7 @@ The configuration requires a JSON formatted list of Client Credential and Tenant
 }
 ```
 
-> ***note***
+> **_note_**
 > the injector uses the _default_ credentials when mutating a Kubernetes Secret without a _credentialAnnotation_.
 > See [below](#use)
 
@@ -110,7 +122,6 @@ Usage of ./dsv-injector:
 
 Thus the injector can run "anywhere," but, typically,
 the injector runs as a POD in the Kubernetes cluster that uses it.
-
 The syncer is a simple Golang executable.
 It typically runs as a Kubernetes CronJob, but it will run outside the cluster.
 
@@ -127,11 +138,10 @@ Usage of ./dsv-syncer:
 
 ### Build
 
-> ***note***
+> **_note_**
 > Building the `dsv-injector` image is not required to install it as it is.
 > It is available on multiple public registries.
-
-Building the image requires [Docker](https://www.docker.com/) or [Podman](https://podman.io/) and [GNU Make](https://www.gnu.org/software/make/).
+> Building the image requires [Docker](https://www.docker.com/) or [Podman](https://podman.io/) and [GNU Make](https://www.gnu.org/software/make/).
 
 To build it, run: `make`.
 
@@ -142,33 +152,32 @@ It will also build the image (which will build and store its own copy of the bin
 
 The tests expect a few environmental conditions to be met.
 
-> ***note***
+> **_note_**
 > For more detailed setup see collapsed section below for DSV Test Configuration Setup.
 
 - A valid DSV tenant.
 - A secret created with the data format below:
-        {
-          "data": {
-            "password": "admin",
-            "username": "admin"
-          },
-          "version": "0"
-        }
+  {
+  "data": {
+  "password": "admin",
+  "username": "admin"
+  },
+  "version": "0"
+  }
 - A `configs/credentials.json` to be created manually that contains the client credentials.
 - The `configs/credentials.json` credential to be structured like this:
 
-    {
-        "app1": {
-            "credentials": {
-                "clientId": "",
-                "clientSecret": ""
-            },
-            "tenant": "app1"
-        }
-    }
+  {
+  "app1": {
+  "credentials": {
+  "clientId": "",
+  "clientSecret": ""
+  },
+  "tenant": "app1"
+  }
+  }
 
-> ***warning***
-> `app1` is required and using any other will fail test conditions.
+> **_warning_** > `app1` is required and using any other will fail test conditions.
 
 <details closed>
 <summary>🧪 DSV Test Configuration Setup</summary>
@@ -190,7 +199,6 @@ make test
 ```
 
 Set `$(GO_TEST_FLAGS)` to `-v` to get DEBUG output.
-
 They require a `credentials.json` as either a file or a string.
 They also require the path to a secret to test to use.
 Use environment variables to specify both:
@@ -228,10 +236,8 @@ gotestsum --format dots-v2 --watch ./... -- -v
 Installation requires [Helm](https://helm.sh).
 There are two separate charts for the injector and the syncer.
 The `Makefile` demonstrates a typical installation of both.
-
 The dsv-injector chart imports `credentials.json` from the filesystem and stores it in a Kubernetes Secret.
 The dsv-syncer chart refers to that Secret instead of creating its own.
-
 The Helm `values.yaml` file `image.repository` is `quay.io/delinea/dsv-k8s`:
 
 ```yaml
@@ -239,7 +245,7 @@ image:
   repository: quay.io/delinea/dsv-k8s
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+tag: ''
 ```
 
 That means, by default, `make install` will pull from Red Hat Quay.
@@ -342,7 +348,7 @@ For it to work:
   By default that's `dsv-injector.dsv.svc`.
 
 - The `$(EXTERNAL_NAME)` is a required argument, and the name itself must be resolvable _inside_ the cluster.
-__localhost will not work__.
+  **localhost will not work**.
 
 If the `$(CA_BUNDLE)` is argument is omitted, `make` will attempt to extract it from `kubectl config`:
 
@@ -361,7 +367,6 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 Optionally set `$(CA_BUNDLE_KUBE_CONFIG_INDEX)` to use `1`, to use the second cluster in your configuration,
 `2` for the third and so on.
-
 ℹ️ All this assumes that the injector uses a certificate signed by the cluster CA.
 There are several options like [cert-manager](https://cert-manager.io/)
 for getting cluster-signed certs, however,
@@ -384,7 +389,6 @@ Now run it:
 Once the injector is available in the Kubernetes cluster,
 and the webhook is in place,
 any correctly annotated Kubernetes Secrets are modified on create and update.
-
 The four annotations that affect the behavior of the webhook are:
 
 ```golang
@@ -399,17 +403,16 @@ const(
 `credentialsAnnotation` selects the credentials that the injector uses to retrieve the DSV Secret.
 If the credentials are present, it must map to Client Credential and Tenant mapping.
 The injector will use the _default_ Credential and Tenant mapping unless the `credentialsAnnotation` is declared.
-
 The `setAnnotation`, `addAnnotation` and `updateAnnotation`,
 must contain the path to the DSV Secret that the injector will use to mutate the Kubernetes Secret.
 
 - `addAnnotation` adds missing fields without overwriting or removing existing fields.
 - `updateAnnotation` adds and overwrites existing fields but does not remove fields.
 - `setAnnotation` overwrites fields and removes fields that do not exist in the DSV Secret.
-
-NOTE: A Kubernetes Secret should specify only one of the "add," "update,"
-or "set" annotations. The order of precedence is `setAnnotation`,
-then `addAnnotation`, then `updateAnnotation` when multiple are present.
+  NOTE: A Kubernetes Secret should specify only one of the "add," "update,"
+  or "set" annotations.
+  The order of precedence is `setAnnotation`,
+  then `addAnnotation`, then `updateAnnotation` when multiple are present.
 
 ### Examples
 
@@ -436,7 +439,6 @@ so the data in the injector will overwrite the existing contents of the Kubernet
 if `/test/secret` contains a `username` and `password` but no `domain`,
 then the Kubernetes Secret would get the `username` and `password` from the DSV Secret Data but,
 the injector will remove the `domain` field.
-
 There are more examples in the `examples` directory.
 They show how the different annotations work.
 
@@ -445,50 +447,82 @@ They show how the different annotations work.
 Use Stern to easily stream cross namespace logs with the `dsv-filter-selector` by running:
 
 - To grab Stern binary, you can run `$(curl -fSSl https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64 -o ./stern) && sudo chmod +x ./stern && sudo mv ./stern /usr/local/bin`. (Modify version as you need)
-- For all pods in the namespace run `stern --kubeconfig .cache/config --namespace dsv  --timestamps .`
-- For pods with the selector run `stern --kubeconfig .cache/config --namespace dsv  --timestamps --selector 'dsv-filter-name in (dsv-syncer, dsv-injector)'`
+- For all pods in the namespace run `stern --kubeconfig .cache/config --namespace dsv --timestamps .`
+- For pods with the selector run `stern --kubeconfig .cache/config --namespace dsv --timestamps --selector 'dsv-filter-name in (dsv-syncer, dsv-injector)'`
 
 ## Reference Mage Tasks
 
 > Manually updated, for most recent Mage tasks, run `mage -l`.
 
-| Target              | Description                                                                                                                          |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| clean               | up after yourself.                                                                                                                   |
-| gittools:init       | ⚙️ Init runs all required steps to use this package.                                                                                  |
-| go:doctor           | 🏥 Doctor will provide config details.                                                                                                |
-| go:fix              | 🔎 Run golangci-lint and apply any auto-fix.                                                                                          |
-| go:fmt              | ✨ Fmt runs gofumpt.                                                                                                                  |
-| go:init             | ⚙️ Init runs all required steps to use this package.                                                                                  |
-| go:lint             | 🔎 Run golangci-lint without fixing.                                                                                                  |
-| go:lintConfig       | 🏥 LintConfig will return output of golangci-lint config.                                                                             |
-| go:test             | 🧪 Run go test.                                                                                                                       |
-| go:testSum          | 🧪 Run gotestsum (Params: Path just like you pass to go test, ie ./..., pkg/, etc ).                                                  |
-| go:tidy             | 🧹 Tidy tidies.                                                                                                                       |
-| go:wrap             | ✨ Wrap runs golines powered by gofumpt.                                                                                              |
-| helm:docs           | generates helm documentation using `helm-doc` tool.                                                                                  |
-| helm:init           | ⚙️ Init sets up the required files to allow for local editing/overriding from CacheDirectory.                                         |
-| helm:install        | 🚀 Install uses Helm to install the chart.                                                                                            |
-| helm:lint           | 🔍 Lint uses Helm to lint the chart for issues.                                                                                       |
-| helm:render         | 💾 Render uses Helm to output rendered yaml for testing helm integration.                                                             |
-| helm:uninstall      | 🚀 Uninstall uses Helm to uninstall the chart.                                                                                        |
-| init                | runs multiple tasks to initialize all the requirements for running a project for a new contributor.                                  |
-| job:redeploy        | removes kubernetes resources and helm charts and then redeploys with log streaming by default.                                       |
-| job:setup           | initializes all the required steps for the cluster creation, initial helm chart copies, and kubeconfig copies.                       |
-| k8s:apply           | applies a kubernetes manifest.                                                                                                       |
-| k8s:delete          | Apply applies a kubernetes manifest.                                                                                                 |
-| k8s:init            | copies the k8 yaml manifest files from the examples directory to the cache directory for editing and linking in integration testing. |
-| k8s:logs            | streams logs until canceled for the dsv syncing jobs, based on the label `dsv.delinea.com: syncer`.                                  |
-| kind:destroy        | 🗑️ Destroy tears down the Kind cluster.                                                                                               |
-| kind:init           | ➕ Create creates a new Kind cluster and populates a kubeconfig in cachedirectory.                                                    |
-| precommit:commit    | 🧪 Commit runs pre-commit checks using pre-commit.                                                                                    |
-| precommit:init      | ⚙️ Init configures precommit hooks.                                                                                                   |
-| precommit:prepush   | 🧪 Push runs pre-push checks using pre-commit.                                                                                        |
-| precommit:uninstall | ✖ Uninstall removes the pre-commit hooks.                                                                                            |
-| secrets:detect      | 🔐 Detect scans for secret violations with gitleaks without git consideration.                                                        |
-| secrets:protect     | 🔐 Protect scans the staged artifacts for violations.                                                                                 |
+| Target | Description        |
+| ------ | ------------------ |
+| clean  | up after yourself. |
 
-## Contributors ✨
+|
+| gittools:init | ⚙️ Init runs all required steps to use this package.
+|
+| go:doctor | 🏥 Doctor will provide config details.
+|
+| go:fix | 🔎 Run golangci-lint and apply any auto-fix.
+|
+| go:fmt | ✨ Fmt runs gofumpt.
+|
+| go:init | ⚙️ Init runs all required steps to use this package.
+|
+| go:lint | 🔎 Run golangci-lint without fixing.
+|
+| go:lintConfig | 🏥 LintConfig will return output of golangci-lint config.
+|
+| go:test | 🧪 Run go test.
+|
+| go:testSum | 🧪 Run gotestsum (Params: Path just like you pass to go test, ie ./..., pkg/, etc ). |
+| go:tidy | 🧹 Tidy tidies.
+|
+| go:wrap | ✨ Wrap runs golines powered by gofumpt.
+|
+| helm:docs | generates helm documentation using `helm-doc` tool.
+|
+| helm:init | ⚙️ Init sets up the required files to allow for local editing/overriding from CacheDirectory.
+|
+| helm:install | 🚀 Install uses Helm to install the chart.
+|
+| helm:lint | 🔍 Lint uses Helm to lint the chart for issues.
+|
+| helm:render | 💾 Render uses Helm to output rendered yaml for testing helm integration.
+|
+| helm:uninstall | 🚀 Uninstall uses Helm to uninstall the chart.
+|
+| init | runs multiple tasks to initialize all the requirements for running a project for a new contributor.
+|
+| job:redeploy | removes kubernetes resources and helm charts and then redeploys with log streaming by default.
+|
+| job:setup | initializes all the required steps for the cluster creation, initial helm chart copies, and kubeconfig copies.
+|
+| k8s:apply | applies a kubernetes manifest.
+|
+| k8s:delete | Apply applies a kubernetes manifest.
+|
+| k8s:init | copies the k8 yaml manifest files from the examples directory to the cache directory for editing and linking in integration testing.
+|
+| k8s:logs | streams logs until canceled for the dsv syncing jobs, based on the label `dsv.delinea.com: syncer`. |
+| kind:destroy | 🗑️ Destroy tears down the Kind cluster.
+|
+| kind:init | ➕ Create creates a new Kind cluster and populates a kubeconfig in cachedirectory.
+|
+| precommit:commit | 🧪 Commit runs pre-commit checks using pre-commit.
+|
+| precommit:init | ⚙️ Init configures precommit hooks.
+|
+| precommit:prepush | 🧪 Push runs pre-push checks using pre-commit.
+|
+| precommit:uninstall | ✖ Uninstall removes the pre-commit hooks.
+|
+| secrets:detect | 🔐 Detect scans for secret violations with gitleaks without git consideration.
+|
+| secrets:protect | 🔐 Protect scans the staged artifacts for violations.
+|
+
+## Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
@@ -498,7 +532,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tbody>
     <tr>
-      <td align="center"><a href="https://mig.us/adam"><img src="https://avatars.githubusercontent.com/u/119477?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Adam C. Migus</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Code">💻</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Documentation">📖</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Tests">⚠️</a></td>
+      <td align="center"><a href="https://mig.us/adam"><img src="https://avatars.githubusercontent.com/u/119477?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Adam C.
+Migus</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Code">💻</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Documentation">📖</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=amigus" title="Tests">⚠️</a></td>
       <td align="center"><a href="https://www.sheldonhull.com"><img src="https://avatars.githubusercontent.com/u/3526320?v=4?s=100" width="100px;" alt=""/><br /><sub><b>sheldonhull</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=sheldonhull" title="Code">💻</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=sheldonhull" title="Documentation">📖</a> <a href="https://github.com/DelineaXPM/dsv-k8s/commits?author=sheldonhull" title="Tests">⚠️</a></td>
       <td align="center"><a href="https://github.com/hansboder"><img src="https://avatars.githubusercontent.com/u/36736535?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hans Boder</b></sub></a><br /><a href="https://github.com/DelineaXPM/dsv-k8s/issues?q=author%3Ahansboder" title="Bug reports">🐛</a></td>
       <td align="center"><a href="https://github.com/tylerezimmerman"><img src="https://avatars.githubusercontent.com/u/100804646?v=4?s=100" width="100px;" alt=""/><br /><sub><b>tylerezimmerman</b></sub></a><br /><a href="#maintenance-tylerezimmerman" title="Maintenance">🚧</a></td>
@@ -514,4 +549,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
+Contributions of any kind welcome!

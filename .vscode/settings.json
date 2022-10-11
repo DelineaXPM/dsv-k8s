@@ -10,7 +10,7 @@
       "source.organizeImports": false
     },
     "editor.defaultFormatter": "golang.go",
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": true
   },
   "go.coverageOptions": "showUncoveredCodeOnly",
   // "go.coverOnSave": true,
@@ -29,11 +29,7 @@
     "GOTESTS_TEMPLATE": "test",
     "IS_NO_COLOR": true
   },
-  "go.testFlags": [
-    "-v",
-    "-race",
-    "-shuffle=on",
-  ],
+  "go.testFlags": ["-v", "-race", "-shuffle=on"],
   "go.testTags": "integration",
   "go.toolsManagement.autoUpdate": true,
   "go.useLanguageServer": true,

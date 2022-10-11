@@ -23,7 +23,7 @@
 
 ## I'm starting from scratch
 
-> ***NOTE***
+> **_NOTE_**
 > Docker is left out of these directions, just install that from [Docker Desktop](https://www.docker.com/products/docker-desktop/) site.
 
 ### Windows
@@ -53,7 +53,7 @@ Run `code --install-extension ms-vscode-remote.remote-containers`
 
 ## Spin It Up
 
-> ***NOTE***
+> **_NOTE_**
 >
 > 🐎 PERFORMANCE TIP: Using the directions provided for named container volume will optimize performance over trying to just "open in container" as there is no mounting files to your local filesystem.
 
@@ -62,7 +62,7 @@ Use command pallet with vscode (Control+Shift+P or F1) and type to find the comm
 - Put the git clone url in, for example: `https://github.com/DelineaXPM/dsv-k8s.git`
 - Name the volume and directory both dsv-k8s or whatever you prefer.
 
-> ***NOTE***
+> **_NOTE_**
 > This is a large development image (10GB). The first time you run this it will take a while. However, after this first run, rebuilding the container to start over should be minimal time, as you'll have the majority of Docker image cached locally.
 
 This includes (for updated info just look at dockerfile):
@@ -81,15 +81,15 @@ This includes (for updated info just look at dockerfile):
 
 1. Accept "Install Recommended Extensions" from popup, to automatically get all the preset tools, such as Kubernetes, Go and others setup.
 1. Open a new `zsh-login` terminal and allow the automatic setup to finish, as this will ensure all other required tools are setup.
-    - Make sure to run `direnv allow` as it prompts you, to ensure all project and your personal environment variables (optional).
+   - Make sure to run `direnv allow` as it prompts you, to ensure all project and your personal environment variables (optional).
 1. Make sure Go 1.19 is the correct version running with `go version`.
    1. If it's not, run `sudo .devcontainer/library-scripts/go-debian.sh "1.19"`
-2. Run setup task:
-    - Using CLI: Run `mage init`
+1. Run setup task:
+   - Using CLI: Run `mage init`
 
 ## Working With Kind & Stack Locally
 
-> ***NOTE***
+> **_NOTE_**
 > For any tasks get more help with `-h`, for example, run `mage -h k8s:init`
 
 ### Kind
@@ -115,7 +115,7 @@ The ports internally aren't the same as externally in your host OS.
 If the port forward isn't discovered automatically, enable it yourself, by using the port forward tab (next to the terminal tab).
 
 1. You should see a port forward once the services are up (next to the terminal button in the bottom pane).
-    1. If the click to open url doesn't work, try accessing the path manually, and ensure it is `https`.
-    Example: `https://127.0.0.1:9999`
+   1. If the click to open url doesn't work, try accessing the path manually, and ensure it is `https`.
+      Example: `https://127.0.0.1:9999`
 
 You can choose the external port to access, or even click on it in the tab and it will open in your host for you.

@@ -41,7 +41,7 @@ runtimes:
         - name: GOROOT
           value: ${runtime}
         - name: GO111MODULE
-          value: on
+          value: on # trunk-ignore(yamllint/truthy)
         - name: CGO_ENABLED
           value: 1
   enabled: [go@1.19, node@16.14.2, python@3.10.3]
@@ -83,3 +83,6 @@ lint:
         - b/test_data/**
         - vendor/*
         - .changes/*
+        - 'charts/*/templates/*'
+    # - linters: [prettier, yamllint]
+    #   paths:
