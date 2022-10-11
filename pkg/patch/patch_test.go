@@ -1,9 +1,8 @@
 // Patch test file runs integration tests against a secret, based on reaching out to DSV.
 //
-//- Create a secret with the following command to test against: `dsv secret create --path 'k8s:sync:test' --data '{"password": "admin","username": "admin"}'`
-//- Hard delete to reset test: `dsv secret delete --path 'k8s:sync:test' --force`
-//- Rollback to a prior version: `dsv secret rollback --path 'k8s:sync:test' --version 0`.
-//
+// - Create a secret with the following command to test against: `dsv secret create --path 'k8s:sync:test' --data '{"password": "","username": ""}'`
+// - Hard delete to reset test: `dsv secret delete --path 'k8s:sync:test' --force`
+// - Rollback to a prior version: `dsv secret rollback --path 'k8s:sync:test' --version 0`.
 package patch
 
 import (

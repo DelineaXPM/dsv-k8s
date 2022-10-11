@@ -51,7 +51,7 @@ and others.
 - Pre-Commit: Requires Python3. Included in project, this allows linting and formatting automation before committing, improving the feedback loop.
 - Optional:
   - Devcontainer configuration included for VSCode to work with Devcontainers and Codespaces in a pre-built development environment that works on all platforms, and includes nested Docker + ability to run Kind kubernetes clusters without any installing any of those on the Host OS.
-  -  Direnv: Default test values are loaded on macOS/Linux based system using [direnv](https://direnv.net/docs/installation.html).
+  - Direnv: Default test values are loaded on macOS/Linux based system using [direnv](https://direnv.net/docs/installation.html).
     Run `direnv allow` in the directory to load default env configuration for testing.
   - macOS/Linux: [Trunk.io](https://trunk.io/) to provide linting and formatting on the project. Included in recommended extensions.
     - `trunk install`, `trunk check`, and `trunk fmt` simplifies running checks.
@@ -60,7 +60,6 @@ and others.
 
 - `mage -l` will give you a list of tasks.
 - `mage -h init` provides more help detail on a task when it's available.
-
 
 ## Configure
 
@@ -85,7 +84,7 @@ The configuration requires a JSON formatted list of Client Credential and Tenant
 }
 ```
 
-> *** note ***
+> ***note***
 > the injector uses the _default_ credentials when mutating a Kubernetes Secret without a _credentialAnnotation_.
 > See [below](#use)
 
@@ -128,7 +127,7 @@ Usage of ./dsv-syncer:
 
 ### Build
 
-> *** note ***
+> ***note***
 > Building the `dsv-injector` image is not required to install it as it is.
 > It is available on multiple public registries.
 
@@ -143,7 +142,7 @@ It will also build the image (which will build and store its own copy of the bin
 
 The tests expect a few environmental conditions to be met.
 
-> *** note ***
+> ***note***
 > For more detailed setup see collapsed section below for DSV Test Configuration Setup.
 
 - A valid DSV tenant.
@@ -168,7 +167,7 @@ The tests expect a few environmental conditions to be met.
         }
     }
 
-> *** warning ***
+> ***warning***
 > `app1` is required and using any other will fail test conditions.
 
 <details closed>
@@ -445,16 +444,13 @@ They show how the different annotations work.
 
 Use Stern to easily stream cross namespace logs with the `dsv-filter-selector` by running:
 
-
 - To grab Stern binary, you can run `$(curl -fSSl https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64 -o ./stern) && sudo chmod +x ./stern && sudo mv ./stern /usr/local/bin`. (Modify version as you need)
-- For all pods in the namespace run `stern --kubeconfig .cache/config --namespace dsv  --timestamps . `
+- For all pods in the namespace run `stern --kubeconfig .cache/config --namespace dsv  --timestamps .`
 - For pods with the selector run `stern --kubeconfig .cache/config --namespace dsv  --timestamps --selector 'dsv-filter-name in (dsv-syncer, dsv-injector)'`
-
 
 ## Reference Mage Tasks
 
 > Manually updated, for most recent Mage tasks, run `mage -l`.
-
 
 | Target              | Description                                                                                                                          |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |

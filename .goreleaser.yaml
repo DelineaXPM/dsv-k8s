@@ -1,0 +1,118 @@
+---
+project_name: dsv-k8s
+dist: .artifacts/goreleaser
+env:
+  - GITHUB_TOKEN=''
+  - GITLAB_TOKEN=''
+  - GITEA_TOKEN=''
+  - LOCAL_DEBUGGING=false # set to make this quick and bypass extra effort builds like archiving zip
+  - CGO_ENABLED=0
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: dsv-injector
+    binary: dsv-injector
+    main: ./cmd/injector
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    ldflags:
+      - -s -w
+      - -X main.version={{ .Summary }}
+      - -X main.commit={{ .FullCommit }}
+      - -X main.date={{ .Timestamp }}
+      - -X main.builtBy=goreleaser
+    goos: [linux]
+    goarch:
+      - amd64
+  - id: dsv-syncer
+    binary: dsv-syncer
+    main: ./cmd/syncer
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    ldflags:
+      - -s -w
+      - -X main.version={{ .Summary }}
+      - -X main.commit={{ .FullCommit }}
+      - -X main.date={{ .Timestamp }}
+      - -X main.builtBy=goreleaser
+    goos: [linux]
+    goarch:
+      - amd64
+archives:
+  - id: binaries
+    format: binary
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+  disable: false
+snapshot:
+  name_template: '{{ incpatch .Version }}-next'
+changelog:
+  skip: false
+  sort: asc
+  use: github
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: 'CI & Chore'
+      regexp: "^.*(fix|chore|build)[(\\w)]*:+.*$"
+      order: 2
+    - title: Others
+      order: 999
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^style:'
+dockers:
+  - id: docker-publish
+    goos: linux
+    # goarch: amd64
+    # goarm: ''
+    # goamd64: v2
+    image_templates:
+      - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:{{ .Tag }}{{ end }}'
+      - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:latest{{ end }}'
+    skip_push: false
+    dockerfile: ./docker/Dockerfile.distroless
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/amd64
+      - --label=org.opencontainers.image.created={{.Date}}
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.version={{.Version}}
+      # - --label=org.opencontainers.image.version="{{ .Tag }}"
+  # local builds
+  - id: local-docker-images
+    goos: linux
+    image_templates:
+      - '{{ .ProjectName }}:{{ .Tag }}'
+      - '{{ .ProjectName }}:latest' # This one is for dev usage so latest version, no tagged semver required in docker compose or local testing
+    skip_push: true
+    dockerfile: ./docker/Dockerfile.distroless
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/amd64
+      - --label=org.opencontainers.image.created={{.Date}}
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.version={{.Version}}
+      - --label=org.opencontainers.image.version="{{ .Tag }}"
+announce:
+  slack:
+    enabled: true
+    # The name of the channel that the user selected as a destination for webhook messages.
+    channel: '{{ .Env.SLACK_CHANNEL }}'
+    message_template: ':github: {{ .ProjectName }} {{ .Tag }} is out. {{ .ReleaseURL }}'
+    # Emoji to use as the icon for this message. Overrides icon_url.
+    icon_emoji: ':rocket:'
+sboms:
+  - artifacts: binary
+    documents:
+      - '${artifact}.spdx.sbom'

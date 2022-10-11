@@ -31,7 +31,6 @@
 - [Install chocolatey (package manager for Windows)](https://chocolatey.org/install#individual) (provides single line command to run).
 - Run `choco install vscode -y`
 
-
 ### MacOS
 
 - [Homebrew](https://brew.sh/)
@@ -120,4 +119,3 @@ If the port forward isn't discovered automatically, enable it yourself, by using
     Example: `https://127.0.0.1:9999`
 
 You can choose the external port to access, or even click on it in the tab and it will open in your host for you.
-
