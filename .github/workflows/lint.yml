@@ -3,6 +3,8 @@ name: lint
 on:
   pull_request:
   workflow_dispatch:
+  workflow_call:
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -31,6 +33,7 @@ jobs:
       # https://github.com/reviewdog/action-golangci-lint
       - name: Trunk Check
         uses: trunk-io/trunk-action@22e948f7bb9f870bc6c42625585f1ef27e9c5afc # tag=v1
+
 
       # - name: golangci-lint
       #   uses: reviewdog/action-golangci-lint@70498f2d1f75a55ee9a4d719e74e21ed68aebea3 # renovate: tag=v2
