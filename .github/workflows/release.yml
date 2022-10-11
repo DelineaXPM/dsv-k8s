@@ -29,7 +29,7 @@ jobs:
           # working_directory:
           aqua_opts: ''
         env:
-          AQUA_CONFIG: .aqua.ci.yaml
+          AQUA_CONFIG: aqua.ci.yaml
           AQUA_LOG_LEVEL: debug
 
       - name: mage-tidy
