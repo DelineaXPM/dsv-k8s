@@ -25,9 +25,9 @@ jobs:
       - uses: aquaproj/aqua-installer@31c7ddc84bbb8b3b6eff822f03f544192c359bba # renovate: tag=v1.1.2
         with:
           aqua_version: v1.20.1
-          install_path: /tmp/bin/aqua
+          # install_path: /tmp/bin/aqua
           # working_directory:
-          aqua_opts: ''
+          # aqua_opts: ''
         env:
           AQUA_CONFIG: aqua.ci.yaml
           AQUA_LOG_LEVEL: debug
