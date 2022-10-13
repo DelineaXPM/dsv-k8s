@@ -54,7 +54,7 @@ lint:
     - taplo@release-taplo-cli-0.7.0
     - yamllint@1.28.0
     - actionlint@1.6.21
-    - gitleaks@8.14.0
+    - gitleaks@8.14.1
     - gofmt@1.16.7
     - golangci-lint@1.50.0
     - hadolint@2.10.0
