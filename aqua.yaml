@@ -26,4 +26,4 @@ packages:
   - name: kubernetes-sigs/kind@v0.16.0
   - name: kubernetes/kubectl
     version: v1.25.2
-  - name: helm/helm@v3.10.0
+  - name: helm/helm@v3.10.1
