@@ -9,7 +9,7 @@ require (
 	github.com/mattbaird/jsonpatch v0.0.0-20200820163806-098863c1fc24
 	github.com/mittwald/go-helm-client v0.11.3
 	github.com/pterm/pterm v0.12.45
-	github.com/sheldonhull/magetools v0.0.12
+	github.com/sheldonhull/magetools v1.0.0
 	k8s.io/api v0.25.2
 	k8s.io/apimachinery v0.25.2
 	k8s.io/client-go v0.25.2
