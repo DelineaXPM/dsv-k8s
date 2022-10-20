@@ -1,6 +1,6 @@
 module github.com/DelineaXPM/dsv-k8s/v2
 
-go 1.19
+go 1.18
 
 require (
 	github.com/DelineaXPM/dsv-sdk-go/v2 v2.0.0
