@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/DelineaXPM/dsv-sdk-go/v2 v2.0.0
 	github.com/bitfield/script v0.20.2
-	github.com/magefile/mage v1.13.0
+	github.com/magefile/mage v1.14.0
 	github.com/mattbaird/jsonpatch v0.0.0-20200820163806-098863c1fc24
 	github.com/mittwald/go-helm-client v0.11.3
 	github.com/pterm/pterm v0.12.45
