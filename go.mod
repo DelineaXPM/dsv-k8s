@@ -8,7 +8,7 @@ require (
 	github.com/magefile/mage v1.14.0
 	github.com/mattbaird/jsonpatch v0.0.0-20200820163806-098863c1fc24
 	github.com/mittwald/go-helm-client v0.11.3
-	github.com/pterm/pterm v0.12.45
+	github.com/pterm/pterm v0.12.49
 	github.com/sheldonhull/magetools v0.0.14
 	k8s.io/api v0.25.3
 	k8s.io/apimachinery v0.25.3
@@ -63,7 +63,7 @@ require (
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.2.0 // indirect
-	github.com/gookit/color v1.5.0 // indirect
+	github.com/gookit/color v1.5.2 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gosuri/uitable v0.0.4 // indirect
 	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7 // indirect
