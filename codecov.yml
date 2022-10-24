@@ -1,0 +1,22 @@
+---
+comment:
+  require_ci_to_pass: true
+  require_changes: true
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+        target: auto # auto compares coverage to the previous base commit
+    patch:
+      default:
+        informational: true
+        target: auto # auto compares coverage to the previous base commit
+# sample regex patterns
+ignore:
+  - 'magefiles'
+  - 'examples'
+  - '.trunk'
+  - '.vscode'
+  - '.devcontainer'
+  - 'vendor'
