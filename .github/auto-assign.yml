@@ -5,10 +5,11 @@ addReviewers: true
 addAssignees: author
 numberOfReviewers: 0
 reviewers:
+  - dsv-contributors
 reviewGroups:
 useReviewGroups: false
-# filterLabels:
-#   exclude:
-#     - wontmerge
-#     - wip
-#     - incomplete pr
+filterLabels:
+  exclude:
+    - wontmerge
+    - wip
+    - incomplete pr

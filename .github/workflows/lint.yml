@@ -1,39 +1,27 @@
 ---
 name: lint
 on:
+  # Run CI against all pushes (direct commits, also merged PRs), Pull Requests
+  push:
+    branches:
+      - main
+      - stable-*
   pull_request:
+  # Run CI once per day (at 06:00 UTC)
+  # This ensures that even if there haven't been commits that we are still testing against latest version of ansible-test for each ansible-base version
+  # schedule:
+  #   - cron: '0 6 * * *'
   workflow_dispatch:
-  workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.action }}
   cancel-in-progress: true
+
 permissions:
-  pull-requests: read
-  contents: read
+  pull-requests: write
   checks: write
+  contents: read
 jobs:
   lint:
-    name: lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: Setup Golang with cache
-        uses: magnetikonline/action-golang-cache@09043845c4b214830a4ae9eb6f5c61d3d3fd37b0 # renovate: tag=v3
-        with:
-          go-version-file: go.mod
-      - name: mage-tidy
-        uses: magefile/mage-action@5f7a9a23cfef763949ca41834b868167adbd1b59 # renovate: tag=v2
-        with:
-          version: latest
-          args: go:tidy
-      # Automatically caches for performance as well
-      # https://github.com/reviewdog/action-golangci-lint
-      - name: Trunk Check
-        uses: trunk-io/trunk-action@22e948f7bb9f870bc6c42625585f1ef27e9c5afc # tag=v1
-
-
-      # - name: golangci-lint
-      #   uses: reviewdog/action-golangci-lint@70498f2d1f75a55ee9a4d719e74e21ed68aebea3 # renovate: tag=v2
+    uses: delineaxpm/github-workflows/.github/workflows/lint.yml@main
+    secrets: inherit

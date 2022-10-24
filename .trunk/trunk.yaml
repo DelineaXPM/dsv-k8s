@@ -6,28 +6,26 @@ plugins:
       uri: https://github.com/trunk-io/plugins
 actions:
   enabled:
+    - trunk-announce
     - trunk-cache-prune
     - trunk-upgrade-available
     - trunk-fmt-pre-commit
     - trunk-check-pre-push
-    - gotestsum
+    # - gotestsum
     # - go-mod-vendor
   definitions:
     - id: gotestsum
       runtime: go
       description: run go tests on pre-push
-      # packages_file: "actions/commitlint/package.json"
-      # CGO_ENABLED -> RACE REQUIRES -race this to be set to 1 and right now it's not
       run: gotestsum --format pkgname -- -shuffle=on  -tags integration ./...
       triggers:
         - git_hooks: [pre-push]
     - id: go-mod-vendor
       description: When go mod or sum is updated, go vendoring should be run to ensure it's consistent.
-      # runtime: go
-      run: .trunk/go-mod-tidy-vendor.sh
+      runtime: go
+      run: mod vendor
       triggers:
-        # - git_hooks: [commit-msg]
-        - files: [go.mod, go.sum]
+        - files: [go.mod]
 runtimes:
   definitions:
     - type: go
@@ -46,7 +44,7 @@ runtimes:
           value: 1
   enabled: [go@1.19, node@16.14.2, python@3.10.3]
 cli:
-  version: 0.18.1-beta
+  version: 1.0.1
 lint:
   enabled:
     - git-diff-check
@@ -54,9 +52,9 @@ lint:
     - taplo@release-taplo-cli-0.7.0
     - yamllint@1.28.0
     - actionlint@1.6.21
-    - gitleaks@8.14.1
+    - gitleaks@8.15.0
     - gofmt@1.16.7
-    - golangci-lint@1.50.0
+    - golangci-lint@1.50.1
     - hadolint@2.10.0
     - markdownlint@0.32.2
     # - prettier@2.7.1
