@@ -1,16 +1,11 @@
 ---
 name: assign
 on:
-  # pull_request: # For testing changes in branch
   pull_request_target:
     types: [opened, ready_for_review]
-permissions:
-  pull-requests: write
-  contents: read # Because it needs to read the configuration file
-
-env: # required for reassignment
+env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   assign:
-    uses: delineaxpm/github-workflows/.github/workflows/lint.yml@main
+    uses: delineaxpm/github-workflows/.github/workflows/assign.yml@main
     secrets: inherit
