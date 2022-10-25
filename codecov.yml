@@ -1,7 +1,8 @@
 ---
-comment:
+codecov:
   require_ci_to_pass: true
-  require_changes: true
+comment:
+  require_changes: true # if true: only post the comment if coverage changes
 coverage:
   status:
     project:
