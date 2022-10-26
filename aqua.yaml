@@ -3,21 +3,21 @@
 # https://aquaproj.github.io/
 registries:
   - type: standard
-    ref: v3.70.0 # renovate: depName=aquaproj/aqua-registry
+    ref: v3.82.0 # renovate: depName=aquaproj/aqua-registry
 packages:
-  - name: miniscruff/changie@v1.9.1
-  - name: golang/go@go1.19.1
+  - name: miniscruff/changie@v1.10.0
+  - name: golang/go@go1.19.2
   - name: direnv/direnv@v2.32.1
   - name: magefile/mage@v1.14.0
   - name: charmbracelet/glow@v1.4.1
-  - name: goreleaser/goreleaser@v1.11.5
+  - name: goreleaser/goreleaser@v1.12.3
   - name: mvdan/gofumpt@v0.4.0
   - name: golang.org/x/tools/gopls@v0.9.5
-  - name: anchore/syft@v0.58.0
+  - name: anchore/syft@v0.59.0
   - name: norwoodj/helm-docs@v1.11.0
   - name: gotestyourself/gotestsum@v1.8.2
   - name: c-bata/kube-prompt@v1.0.11
-  - name: kubernetes-sigs/kind@v0.16.0
+  - name: kubernetes-sigs/kind@v0.17.0
   - name: kubernetes/kubectl
     version: v1.25.2
-  - name: helm/helm@v3.10.0
+  - name: helm/helm@v3.10.1
