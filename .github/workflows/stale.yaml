@@ -3,26 +3,13 @@ name: stale
 on:
   schedule:
     - cron: 30 1 * * *
+  workflow_dispatch:
 
 permissions:
   issues: write
   pull-requests: write
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
   stale:
-    runs-on: ubuntu-latest
-    steps:
-      # Config Options: https://github.com/actions/stale#list-of-input-options
-      - uses: actions/stale@5ebf00ea0e4c1561e9b43a292ed34424fb1d4578 # tag=v6
-        with:
-          days-before-stale: 30
-          days-before-close: 5
-          stale-issue-message: 🤖 This has been flagged as stale. If it is still relevant please post an update with context, otherwise this will shortly be closed. _You can always reopen a closed issue. This is not a permanent delete._
-          stale-pr-message: 🤖 This is being marked as stale due to no recent activity. Update to keep this open.
-          stale-issue-label: stale-issue
-          exempt-issue-labels: pinned
-          stale-pr-label: stale-pr
-          exempt-draft-pr: true
+    uses: delineaxpm/github-workflows/.github/workflows/stale.yml@main
+    secrets: inherit
