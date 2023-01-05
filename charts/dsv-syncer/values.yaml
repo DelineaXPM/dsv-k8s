@@ -9,7 +9,7 @@
 replicaCount: 1
 
 image:
-  repository: quay.io/delinea/dsv-k8s
+  repository: docker.io/delineaxpm/dsv-k8s
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ''
