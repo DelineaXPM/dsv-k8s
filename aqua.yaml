@@ -3,7 +3,7 @@
 # https://aquaproj.github.io/
 registries:
   - type: standard
-    ref: v3.92.0 # renovate: depName=aquaproj/aqua-registry
+    ref: v3.116.0 # renovate: depName=aquaproj/aqua-registry
 packages:
   - name: miniscruff/changie@v1.10.0
   - name: golang/go@go1.19.3
@@ -21,3 +21,4 @@ packages:
   - name: kubernetes/kubectl
     version: v1.25.2
   - name: helm/helm@v3.10.2
+  - name: DelineaXPM/dsv-cli@v1.39.9

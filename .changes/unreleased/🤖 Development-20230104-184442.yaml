@@ -1,0 +1,9 @@
+kind: "\U0001F916 Development"
+body: Bump aqua tooling and include dsv-cli in the project setup. Include `CGO_ENABLED=0`
+  to avoid issues with running commands in devcontainers & codespaces.
+time: 2023-01-04T18:44:42.354056-06:00
+custom:
+  azure-boards-workitemid-fixed: ""
+  azure-boards-workitemid-related: ""
+  github-contributor: sheldonhull
+  github-link: ""
