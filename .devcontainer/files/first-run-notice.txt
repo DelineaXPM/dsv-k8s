@@ -10,3 +10,5 @@ Common Starting Tasks:
 - `mage -l`
 - `mage -h init`
 - `mage job:setup`
+
+> WARNING: You'll want to make sure to run: `direnv allow` if you haven't to load all the correct environment variables.
