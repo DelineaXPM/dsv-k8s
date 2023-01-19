@@ -48,13 +48,25 @@ func updateKubeconfig() error {
 			pterm.Error.Printfln("unable to create empty placeholder file: %v", err)
 		}
 	}
-	if err := sh.Run(
-		"kubectl",
-		"cluster-info", "--context", constants.KindContextName,
-		"--cluster", constants.KindContextName,
-	); err != nil {
+	kc, err := sh.Output("kind", "get", "cluster", "kubeconfig", "--name", constants.KindClusterName)
+	if err != nil {
+		pterm.Error.Println("unable to get kind cluster info, maybe you need to run mage kind:init first?")
 		return err
 	}
+
+	if err := os.WriteFile(constants.Kubeconfig, []byte(kc), constants.PermissionUserReadWriteExecute); err != nil {
+		pterm.Error.Printfln("unable to write kubeconfig to file: %v", err)
+		return err
+	}
+	pterm.Info.Printfln("kubeconfig updated: %s", constants.Kubeconfig)
+	// for now this is only going to be run against Kind cluster.
+	// if err := sh.Run(
+	// 	"kubectl",
+	// 	"cluster-info", "--context", constants.KindContextName,
+	// 	"--cluster", constants.KindContextName,
+	// ); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 

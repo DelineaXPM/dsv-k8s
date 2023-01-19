@@ -44,21 +44,22 @@ runtimes:
           value: 1
   enabled: [go@1.19, node@16.14.2, python@3.10.3]
 cli:
-  version: 1.0.1
+  version: 1.3.1
 lint:
   enabled:
+    - cspell@6.19.2
     - git-diff-check
-    - prettier@2.7.1
-    - taplo@release-taplo-cli-0.7.0
-    - yamllint@1.28.0
-    - actionlint@1.6.21
-    - gitleaks@8.15.0
-    - gofmt@1.16.7
+    - prettier@2.8.3
+    - taplo@0.7.0
+    - yamllint@1.29.0
+    - actionlint@1.6.22
+    - gitleaks@8.15.2
+    - gofmt@1.19.3
     - golangci-lint@1.50.1
-    - hadolint@2.10.0
-    - markdownlint@0.32.2
-    # - prettier@2.7.1
-    - shellcheck@0.8.0
+    - hadolint@2.12.0
+    - markdownlint@0.33.0
+    # - prettier@2.8.3
+    - shellcheck@0.9.0
     - shfmt@3.5.0
   # - golines@0.11.0
   # definitions:

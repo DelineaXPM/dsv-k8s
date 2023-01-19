@@ -9,8 +9,10 @@
       "GOPATH": "/home/vscode/go"
     }
   },
-  "runArgs": ["--init", "--privileged"],
-
+  "runArgs": [
+    "--init",
+    "--privileged"
+  ],
   // "runArgs": [
   //   "--cap-add=SYS_PTRACE",
   //   "--security-opt",
@@ -37,7 +39,8 @@
         "GitHub.vscode-pull-request-github",
         "yzhang.markdown-all-in-one",
         "sheldon-hull.extension-pack-go",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
       ]
     }
   },
@@ -72,7 +75,7 @@
     ".devcontainer/init"
   ],
   "hostRequirements": {
-    "cpus": 4,
+    "cpus": 8, // running local kind cluster and toolchain tends to run into issues with 4, let's recommend 8 (though this requires an org membership by default). Local devcontainers should be fine.
     "memory": "8gb",
     "storage": "32gb"
   },

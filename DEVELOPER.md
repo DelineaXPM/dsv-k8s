@@ -10,9 +10,10 @@
   - [I already use devcontainers](#i-already-use-devcontainers)
   - [Spin It Up](#spin-it-up)
     - [After Devcontainer Loads](#after-devcontainer-loads)
-  - [Working With Kind & Stack Locally](#working-with-kind--stack-locally)
+  - [Working With Kind \& Stack Locally](#working-with-kind--stack-locally)
     - [Kind](#kind)
   - [Troubleshooting](#troubleshooting)
+  - [Error With Permissions On Go Directories](#error-with-permissions-on-go-directories)
     - [Mismatch With Checksum for Go Modules](#mismatch-with-checksum-for-go-modules)
     - [Connecting to Services Outside of devcontainer](#connecting-to-services-outside-of-devcontainer)
 
@@ -103,6 +104,12 @@ For local development, Mage tasks have been created to automate most of the setu
 - To deploy (or redeploy after changes) all the helm charts and kuberenetes manifests run `mage job:redeploy`.
 
 ## Troubleshooting
+
+## Error With Permissions On Go Directories
+
+Clear the directories with `rm -rf /home/vscode/go` and then try `mage init` to redownload packages.
+
+> Known issue: Haven't figured out why this is being set incorrectly yet
 
 ### Mismatch With Checksum for Go Modules
 
