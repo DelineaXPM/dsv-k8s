@@ -44,7 +44,7 @@ func updateKubeconfig() error {
 			pterm.Error.Printfln("unable to create empty placeholder file: %v", err)
 		}
 	}
-	_, err := sh.Output("minikube", "get-context", "--profile", constants.KindClusterName)
+	_, err := sh.Output("minikube", "update-context", "--profile", constants.KindClusterName)
 	if err != nil {
 		pterm.Error.Println("unable to get minikube cluster info, maybe you need to run mage minikube:init first?")
 		return err
@@ -119,8 +119,8 @@ func (Minikube) Init() error {
 // 🗑️ Destroy tears down the Kind cluster.
 func (Minikube) Destroy() error {
 	mtu.CheckPtermDebug()
-	if err := sh.Run("kind", "delete", "cluster", "--name", constants.KindClusterName); err != nil {
-		pterm.Error.Printfln("kind delete error: %v", err)
+	if err := sh.Run("minikube", "delete","--profile", constants.KindClusterName); err != nil {
+		pterm.Error.Printfln("minikube delete error: %v", err)
 		return err
 	}
 	if err := sh.Run("kubectl", "config", "unset", fmt.Sprintf("clusters.%s", constants.KindContextName)); err != nil {
