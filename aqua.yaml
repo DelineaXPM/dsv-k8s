@@ -22,3 +22,4 @@ packages:
     version: v1.25.2
   - name: helm/helm@v3.10.3
   - name: DelineaXPM/dsv-cli@v1.39.11
+  - name: kubernetes/minikube@v1.28.0
