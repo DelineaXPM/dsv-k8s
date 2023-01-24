@@ -27,7 +27,8 @@
 # nonroot won't work for github actions
 # https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions#user this was for dockerfile approach, not docker image but it worked well this way.
 # trunk-ignore(hadolint/DL3007)
+
+# If you change the copy location, you'll want to make sure to change the path in the helm charts and publish a new version.
 FROM gcr.io/distroless/static:nonroot
 COPY dsv-syncer /app/dsv-syncer
 COPY dsv-injector /app/dsv-injector
-

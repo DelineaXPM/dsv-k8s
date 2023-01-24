@@ -6,6 +6,8 @@ ARG GOPATH
 USER root
 ENV DOCKER_BUILDKIT=1
 ENV GOPATH=$GOPATH
+# to avoid gcc compile issues as don't need gcc except for race conditions testing
+ENV CGO_ENABLED=0
 ENV MAGEFILE_ENABLE_COLOR=1
 ENV TRUNK_LAUNCHER_QUIET=true
 ENV PATH="$GOPATH/bin:/home/$DEVCONTAINER_USER/.local/share/aquaproj-aqua/bin:/home/$DEVCONTAINER_USER/go/bin:$PATH"

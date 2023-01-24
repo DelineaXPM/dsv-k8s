@@ -24,6 +24,8 @@ image:
   pullPolicy: Always
   # -- Overrides the image tag whose default is the chart appVersion.
   tag: ''
+  # -- Entrypoint is the path to the binary. Since the container image could contain multiple binaries, this makes sure it's correctly mapped to the binary.
+  entrypoint: /app/dsv-injector
 
 imagePullSecrets: []
 nameOverride: ''

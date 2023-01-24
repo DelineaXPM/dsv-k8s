@@ -9,7 +9,7 @@ keywords:
   - secrets
   - vault
 type: application
-version: 0.2.2
+version: 0.2.3
 appVersion: latest
 maintainers:
   - name: Sheldon Hull
