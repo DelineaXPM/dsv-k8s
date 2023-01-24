@@ -119,7 +119,7 @@ func (Minikube) Init() error {
 // 🗑️ Destroy tears down the Kind cluster.
 func (Minikube) Destroy() error {
 	mtu.CheckPtermDebug()
-	if err := sh.Run("minikube", "delete","--profile", constants.KindClusterName); err != nil {
+	if err := sh.Run("minikube", "delete", "--profile", constants.KindClusterName); err != nil {
 		pterm.Error.Printfln("minikube delete error: %v", err)
 		return err
 	}
