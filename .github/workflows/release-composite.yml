@@ -2,8 +2,6 @@
 name: release-composite
 on:
   push:
-    #   tags:
-    #     - 'v*'
     branches: [main]
     paths: [CHANGELOG.md] # your changelog file if different
   workflow_dispatch:
@@ -21,7 +19,7 @@ permissions:
 
 jobs:
   lint:
-    uses: ./.github/workflows/lint.yml
+    uses: delineaxpm/github-workflows/.github/workflows/lint.yml@main
     secrets: inherit
   test:
     uses: ./.github/workflows/test.yml
