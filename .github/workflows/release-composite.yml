@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   lint:
-    uses: delineaxpm/github-workflows/.github/workflows/lint.yml@main
+    uses: ./.github/workflows/lint.yml
     secrets: inherit
   test:
     uses: ./.github/workflows/test.yml
