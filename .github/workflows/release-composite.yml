@@ -6,9 +6,9 @@ on:
     paths: [CHANGELOG.md] # your changelog file if different
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.action }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.action }}
+#   cancel-in-progress: true
 
 permissions:
   pull-requests: write
