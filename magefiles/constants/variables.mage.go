@@ -14,7 +14,7 @@ type HelmCharts struct {
 	Values string
 }
 
-var HelmChartsList = []HelmCharts{ //nolint:gochecknoglobals // Integration testing global variable is fine to leave.
+var HelmChartsList = []HelmCharts{
 	{
 		ReleaseName: "dsv-syncer",
 		ChartPath:   "./charts/dsv-syncer",
@@ -30,8 +30,8 @@ var HelmChartsList = []HelmCharts{ //nolint:gochecknoglobals // Integration test
 }
 
 // DefaultHelmTimeoutMinutes is the default timeout for helm commands.
-var DefaultHelmTimeoutMinutes = time.Minute * 5 //nolint:gochecknoglobals // Integration testing global variable is fine to leave.
+var DefaultHelmTimeoutMinutes = time.Minute * 5
 
 // CacheManifestDirectory is the directory where helm charts are cached for local tweaking.
 // They are copied from the examples directory to allow editing without committing to source control.
-var CacheManifestDirectory = filepath.Join(CacheDirectory, "manifests") //nolint:gochecknoglobals // Integration testing global variable is fine to leave.
+var CacheManifestDirectory = filepath.Join(CacheDirectory, "manifests")

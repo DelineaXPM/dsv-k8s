@@ -4,7 +4,8 @@ import (
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/constants"
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/helm"
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/k8s"
-	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/kind"
+	// "github.com/DelineaXPM/dsv-k8s/v2/magefiles/kind"
+	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/minikube"
 	"github.com/magefile/mage/mg"
 	"github.com/pterm/pterm"
 )
@@ -18,7 +19,8 @@ type Job mg.Namespace
 func (Job) Init() {
 	pterm.DefaultSection.Println("(Job) Init()")
 	mg.SerialDeps(
-		kind.Kind{}.Init,
+		// kind.Kind{}.Init,
+		minikube.Minikube{}.Init,
 		k8s.K8s{}.Init,
 		helm.Helm{}.Init,
 	)
@@ -28,7 +30,7 @@ func (Job) Init() {
 func (Job) Setup() {
 	pterm.DefaultSection.Println("(Job) Setup()")
 	mg.SerialDeps(
-		kind.Kind{}.Init,
+		minikube.Minikube{}.Init,
 		k8s.K8s{}.Init,
 		helm.Helm{}.Init,
 		mg.F(k8s.K8s{}.Apply, constants.CacheManifestDirectory),

@@ -116,11 +116,11 @@ func (Kind) Init() error {
 		dspin.SuccessPrinter.Printfln("namespace created: %s", constants.KubectlNamespace)
 	}
 	dspin.UpdateText("pulling docker images")
-	if err := sh.Run("docker", "pull", "quay.io/delinea/dsv-k8s:latest"); err != nil {
+	if err := sh.Run("docker", "pull", constants.DockerImageQualified); err != nil {
 		dspin.WarningPrinter.Printfln("docker pull: %v", err)
 		return fmt.Errorf("docker pull: %w", err)
 	}
-	dspin.SuccessPrinter.Println("docker image for quay.io/delinea/dsv-k8s:latest pulled")
+	dspin.SuccessPrinter.Println("docker image for " + constants.DockerImageQualified)
 	// Not working right now, can't find nodes for Kind to preload. Not critical so commenting out for now - sheldon.
 	// Sp.UpdateText("preloading docker image into kind cluster")
 	// if err := sh.Run("kind", "load", "docker-image", "quay.io/delinea/dsv-k8s:latest"); err != nil {

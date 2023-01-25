@@ -36,4 +36,6 @@ const (
 
 	// ChartsDirectory is the directory where the helm charts are placed, in sub directories.
 	ChartsDirectory = "charts"
+	// DockerImageQualified is the qualified path of the image in Docker Hub.
+	DockerImageQualified = "docker.io/delineaxpm/dsv-k8s"
 )

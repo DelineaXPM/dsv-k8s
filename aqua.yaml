@@ -23,3 +23,4 @@ packages:
   - name: helm/helm@v3.10.3
   - name: DelineaXPM/dsv-cli@v1.39.11
   - name: kubernetes/minikube@v1.28.0
+  - name: stern/stern@v1.22.0
