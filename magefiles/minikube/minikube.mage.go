@@ -1,11 +1,9 @@
-// Kind package contains all the tasks for automation of kind cluster creation and tear down, and the required kubectl commands to correctly use this.
-package kind
+// Minikube package contains all the tasks for automation of kind cluster creation and tear down, and the required kubectl commands to correctly use this.
+package minikube
 
 import (
 	"fmt"
 	"os"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/constants"
@@ -16,25 +14,23 @@ import (
 	mtu "github.com/sheldonhull/magetools/pkg/magetoolsutils"
 )
 
-// Kind contains the kind cli commands.
-type Kind mg.Namespace
+// Minikube contains the kind cli commands.
+type Minikube mg.Namespace
 
 func createCluster() error {
 	mtu.CheckPtermDebug()
-	kindargs := []string{
-		"create",
-		"cluster",
-		"--name", constants.KindClusterName,
-		"--wait",
-		"300s",
+	minikubeArgs := []string{
+		"start",
+		"--profile", constants.KindClusterName,
+		"--namespace", constants.KubectlNamespace,
 	}
-	if os.Getenv("KIND_SETUP_CONFIG") != "" {
-		pterm.Info.Printfln("KIND_SETUP_CONFIG: %s", os.Getenv("KIND_SETUP_CONFIG"))
-		kindargs = append(kindargs, "--config", os.Getenv("KIND_SETUP_CONFIG"))
-	}
+	// if os.Getenv("KIND_SETUP_CONFIG") != "" {
+	// 	pterm.Info.Printfln("KIND_SETUP_CONFIG: %s", os.Getenv("KIND_SETUP_CONFIG"))
+	// 	minikubeArgs = append(minikubeArgs, "--config", os.Getenv("KIND_SETUP_CONFIG"))
+	// }
 	if err := sh.RunV(
-		"kind",
-		kindargs...,
+		"minikube",
+		minikubeArgs...,
 	); err != nil {
 		return err
 	}
@@ -48,16 +44,16 @@ func updateKubeconfig() error {
 			pterm.Error.Printfln("unable to create empty placeholder file: %v", err)
 		}
 	}
-	kc, err := sh.Output("kind", "get", "cluster", "kubeconfig", "--name", constants.KindClusterName)
+	_, err := sh.Output("minikube", "update-context", "--profile", constants.KindClusterName)
 	if err != nil {
-		pterm.Error.Println("unable to get kind cluster info, maybe you need to run mage kind:init first?")
+		pterm.Error.Println("unable to get minikube cluster info, maybe you need to run mage minikube:init first?")
 		return err
 	}
 
-	if err := os.WriteFile(constants.Kubeconfig, []byte(kc), constants.PermissionUserReadWriteExecute); err != nil {
-		pterm.Error.Printfln("unable to write kubeconfig to file: %v", err)
-		return err
-	}
+	// if err := os.WriteFile(constants.Kubeconfig, []byte(kc), constants.PermissionUserReadWriteExecute); err != nil {
+	// 	pterm.Error.Printfln("unable to write kubeconfig to file: %v", err)
+	// 	return err
+	// }
 	pterm.Info.Printfln("kubeconfig updated: %s", constants.Kubeconfig)
 	// for now this is only going to be run against Kind cluster.
 	// if err := sh.Run(
@@ -70,22 +66,11 @@ func updateKubeconfig() error {
 	return nil
 }
 
-// ➕ Create creates a new Kind cluster and populates a kubeconfig in cachedirectory.
-func (Kind) Init() error {
+// ➕ Create creates a new Minikube cluster and populates a kubeconfig in cachedirectory.
+func (Minikube) Init() error {
 	mtu.CheckPtermDebug()
-
-	out, err := sh.Output("kind", "get", "clusters")
-	if err := err; err != nil {
+	if err := createCluster(); err != nil {
 		return err
-	}
-	cleanOutput := strings.TrimSpace(out)
-	matchedCluster := regexp.MustCompile(constants.KindClusterName)
-	pterm.Debug.Printfln("cleanOutput: %s", cleanOutput)
-	if !matchedCluster.MatchString(cleanOutput) {
-		pterm.Info.Printfln("simple match not found, so attempting to recreate cluster")
-		if err := createCluster(); err != nil {
-			return err
-		}
 	}
 	dspin, _ := pterm.DefaultSpinner.
 		WithDelay(time.Second).
@@ -132,10 +117,10 @@ func (Kind) Init() error {
 }
 
 // 🗑️ Destroy tears down the Kind cluster.
-func (Kind) Destroy() error {
+func (Minikube) Destroy() error {
 	mtu.CheckPtermDebug()
-	if err := sh.Run("kind", "delete", "cluster", "--name", constants.KindClusterName); err != nil {
-		pterm.Error.Printfln("kind delete error: %v", err)
+	if err := sh.Run("minikube", "delete", "--profile", constants.KindClusterName); err != nil {
+		pterm.Error.Printfln("minikube delete error: %v", err)
 		return err
 	}
 	if err := sh.Run("kubectl", "config", "unset", fmt.Sprintf("clusters.%s", constants.KindContextName)); err != nil {

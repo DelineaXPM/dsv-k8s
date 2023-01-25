@@ -25,6 +25,8 @@
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.kube,target=/home/vscode/.kube/,type=bind,consistency=cached", // support for SSH keys
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh/,type=bind,consistency=cached", // support for SSH keys
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.envrc,target=/home/vscode/.envrc,type=bind,consistency=cached", // envrc from home to allow direnv to mount credentials
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.thy,target=/home/vscode/.thy/,type=bind,consistency=cached", // support for dsv-cli filestore based store
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.dsv.yml,target=/home/vscode/.dsv.yml/,type=bind,consistency=cached", // mounting for dsv-config
     // cache gopath directory
     "source=go-path,target=/home/vscode/go/,type=volume"
   ],
@@ -61,12 +63,15 @@
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "",
   // Use 'postStartCommand' to run commands after the container is created like starting minikube.
-  "postStartCommand": "sudo chown -R vscode /home/vscode/go/ && export GOPATH=/home/vscode/go/ && echo '🔨 aqua tooling download' && aqua install && echo '✅ aqua install complete' && echo '🔨 running go mod download' && /home/vscode/.local/share/aquaproj-aqua/bin/go mod download && echo '✅ go mod download finished' && echo '🔨 downloading build tooling dependencies' && /home/vscode/.local/share/aquaproj-aqua/bin/mage && echo '✅ build tooling dependencies complete'",
+  "postStartCommand": "sudo chown -R vscode /home/vscode/go/ && export GOPATH=/home/vscode/go/ && echo '🔨 aqua tooling download' && aqua install && echo '✅ aqua install complete' && echo
+'🔨 running go mod download' && /home/vscode/.local/share/aquaproj-aqua/bin/go mod download && echo '✅ go mod download finished' && echo '🔨 downloading build tooling dependencies' &&
+/home/vscode/.local/share/aquaproj-aqua/bin/mage -compile ./magec && echo '✅ build tooling dependencies complete'",
   // Minikube does not like running as root, so use a non-root user.
   "remoteUser": "vscode",
   "containerEnv": {
     "ENABLE_NONROOT_DOCKER": "true",
-    "GITHUB_OATH_TOKEN": "${localEnv:GITHUB_OATH_TOKEN}"
+    "GITHUB_OATH_TOKEN": "${localEnv:GITHUB_OATH_TOKEN}",
+    "CGO_ENABLED": "false",
   },
   "remoteEnv": {
     "ENABLE_NONROOT_DOCKER": "true"
@@ -85,7 +90,7 @@
       "username": "vscode",
       "installOhMyZsh": true
     },
-    "ghcr.io/devcontainers/features/docker-in-docker:1.0.7": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest",
       "dockerDashComposeVersion": "v2",
       "username": "vscode"

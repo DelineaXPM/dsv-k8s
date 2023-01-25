@@ -19,7 +19,7 @@ spec:
         spec:
           containers:
           - name: {{ .Chart.Name }}
-            command: [{{ include "dsv.name" . }}]
+            command: [{{ .Values.image.entrypoint }}]
             resources:
               {{- toYaml .Values.resources | nindent 14 }}
             securityContext:
