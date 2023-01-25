@@ -6,6 +6,10 @@
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+![Docker Pulls](https://img.shields.io/docker/pulls/delineaxpm/dsv-k8s?style=for-the-badge)
+
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/delineaxpm/dsv-k8s?style=for-the-badge)
+
 [![Tests](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/test.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/test.yml)
 
 [![Release](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/release.yml/badge.svg)](https://github.com/DelineaXPM/dsv-k8s/actions/workflows/release.yml)
