@@ -24,7 +24,7 @@ jobs:
 
       - uses: aquaproj/aqua-installer@a39f721a15ed34ccbc85706e6e8ae8572c9ca9c6 # tag=v1.2.0
         with:
-          aqua_version: v1.30.1
+          aqua_version: v1.32.2
           # install_path: /tmp/bin/aqua
           # working_directory:
           # aqua_opts: ''
