@@ -26,19 +26,6 @@ func (Job) Init() {
 	)
 }
 
-// Setup runs all the initialization tasks, in addition to installing the helm chart and kubeconfig files.
-func (Job) Setup() {
-	pterm.DefaultSection.Println("(Job) Setup()")
-	mg.SerialDeps(
-		minikube.Minikube{}.Init,
-		k8s.K8s{}.Init,
-		helm.Helm{}.Init,
-		mg.F(k8s.K8s{}.Apply, constants.CacheManifestDirectory),
-		helm.Helm{}.Install,
-		k8s.K8s{}.Logs,
-	)
-}
-
 // Redeploy removes kubernetes resources and helm charts and then redeploys with log streaming by default.
 func (Job) Redeploy() {
 	pterm.DefaultSection.Println("(Job) Redeploy()")

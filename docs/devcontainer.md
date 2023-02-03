@@ -1,21 +1,4 @@
-# Devcontainer Based Setup
-
-- [Devcontainer Based Setup](#devcontainer-based-setup)
-  - [Prerequisites](#prerequisites)
-  - [I'm starting from scratch](#im-starting-from-scratch)
-    - [Windows](#windows)
-    - [MacOS](#macos)
-    - [Linux](#linux)
-    - [After You've Setup VSCode](#after-youve-setup-vscode)
-  - [I already use devcontainers](#i-already-use-devcontainers)
-  - [Spin It Up](#spin-it-up)
-    - [After Devcontainer Loads](#after-devcontainer-loads)
-  - [Working With Kind \& Stack Locally](#working-with-kind--stack-locally)
-    - [Kind](#kind)
-  - [Troubleshooting](#troubleshooting)
-  - [Error With Permissions On Go Directories](#error-with-permissions-on-go-directories)
-    - [Mismatch With Checksum for Go Modules](#mismatch-with-checksum-for-go-modules)
-    - [Connecting to Services Outside of devcontainer](#connecting-to-services-outside-of-devcontainer)
+# Devcontainer
 
 ## Prerequisites
 
@@ -87,42 +70,3 @@ This includes (for updated info just look at dockerfile):
    1. If it's not, run `sudo .devcontainer/library-scripts/go-debian.sh "1.19"`
 1. Run setup task:
    - Using CLI: Run `mage init`
-
-## Working With Kind & Stack Locally
-
-> **_NOTE_**
-> For any tasks get more help with `-h`, for example, run `mage -h k8s:init`
-
-### Kind
-
-For local development, Mage tasks have been created to automate most of the setup and usage for local testing.
-
-- Ensure your local `configs/credentials.json` exists.
-- run `mage job:init` to setup a local kind cluster, initial local copies of the helm chart and kubernetes manifest files.
-- Modify the `.cache/dsv-injector/values.yaml` with the embedded credentials.json contents matching your `configs/credentials.json`.
-- Modify the `.cache/manifests/*.yaml` files to match the credentials you want to test against.
-- To deploy (or redeploy after changes) all the helm charts and kuberenetes manifests run `mage job:redeploy`.
-
-## Troubleshooting
-
-## Error With Permissions On Go Directories
-
-Clear the directories with `rm -rf /home/vscode/go` and then try `mage init` to redownload packages.
-
-> Known issue: Haven't figured out why this is being set incorrectly yet
-
-### Mismatch With Checksum for Go Modules
-
-- Run `go clean -modcache && go mod tidy`.
-
-### Connecting to Services Outside of devcontainer
-
-You are in an isolated, self-contained Docker setup.
-The ports internally aren't the same as externally in your host OS.
-If the port forward isn't discovered automatically, enable it yourself, by using the port forward tab (next to the terminal tab).
-
-1. You should see a port forward once the services are up (next to the terminal button in the bottom pane).
-   1. If the click to open url doesn't work, try accessing the path manually, and ensure it is `https`.
-      Example: `https://127.0.0.1:9999`
-
-You can choose the external port to access, or even click on it in the tab and it will open in your host for you.

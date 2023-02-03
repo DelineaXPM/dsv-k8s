@@ -1,14 +1,5 @@
 # Release
 
-## First Time Setup
-
-- Run `mage init` to install tooling.
-- Install [trunk](https://trunk.io/products/check) (quick install script: `curl https://get.trunk.io -fsSL | bash`)
-- Install [aqua](https://aquaproj.github.io/docs/tutorial-basics/quick-start#install-aqua) and have it configured in your path per directions.
-  - This will allow faster installs of project tooling by grabbing binaries for your platform more quickly (most of the time release binaries instead of building from source).
-- Run `aqua install` for tooling such as changie or others for the project.
-  - At this time, it expects you have to Go pre-installed.
-
 ## Release Notes
 
 This project uses an different approach to release, driving it from changelog and versioned changelog notes instead of tagging.

@@ -4,9 +4,11 @@ package main
 import (
 	"os"
 	"os/exec"
+	"runtime"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/constants"
 	"github.com/bitfield/script"
+
 	// mage:import
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/helm"
 	// mage:import
@@ -20,6 +22,7 @@ import (
 	"github.com/pterm/pterm"
 	"github.com/sheldonhull/magetools/ci"
 	"github.com/sheldonhull/magetools/fancy"
+	"github.com/sheldonhull/magetools/pkg/magetoolsutils"
 
 	// mage:import
 	"github.com/sheldonhull/magetools/gotools"
@@ -89,16 +92,29 @@ func Init() error { //nolint:deadcode // Not dead, it's alive.
 	return nil
 }
 
-// InstallTrunk installs trunk.io tooling.
+// InstallTrunk installs trunk.io tooling if it isn't already found.
 func InstallTrunk() error {
-	// _ = sh.RunV("sudo", "-p", "Enter sudo password", "whoami")
-	// _, err := script.Exec("curl https://get.trunk.io -fsSL").Exec("sudo bash -s -- -y").Stdout()
-	_, err := script.Exec("curl https://get.trunk.io -fsSL").Exec("bash -s -- -y").Stdout()
-	if err != nil {
-		return err
+	magetoolsutils.CheckPtermDebug()
+	if runtime.GOOS == "windows" {
+		pterm.Warning.Println("InstallTrunk() trunk.io not supported on windows, skipping")
+		return nil
 	}
-
+	_, err := exec.LookPath("trunk")
+	if err != nil && os.IsNotExist(err) {
+		pterm.Warning.Printfln("unable to resolve aqua cli tool, please install for automated project tooling setup: https://aquaproj.github.io/docs/tutorial-basics/quick-start#install-aqua")
+		_, err := script.Exec("curl https://get.trunk.io -fsSL").Exec("bash -s -- -y").Stdout()
+		if err != nil {
+			return err
+		}
+	} else {
+		pterm.Success.Printfln("trunk.io already installed, skipping")
+	}
 	return nil
+}
+
+// TrunkInit ensures the required runtimes are installed.
+func TrunkInit() error {
+	return sh.RunV("trunk", "install")
 }
 
 // Clean up after yourself.

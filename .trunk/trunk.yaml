@@ -2,7 +2,7 @@ version: 0.1
 plugins:
   sources:
     - id: trunk
-      ref: v0.0.8
+      ref: v0.0.9
       uri: https://github.com/trunk-io/plugins
 actions:
   enabled:
@@ -44,20 +44,23 @@ runtimes:
           value: 1
   enabled: [go@1.19, node@16.14.2, python@3.10.3]
 cli:
-  version: 1.3.2
+  version: 1.4.1
 lint:
+  threshold:
+    - linters: [gitleaks]
+      level: high
   disabled:
     - cspell
   enabled:
     #- cspell@6.19.2
-    - prettier@2.3.0
+    - prettier@2.8.3
     - git-diff-check
     - taplo@0.7.0
     - yamllint@1.29.0
     - actionlint@1.6.23
     - gitleaks@8.15.3
     - gofmt@1.19.3
-    - golangci-lint@1.50.1
+    - golangci-lint@1.51.0
     - hadolint@2.12.0
     - markdownlint@0.33.0
     # - prettier@2.8.3
