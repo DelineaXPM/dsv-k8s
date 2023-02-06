@@ -75,6 +75,7 @@ func (Helm) Init() error {
 // newClient returns a helm client, and allows passing a kubeconfig path.
 // By default it just uses what's set in the environment.
 // If kubeconfig is provided then by default this should be using the local kind cluster setup.
+//
 //nolint:unparam // Allow initially. I placed in case I want to allow running against a target instance other than kind to allow overriding. Add an env check for KUBECONFIG and allow override then.
 func newClient( //nolint:ireturn // Ignore for this helm project
 	namespace, kubeconfig string,
