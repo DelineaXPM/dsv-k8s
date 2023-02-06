@@ -1,15 +1,88 @@
 ---
 name: test
+
+# secrets aren't inherited to tasks, so not able to use the reusable as of 2023-02.
+# Using workflow directly and will revisit in the future.
+# uses: delineaxpm/github-workflows/.github/workflows/test.yml@main
+# secrets: inherit
 env:
   DSV_K8S_TEST_CONFIG: ${{ secrets.DSV_TMG_CONFIG }}
   DSV_K8S_TEST_SECRET_PATH: secrets:ci:tests:dsv-k8s:sync-test
+
 on:
   pull_request:
+  push:
+    tags:
+      - v*
   workflow_dispatch:
+    inputs:
+      gotestflags:
+        type: string
+        description: 'GOTEST_FLAGS to pass'
+        required: false
+        default: '--tags=integration'
   workflow_call:
+    inputs:
+      gotestflags:
+        type: string
+        description: 'GOTEST_FLAGS to pass'
+        required: false
+        default: '--tags=integration'
+defaults:
+  run:
+    shell: bash
+
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.action }}
+  cancel-in-progress: true
+
 jobs:
   test:
-    uses: delineaxpm/github-workflows/.github/workflows/test.yml@main
-    secrets: inherit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aquaproj/aqua-installer@a39f721a15ed34ccbc85706e6e8ae8572c9ca9c6 # tag=v1.2.0
+        with:
+          aqua_version: v1.32.0
+          enable_aqua_install: true
+          # aqua_opts: ""
+        env:
+          AQUA_LOG_LEVEL: debug
+          AQUA_OPTS: ''
+      - name: env-config-go
+        run: |
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+      # no pinning of github managed action
+      - name: Setup Golang caches
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${HOME}/.cache/go-build
+            ${HOME}/go/pkg/mod
+          key: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-golang-
+      # - name: mage-init
+      #   run: |
+      #     export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua:${PATH}"
+      #     export PATH="$(go env GOPATH)/bin:${PATH}"
+      #     mage init
+      - name: mage-testsum
+        run: |
+          export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua:${PATH}"
+          export PATH="$(go env GOPATH)/bin:${PATH}"
+          USER_GOTESTFLAGS="${{ github.event.inputs.name }}"
+          # Use user input or fall back to --tags=integration if nothing provided
+          GOTEST_FLAGS=${USER_GOTESTFLAGS:-"--tags=integration"}
+          mage go:testsum ./...
+        env:
+          # Race conditions will be hit due to the cli driven tasks and binaries being called.
+          GOTEST_DISABLE_RACE: 1
+          # GOTEST_FLAGS: '${{ inputs.gotestflags }}'
+
+      - uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70 # renovate: tag=v3.1.1
+        with:
+          fail_ci_if_error: false
