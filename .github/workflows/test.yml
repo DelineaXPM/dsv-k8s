@@ -34,9 +34,9 @@ defaults:
 
 permissions:
   contents: read
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.action }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.action }}
+#   cancel-in-progress: true
 
 jobs:
   test:
