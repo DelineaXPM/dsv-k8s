@@ -38,6 +38,7 @@ kinds:
   - label: 🔒 Security
   - label: ⬆️ Dependencies
   - label: 🤖 Development
+  - label: 🤖 CI
 newlines:
   afterChange: 0
   afterChangelogHeader: 1

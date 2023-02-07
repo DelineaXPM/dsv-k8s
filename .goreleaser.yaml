@@ -78,6 +78,11 @@ dockers:
     image_templates:
       - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:{{ .Tag }}{{ end }}'
       - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:latest{{ end }}'
+
+      # tag for quay publishing both with semver and latest tag
+      - '{{ if index .Env "QUAY_ORG" }}{{ .Env.QUAY_ORG }}/{{ .ProjectName }}:{{ .Tag }}{{ end }}'
+      - '{{ if index .Env "QUAY_ORG" }}{{ .Env.QUAY_ORG }}/{{ .ProjectName }}:latest{{ end }}'
+
     skip_push: false
     dockerfile: ./docker/Dockerfile.distroless
     use: buildx
