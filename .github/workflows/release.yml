@@ -32,7 +32,7 @@ jobs:
           AQUA_LOG_LEVEL: debug
 
       - name: mage-tidy
-        uses: magefile/mage-action@2c1951143e54356ebe6a0c6c971bae325b5b50f1 # tag=v2
+        uses: magefile/mage-action@3b833fb24c0d19eed3aa760b9eb285b4b84f420f # v2
         with:
           version: latest
           args: init
@@ -48,7 +48,7 @@ jobs:
           username: ${{ secrets.DOCKER_QUAY_LOGIN_NAME }}
           password: ${{ secrets.DOCKER_QUAY_PASSWORD }}
       - name: mage-release
-        uses: magefile/mage-action@2c1951143e54356ebe6a0c6c971bae325b5b50f1 # tag=v2
+        uses: magefile/mage-action@3b833fb24c0d19eed3aa760b9eb285b4b84f420f # v2
         with:
           version: latest
           args: release
