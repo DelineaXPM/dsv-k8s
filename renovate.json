@@ -4,9 +4,21 @@
    "packageRules": [
     {
       "matchManagers": ["gomod"],
-      "matchPackageNames": ["helm.sh/helm/v3"],
+      "matchPackageNames": [
+        "helm.sh/helm/v3",
+        "github.com/mittwald/go-helm-client"
+      ],
+      "group": "risky-breaking-changes",
       "enabled": false,
-      "group": "risky-breaking-changes"
+    },
+     {
+      "matchManagers": ["gomod"],
+      "matchPackageNames": [
+        "k8s.io/api"
+      ],
+      "group": "risky-k8s-changes",
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
     }
   ]
 }
