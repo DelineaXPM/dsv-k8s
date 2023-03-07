@@ -8,13 +8,13 @@
         "helm.sh/helm/v3",
         "github.com/mittwald/go-helm-client"
       ],
-      "group": "risky-breaking-changes",
+      "groupName": "risky-breaking-changes",
       "enabled": false
     },
     {
       "matchManagers": ["gomod"],
       "matchPackageNames": ["k8s.io/api"],
-      "group": "risky-k8s-changes",
+      "groupName": "risky-k8s-changes",
       "matchUpdateTypes": ["major", "minor"],
       "enabled": false
     }
