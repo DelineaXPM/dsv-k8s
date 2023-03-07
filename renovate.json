@@ -1,4 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["DelineaXPM/renovate-config"]
+  "extends": ["DelineaXPM/renovate-config"],
+   "packageRules": [
+    {
+      "matchManagers": ["gomod"],
+      "matchPackageNames": ["helm.sh/helm/v3"],
+      "enabled": false,
+      "group": "risky-breaking-changes"
+    }
+  ]
 }
