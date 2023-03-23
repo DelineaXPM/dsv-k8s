@@ -28,7 +28,7 @@ const (
 	// KindClusterName is the name of the kind cluster.
 	KindClusterName = "dsvtest"
 	// KindClusterName is the name of the kind cluster.
-	KindContextName = "kind-dsvtest"
+	KindContextName = "dsvtest"
 	// KubeconfigPath is the path to the kubeconfig file for this project, which is cached locally.
 	Kubeconfig = ".cache/config"
 	// KubectlNamespace is the namespace used for all kubectl commands, so that they don't operate in default or other namespace by accident.

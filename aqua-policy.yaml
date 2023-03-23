@@ -1,0 +1,8 @@
+---
+# aqua Policy
+# https://aquaproj.github.io/
+registries:
+  - type: standard
+    ref: semver(">= 3.0.0")
+packages:
+  - registry: standard

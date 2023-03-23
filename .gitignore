@@ -44,3 +44,5 @@ packages-*
 /secret-*.yaml
 
 vendor/**/*.png
+
+Tiltfile.local

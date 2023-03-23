@@ -8,7 +8,7 @@
       "source.fixAll": true,
       "source.organizeImports": false
     },
-    "editor.defaultFormatter": "trunk.io",
+    "editor.defaultFormatter": "go",
     "editor.formatOnSave": true
   },
   "[markdown]": {

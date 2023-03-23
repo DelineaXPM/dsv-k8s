@@ -83,6 +83,7 @@ func Init() error { //nolint:deadcode // Not dead, it's alive.
 	// These can run in parallel as different toolchains.
 	mg.Deps(
 		(InstallTrunk),
+		(TrunkInit),
 	)
 
 	mg.Deps(

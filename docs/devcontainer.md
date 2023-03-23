@@ -1,5 +1,21 @@
 # Devcontainer
 
+## Codespaces
+
+Use the GitHub cli to create the codespace or do this from the browser.
+Ideally, use minimum of 8gb ram configuration or you'll run into issues with nested Kubernetes setup.
+
+Example invocation:
+
+```shell
+gh codespace create \
+    --display-name dsv-k8s \
+    --machine 'standardLinux32gb' \
+    --repo DelineaXPM/dsv-k8s \
+    --status \
+    --retention-period "5d"
+```
+
 ## Prerequisites
 
 - Docker

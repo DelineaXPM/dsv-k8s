@@ -2,7 +2,7 @@ version: 0.1
 plugins:
   sources:
     - id: trunk
-      ref: v0.0.9
+      ref: v0.0.11
       uri: https://github.com/trunk-io/plugins
 actions:
   enabled:
@@ -42,9 +42,13 @@ runtimes:
           value: on # trunk-ignore(yamllint/truthy)
         - name: CGO_ENABLED
           value: 1
-  enabled: [go@1.19, node@16.14.2, python@3.10.3]
+
+  enabled:
+    - go@1.20.1
+    - node@18.12.1
+    - python@3.10.8
 cli:
-  version: 1.4.1
+  version: 1.6.1
 lint:
   threshold:
     - linters: [gitleaks]
@@ -53,6 +57,18 @@ lint:
     - cspell
   enabled:
     #- cspell@6.19.2
+    - gofmt@1.19.3
+    - git-diff-check
+    - taplo@0.7.0
+    - markdownlint@0.33.0
+    - prettier@2.8.6
+    - actionlint@1.6.23
+    - hadolint@2.12.0
+    - gitleaks@8.16.1
+    - shellcheck@0.9.0
+    - shfmt@3.5.0
+    - yamllint@1.30.0
+    - svgo@3.0.2
     - prettier@2.8.3
     - git-diff-check
     - taplo@0.7.0
@@ -60,7 +76,7 @@ lint:
     - actionlint@1.6.23
     - gitleaks@8.15.3
     - gofmt@1.19.3
-    - golangci-lint@1.51.0
+    - golangci-lint@SYSTEM
     - hadolint@2.12.0
     - markdownlint@0.33.0
     # - prettier@2.8.3

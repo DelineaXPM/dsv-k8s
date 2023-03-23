@@ -6,6 +6,8 @@ versionExt: md
 versionFormat: '## {{.Version}} - {{.Time.Format "2006-01-02"}}'
 kindFormat: '### {{.Kind}}'
 changeFormat: '- {{ .Body -}}'
+body:
+  block: true
 footerFormat: |
   {{- $azureBoardsFixed :=  customs .Changes "azure-boards-workitemid-fixed" | compact | uniq   }}
   {{ $azureBoardsRelated :=  customs .Changes "azure-boards-workitemid-related" | compact | uniq   }}
