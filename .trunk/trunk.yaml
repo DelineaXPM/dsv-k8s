@@ -39,7 +39,7 @@ runtimes:
   #     - name: GOROOT
   #       value: ${runtime}
   #     - name: GO111MODULE
-  #       value: on # trunk-ignore(yamllint/truthy)
+  #       value: on
   #     - name: CGO_ENABLED
   #       value: 1
   enabled:
