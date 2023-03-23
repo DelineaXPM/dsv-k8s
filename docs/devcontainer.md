@@ -62,8 +62,9 @@ Use command pallet with vscode (Control+Shift+P or F1) and type to find the comm
 - Put the git clone url in, for example: `https://github.com/DelineaXPM/dsv-k8s.git`
 - Name the volume and directory both dsv-k8s or whatever you prefer.
 
-> **_NOTE_**
-> This is a large development image (10GB). The first time you run this it will take a while. However, after this first run, rebuilding the container to start over should be minimal time, as you'll have the majority of Docker image cached locally.
+> **Note**
+> This is a large development image (10GB). The first time you run this it will take a while.
+> However, after this first run, rebuilding the container to start over should be minimal time, as you'll have the majority of Docker image cached locally.
 
 This includes (for updated info just look at dockerfile):
 
