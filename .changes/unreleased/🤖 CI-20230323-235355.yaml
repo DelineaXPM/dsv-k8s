@@ -1,0 +1,10 @@
+kind: "\U0001F916 CI"
+body: |-
+  - Adjust aqua to latest version.
+  - Include aqua configuration tags so github actions will minimize time by installing only tooling required. (dagger will be better :-)
+time: 2023-03-23T23:53:55.368513076Z
+custom:
+  azure-boards-workitemid-fixed: ''
+  azure-boards-workitemid-related: ''
+  github-contributor: sheldonhull
+  github-link: ''
