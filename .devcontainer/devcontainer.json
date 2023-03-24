@@ -79,6 +79,22 @@
   "initializeCommand": [
     ".devcontainer/init"
   ],
+  "forwardPorts": [
+    10350,
+    2222
+  ],
+  "portsAttributes": {
+    "10350": {
+      "label": "tilt",
+      "onAutoForward": "openBrowserOnce",
+      "protocol": "http",
+      "requireLocalPort": false
+    },
+    "2222": {
+      "label": "remote-ssh-support",
+      "onAutoForward": "silent"
+    }
+  },
   "hostRequirements": {
     "cpus": 8, // running local kind cluster and toolchain tends to run into issues with 4, let's recommend 8 (though this requires an org membership by default). Local devcontainers should be fine.
     "memory": "8gb",

@@ -48,7 +48,7 @@ jobs:
         with:
           aqua_version: v1.34.0
           enable_aqua_install: true
-          # aqua_opts: ""
+          aqua_opts: '--tags test'
         env:
           AQUA_LOG_LEVEL: debug
           AQUA_OPTS: ''

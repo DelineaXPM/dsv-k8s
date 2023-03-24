@@ -22,15 +22,14 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - uses: aquaproj/aqua-installer@61e2563dfe7674cbf74fe6ec212e444198a3bb00 # v2.0.2
+      - uses: aquaproj/aqua-installer@61e2563dfe7674cbf74fe6ec212e444198a3bb00 # tag=v2.0.2
         with:
-          aqua_version: v1.34.0
-          # install_path: /tmp/bin/aqua
-          # working_directory:
-          # aqua_opts: ''
+          aqua_version: v1.36.0
+          enable_aqua_install: true
+          aqua_opts: '--tags release'
         env:
           AQUA_LOG_LEVEL: debug
-
+          AQUA_OPTS: ''
       - name: mage-tidy
         uses: magefile/mage-action@3b833fb24c0d19eed3aa760b9eb285b4b84f420f # v2
         with:
