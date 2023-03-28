@@ -83,7 +83,7 @@ require_tool("direnv")
 
 allow_k8s_contexts('dsvtest') # ensure dsvtest is scoped so we don't load against anything other local test environment
 def current_namespace():
-  namespace=str(local("kubectl config view --minify --output 'jsonpath={..namespace}'",echo_off=True,quiet=True))
+  namespace=str(local("kubectl config view --output 'jsonpath={..namespace}'",echo_off=True,quiet=True))
   if namespace != "dsv":
     print(color.red("""WARNING: You are not in the dsv namespace."""))
   return namespace
