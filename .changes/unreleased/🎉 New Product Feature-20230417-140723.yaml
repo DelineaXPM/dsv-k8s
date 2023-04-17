@@ -1,0 +1,5 @@
+kind: "\U0001F389 New Product Feature"
+body:
+  Add prebuilt docker image for `linux/arm64` to ease evaluation in local test
+  environments by users leveraging M1/M2 on macOS.
+time: 2023-04-17T14:07:23.010961-05:00

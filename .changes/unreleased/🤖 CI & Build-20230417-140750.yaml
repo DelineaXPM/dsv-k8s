@@ -1,0 +1,3 @@
+kind: "\U0001F916 CI & Build"
+body: Add magefile tasks for changelog bump and release note generation.
+time: 2023-04-17T14:07:50.268525-05:00

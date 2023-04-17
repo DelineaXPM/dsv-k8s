@@ -25,6 +25,7 @@ builds:
     goos: [linux]
     goarch:
       - amd64
+      - arm64
   - id: dsv-syncer
     binary: dsv-syncer
     main: ./cmd/syncer
@@ -38,6 +39,7 @@ builds:
     goos: [linux]
     goarch:
       - amd64
+      - arm64
 archives:
   - id: binaries
     format: binary
@@ -72,9 +74,7 @@ changelog:
 dockers:
   - id: docker-publish
     goos: linux
-    # goarch: amd64
-    # goarm: ''
-    # goamd64: v2
+    goarch: amd64
     image_templates:
       - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:{{ .Tag }}{{ end }}'
       - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:latest{{ end }}'
@@ -82,7 +82,6 @@ dockers:
       # tag for quay publishing both with semver and latest tag
       - '{{ if index .Env "QUAY_ORG" }}{{ .Env.QUAY_ORG }}/{{ .ProjectName }}:{{ .Tag }}{{ end }}'
       - '{{ if index .Env "QUAY_ORG" }}{{ .Env.QUAY_ORG }}/{{ .ProjectName }}:latest{{ end }}'
-
     skip_push: false
     dockerfile: ./docker/Dockerfile.distroless
     use: buildx
@@ -92,7 +91,24 @@ dockers:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.version={{.Version}}
-      # - --label=org.opencontainers.image.version="{{ .Tag }}"
+  - id: docker-publish-arm64
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:{{ .Tag }}{{ end }}'
+      - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:latest{{ end }}'
+      # tag for quay publishing both with semver and latest tag
+      - '{{ if index .Env "QUAY_ORG" }}{{ .Env.QUAY_ORG }}/{{ .ProjectName }}:{{ .Tag }}{{ end }}'
+      - '{{ if index .Env "QUAY_ORG" }}{{ .Env.QUAY_ORG }}/{{ .ProjectName }}:latest{{ end }}'
+    skip_push: false
+    dockerfile: ./docker/Dockerfile.distroless
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/arm64
+      - --label=org.opencontainers.image.created={{.Date}}
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.version={{.Version}}
   # local builds
   - id: local-docker-images
     goos: linux
@@ -103,12 +119,19 @@ dockers:
     dockerfile: ./docker/Dockerfile.distroless
     use: buildx
     build_flag_templates:
-      - --platform=linux/amd64
+      # - --platform=linux/amd64
       - --label=org.opencontainers.image.created={{.Date}}
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.version={{.Version}}
       - --label=org.opencontainers.image.version="{{ .Tag }}"
+# https://goreleaser.com/customization/docker_manifest/
+docker_manifests:
+  - name_template: '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:{{ .Tag }}{{ end }}'
+    image_templates:
+      - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:{{ .Tag }}{{ end }}'
+      - '{{ if index .Env "DOCKER_ORG" }}{{ .Env.DOCKER_ORG }}/{{ .ProjectName }}:latest{{ end }}'
+
 announce:
   slack:
     enabled: true
