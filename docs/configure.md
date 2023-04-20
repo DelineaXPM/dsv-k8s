@@ -32,6 +32,8 @@ You can place your temporary config in `.cache/credentials.json` as this is igno
 }
 ```
 
+### Update Manifests
+
 This would be referenced by a Kubernetes secret with annontations like:
 
 ```yaml
@@ -44,6 +46,9 @@ metadata:
     dsv.delinea.com/credentials: app1
     dsv.delinea.com/set-secret: 'k8s:sync:test'
 ```
+
+If using the provided examples, you can edit: `.cache/manifests` and adjust the secrets to map.
+You can use all of the provided manifests to test the different behavior, or just deploy one if desired.
 
 ## Configuring Credentials in Kubernetes To Talk to DSV
 

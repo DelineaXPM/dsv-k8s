@@ -1,3 +1,4 @@
+{{ $fullname := include "dsv.fullname" . }}
 {{- if ne .Values.service.type "ExternalName" -}}
 ---
 apiVersion: apps/v1
@@ -40,10 +41,15 @@ spec:
           volumeMounts:
             - name: cert
               readOnly: true
-              mountPath: /home/dsv/tls
+              mountPath: /home/nonroot/tls
             - name: credentials
               readOnly: true
-              mountPath: /home/dsv/credentials
+              mountPath: /home/nonroot/credentials
+          {{- with .Values.configmap }}
+          envFrom:
+            - configMapRef:
+                name: {{ $fullname }}-configmap
+          {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:

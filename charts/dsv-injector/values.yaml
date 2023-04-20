@@ -87,3 +87,15 @@ webhookPort: 8543
 webhookScope: Namespaced
 # -- containerPort is the port that the container itself listens on
 containerPort: 18543
+
+# -- configmap are configuration values for the app to load.
+# All of these are defaulted in the template itself and only need be set if adjusting.
+# Since the user for the container is nonroot, only edit if you know what you are doing.
+# @default -- {} empty.
+configmap:
+  {}
+  # DSV_CERT:
+  # DSV_KEY:
+  # DSV_CREDENTIALS_JSON:
+  # DSV_SERVER_ADDRESS:
+  # DSV_DEBUG: true

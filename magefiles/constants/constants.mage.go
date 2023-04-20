@@ -22,6 +22,9 @@ const (
 
 	// ExamplesDirectory is the directory where the kubernetes manifests are stored.
 	ExamplesDirectory = "examples"
+
+	// CacheChartsDirectory is the directory where the cached helm values file is copied to.
+	CacheChartsDirectory = ".cache/charts"
 )
 
 const (
@@ -34,8 +37,18 @@ const (
 	// KubectlNamespace is the namespace used for all kubectl commands, so that they don't operate in default or other namespace by accident.
 	KubectlNamespace = "dsv"
 
-	// ChartsDirectory is the directory where the helm charts are placed, in sub directories.
-	ChartsDirectory = "charts"
 	// DockerImageQualified is the qualified path of the image in Docker Hub.
 	DockerImageQualified = "docker.io/delineaxpm/dsv-k8s"
+	// DockerImageNameLocal is the name of the built image to run locally and load with minikube/kind.
+	DockerImageNameLocal = "dsv-k8s"
+)
+
+const (
+
+	// HelmTimeout is the timeout for helm commands using the CLI.
+	HelmTimeout = "5m"
+	// ChartsDirectory is the directory where the helm charts are placed, in sub directories.
+	ChartsDirectory = "charts"
+	// SternFilter is the filter for dsv-filter-name for streaming logs easily.
+	SternFilter = "dsv-syncer, dsv-injector"
 )

@@ -111,9 +111,21 @@ func (Minikube) Init() error {
 	// if err := sh.Run("kind", "load", "docker-image", "quay.io/delinea/dsv-k8s:latest"); err != nil {
 	// 	return fmt.Errorf("kind load docker-image: %w", err)
 	// }.
-	dspin.SuccessPrinter.Println("(Kind) Init()")
+	dspin.SuccessPrinter.Println("(Minikube) Init()")
 	_ = dspin.Stop()
 	return nil
+}
+
+// 💾 LoadImages loads the images into the minikube cluster.
+func (Minikube) LoadImages() {
+	mtu.CheckPtermDebug()
+	// for _, chart := range constants.HelmChartsList {
+	// Load image into minikube
+	if err := sh.Run("minikube", "image", "load", "--profile", constants.KindClusterName, fmt.Sprintf("%s:latest", constants.DockerImageNameLocal)); err != nil {
+		pterm.Error.Printfln("unable to load image into minikube: %v", err)
+	}
+	pterm.Success.Printfln("image loaded into minikube: %s", constants.DockerImageNameLocal)
+	// }
 }
 
 // 🗑️ Destroy tears down the Kind cluster.
@@ -127,6 +139,6 @@ func (Minikube) Destroy() error {
 		pterm.Warning.Printfln("default context might not be setup correct to new context: %v", err)
 	}
 
-	pterm.Success.Println("(Kind) Destroy()")
+	pterm.Success.Println("(Minikube) Destroy()")
 	return nil
 }

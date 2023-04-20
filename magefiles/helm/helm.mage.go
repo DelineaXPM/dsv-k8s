@@ -2,7 +2,6 @@
 package helm
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -13,24 +12,33 @@ import (
 	"github.com/magefile/mage/sh"
 
 	"github.com/pterm/pterm"
-	mtu "github.com/sheldonhull/magetools/pkg/magetoolsutils"
+	"github.com/sheldonhull/magetools/pkg/magetoolsutils"
 	"github.com/sheldonhull/magetools/pkg/req"
-
-	helmclient "github.com/mittwald/go-helm-client"
 )
 
+// Helm contains Mage tasks for invoking Helm cli.
 type Helm mg.Namespace
+
+// invokeHelm is a wrapper for running the helm binary.
+func invokeHelm(args ...string) error {
+	binary, err := req.ResolveBinaryByInstall("helm", "helm.sh/helm/v3@latest")
+	if err != nil {
+		return err
+	}
+	return sh.Run(binary, args...)
+}
 
 // ⚙️ Init sets up the required files to allow for local editing/overriding from CacheDirectory.
 //
 // It does this by using the HelmChartlist and copying the default values.yaml to the CacheDirectory.
 func (Helm) Init() error {
 	pterm.DefaultSection.Println("(Helm) Init()")
+	magetoolsutils.CheckPtermDebug()
 	for _, chart := range constants.HelmChartsList {
 		pterm.DefaultSection.Printfln(
 			"Copy values.yaml for: %s to CacheDirectory: %s",
 			chart.ReleaseName,
-			constants.CacheDirectory,
+			constants.CacheChartsDirectory,
 		)
 
 		// FileToCopy is the helm Values file without the parent directory path.
@@ -43,8 +51,8 @@ func (Helm) Init() error {
 		fileToCopy := filepath.Join(constants.ChartsDirectory, ln)
 
 		// Since the file doesn't exist let's read the contents and update an equivalent in the CacheDirectory for local editing and tweaking.
-		targetFile := filepath.Join(constants.CacheDirectory, ln)
-		targetDir, _ := filepath.Split(filepath.Join(constants.CacheDirectory, ln))
+		targetFile := filepath.Join(constants.CacheChartsDirectory, ln)
+		targetDir, _ := filepath.Split(filepath.Join(constants.CacheChartsDirectory, ln))
 		if _, err := os.Stat(targetFile); !os.IsNotExist(err) {
 			pterm.Info.Printfln("file: %s already exists in target, bypassing", targetFile)
 			continue
@@ -72,231 +80,92 @@ func (Helm) Init() error {
 	return nil
 }
 
-// newClient returns a helm client, and allows passing a kubeconfig path.
-// By default it just uses what's set in the environment.
-// If kubeconfig is provided then by default this should be using the local kind cluster setup.
-//
-//nolint:unparam // Allow initially. I placed in case I want to allow running against a target instance other than kind to allow overriding. Add an env check for KUBECONFIG and allow override then.
-func newClient( //nolint:ireturn // Ignore for this helm project
-	namespace, kubeconfig string,
-) (helmclient.Client, error) {
-	if kubeconfig == "" {
-		opt := &helmclient.Options{
-			Namespace: namespace,
-			Debug:     true,
-			Linting:   true,
-
-			DebugLog: func(format string, v ...interface{}) {
-				pterm.Debug.Printfln("[helmclient] "+format, v...)
-				// Change this to your own logger. Default is 'log.Printf(format, v...)'.
-			},
-			// DebugLog:         func(format string, v ...interface{}) {},.
-		}
-
-		helmClient, err := helmclient.New(opt)
-		if err != nil {
-			return nil, fmt.Errorf("helm client failed: %w", err)
-		}
-		return helmClient, nil
+// 🚀 Install uses Helm to
+// 🚀 Install installs or upgrades the helm charts for any charts listed in constants.HelmChartsList.
+func (Helm) Install() {
+	magetoolsutils.CheckPtermDebug()
+	if os.Getenv("KUBECONFIG") != ".cache/config" {
+		pterm.Warning.Printfln("KUBECONFIG is not set to .cache/config. Make sure direnv/env variables loading if you want to keep the project changes from changing your user KUBECONFIG.")
 	}
-	if kubeconfig != "" {
-		if _, err := os.Stat(constants.Kubeconfig); os.IsNotExist(err) {
-			return nil, fmt.Errorf("kubeconfig file does not exist: %w", err)
-		}
-		// Read kubeconfig.
-		kubeconfigData, err := os.ReadFile(constants.Kubeconfig)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read kubeconfig file: %w", err)
-		}
-
-		opt := &helmclient.KubeConfClientOptions{
-			Options: &helmclient.Options{
-				Namespace: namespace,
-				Debug:     true,
-				Linting:   true,
-				DebugLog: func(format string, v ...interface{}) {
-					pterm.Debug.Printfln("[helmclient-kubeconfig] "+format, v...)
-					// Change this to your own logger. Default is 'log.Printf(format, v...)'.
-				},
-			},
-			KubeContext: constants.KindContextName,
-			KubeConfig:  kubeconfigData,
-		}
-
-		helmClient, err := helmclient.NewClientFromKubeConf(opt)
-		if err != nil {
-			return nil, fmt.Errorf("helm client using kubeconfig failed: %w", err)
-		}
-		return helmClient, nil
-	}
-	return nil, nil
-}
-
-// getValuesYaml returns the values file as as string for consuming.
-func getValuesYaml(helmValuesFile string) (string, error) {
-	mtu.CheckPtermDebug()
-	if _, err := os.Stat(helmValuesFile); os.IsNotExist(err) {
-		pterm.Warning.Printfln(
-			"%s file does not exist\n\nMake sure to run the following task to get working copies of the template files\tmage helm:init",
-			helmValuesFile,
-		)
-		return "", fmt.Errorf(
-			"getValuesYaml: %s file does not exist, probably need to run helm:init first ",
-			helmValuesFile,
-		)
-	}
-
-	// Since files don't exist, we should go ahead and copy the helm template files to get this started.
-	vf, err := os.ReadFile(helmValuesFile)
-	if err != nil {
-		return "", fmt.Errorf("(Helm) Render() - Error reading values file: %w", err)
-	}
-	return string(vf), nil
-}
-
-// 💾 Render uses Helm to output rendered yaml for testing helm integration.
-func (Helm) Render() error {
-	mtu.CheckPtermDebug()
-	pterm.DefaultHeader.Println("(Helm) Render()")
 	for _, chart := range constants.HelmChartsList {
-		pterm.DefaultSection.Printfln("New Client: %s", chart.ReleaseName)
-		client, err := newClient(chart.Namespace, constants.Kubeconfig)
-		if err != nil {
-			return err
+		pterm.Info.Printfln("Installing chart: %s", chart.ReleaseName)
+		if err :=
+			invokeHelm("upgrade",
+				chart.ReleaseName,
+				chart.ChartPath,
+				"--namespace", constants.KubectlNamespace,
+				"--install", // install if not already installed
+				"--atomic",  // if set, the installation process deletes the installation on failure. The --wait flag will be set automatically if --atomic is used
+				// "--replace", // re-use the given name, only if that name is a deleted release which remains in the history. This is unsafe in production
+				"--wait", // waits, those atomic already runs this
+				"--values", filepath.Join(constants.CacheChartsDirectory, chart.ReleaseName, "values.yaml"),
+				"--timeout", constants.HelmTimeout,
+				"--force",             // force resource updates through a replacement strategy
+				"--wait-for-jobs",     // will wait until all Jobs have been completed before marking the release as successful
+				"--dependency-update", // update dependencies if they are missing before installing the chart
+				"--debug",             // enable verbose output
+				// NOTE: Can pass credentials/certs etc in. NOT ADDED YET - "--set-file", "sidecar.configFile=config.yaml",
+			); err != nil {
+			pterm.Warning.Printfln("failed to install chart: %s, err: %v", chart.ReleaseName, err)
+		} else {
+			pterm.Success.Printfln("successfully installed chart: %s", chart.ReleaseName)
 		}
-		valuesYaml, err := getValuesYaml(chart.Values)
-		if err != nil || len(valuesYaml) == 0 {
-			return fmt.Errorf("failed to get values.yaml: %w", err)
-		}
-		chartSpec := helmclient.ChartSpec{
-			ReleaseName:  chart.ReleaseName,
-			ChartName:    chart.ChartPath,
-			Namespace:    chart.Namespace,
-			UpgradeCRDs:  true,
-			Wait:         true,
-			ValuesYaml:   valuesYaml,
-			GenerateName: true,
-			DryRun:       true,
-		}
-
-		out, err := client.TemplateChart(&chartSpec)
-		if err != nil {
-			return fmt.Errorf("helm template failed: %w", err)
-		}
-
-		outFile := filepath.Join(constants.ArtifactDirectory, chart.ReleaseName+".yml")
-		if err := os.WriteFile(outFile, out, constants.PermissionUserReadWriteExecute); err != nil {
-			return fmt.Errorf("failed to write templated output for helm chart: %w", err)
-		}
-		if err := sh.Run("yamlfmt", outFile, "-w"); err != nil {
-			pterm.Warning.Printfln("yamlfmt failed: %s", err)
-		}
-		pterm.Success.Printfln("(Helm) Render() - Successfully rendered chart to %s", outFile)
 	}
-	return nil
 }
 
-// 🔍 Lint uses Helm to lint the chart for issues.
-func (Helm) Lint() error {
-	mtu.CheckPtermDebug()
-	pterm.DefaultHeader.Println("(Helm) Lint()")
+// Uninstall uninstalls all the charts listed in constants.HelmChartsList.
+func (Helm) Uninstall() {
+	magetoolsutils.CheckPtermDebug()
+	if os.Getenv("KUBECONFIG") != ".cache/config" {
+		pterm.Warning.Printfln("KUBECONFIG is not set to .cache/config. Make sure direnv/env variables loading if you want to keep the project changes from changing your user KUBECONFIG.")
+	}
 	for _, chart := range constants.HelmChartsList {
-		pterm.DefaultSection.Printfln("New Client: %s", chart.ReleaseName)
-		client, err := newClient(chart.Namespace, constants.Kubeconfig)
-		if err != nil {
-			return err
-		}
-		valuesYaml, err := getValuesYaml(chart.Values)
-		if err != nil {
-			return err
-		}
-		chartSpec := helmclient.ChartSpec{
-			ReleaseName: chart.ReleaseName,
-			ChartName:   chart.ChartPath,
-			Namespace:   chart.Namespace,
-			UpgradeCRDs: true,
-			Wait:        true,
-			ValuesYaml:  valuesYaml,
-			DryRun:      true,
-		}
-
-		err = client.LintChart(&chartSpec)
-		if err != nil {
-			pterm.Warning.Printfln("(Helm) Lint() - Error linting chart: %s", err)
-			return fmt.Errorf("helm lint failed: %w", err)
+		pterm.Info.Printfln("Uninstalling: %s", chart.ReleaseName)
+		if err :=
+			invokeHelm("uninstall",
+				chart.ReleaseName,
+				"--wait",  // waits, those atomic already runs this
+				"--debug", // enable verbose output
+			); err != nil {
+			pterm.Warning.Printfln("failed to uninstall: %s, err: %v", chart.ReleaseName, err)
+		} else {
+			pterm.Success.Printfln("Successfully uninstalled: %s", chart.ReleaseName)
 		}
 	}
-	return nil
 }
 
-// 🚀 Install uses Helm to install the chart.
-func (Helm) Install() error {
-	mtu.CheckPtermDebug()
-	pterm.DefaultHeader.Println("(Helm) Install()")
-
-	ctx, cancel := context.WithTimeout(context.Background(), constants.DefaultHelmTimeoutMinutes)
-	defer cancel()
-	for _, chart := range constants.HelmChartsList {
-		pterm.DefaultSection.Printfln("New Client: %s", chart.ReleaseName)
-		client, err := newClient(chart.Namespace, constants.Kubeconfig)
-		if err != nil {
-			return err
-		}
-		valuesYaml, err := getValuesYaml(chart.Values)
-		if err != nil {
-			return err
-		}
-		chartSpec := helmclient.ChartSpec{
-			ReleaseName:      chart.ReleaseName,
-			ChartName:        chart.ChartPath,
-			Namespace:        chart.Namespace,
-			Wait:             true,
-			ValuesYaml:       valuesYaml,
-			DryRun:           false,
-			CreateNamespace:  true,
-			Atomic:           true,
-			Replace:          true,
-			CleanupOnFail:    true,
-			Force:            true,
-			WaitForJobs:      true,
-			Recreate:         true,
-			DependencyUpdate: true,
-			Timeout:          constants.DefaultHelmTimeoutMinutes,
-		}
-
-		rel, err := client.InstallOrUpgradeChart(ctx, &chartSpec, &helmclient.GenericHelmOptions{})
-		if err != nil {
-			return fmt.Errorf("helm install failed: %w", err)
-		}
-		pterm.Info.Printfln("releasestatus: %v", rel.Info.Status)
+// 💾 Render outputs the Kubernetes manifests from the helm template for debugging purposes.
+func (Helm) Render() {
+	magetoolsutils.CheckPtermDebug()
+	if os.Getenv("KUBECONFIG") != ".cache/config" {
+		pterm.Warning.Printfln("KUBECONFIG is not set to .cache/config. Make sure direnv/env variables loading if you want to keep the project changes from changing your user KUBECONFIG.")
 	}
-	return nil
-}
-
-// 🚀 Uninstall uses Helm to uninstall the chart.
-func (Helm) Uninstall() error {
-	mtu.CheckPtermDebug()
-	pterm.DefaultHeader.Println("(Helm) Uninstall()")
-
 	for _, chart := range constants.HelmChartsList {
-		pterm.DefaultSection.Printfln("New Client: %s", chart.ReleaseName)
-		client, err := newClient(chart.Namespace, constants.Kubeconfig)
-		if err != nil {
-			return err
+		pterm.Info.Printfln("Rendering: %s", chart.ReleaseName)
+		targetDirectory := filepath.Join(constants.CacheDirectory, "exported-template", chart.ReleaseName)
+		_ = sh.Rm(targetDirectory) // no need to check for error, just clean directory if exists
+		if err := os.MkdirAll(targetDirectory, constants.PermissionUserReadWriteExecute); err != nil {
+			pterm.Error.Printfln("unable to create target chart directory for rendering helm template. what gives?")
+			return
 		}
-		err = client.UninstallReleaseByName(chart.ReleaseName)
-		if err != nil {
-			pterm.Warning.Printfln("helm uninstall failed: %v", err)
-			continue
+		if err := invokeHelm("template",
+			chart.ReleaseName,
+			chart.ChartPath,
+			"--values", filepath.Join(constants.CacheChartsDirectory, chart.ReleaseName, "values.yaml"),
+			// "--create-namespace",
+			// "--dependency-update",
+			"--output-dir", targetDirectory,
+		); err != nil {
+			pterm.Warning.Printfln("failed to render template to: %s, err: %v", targetDirectory, err)
+		} else {
+			pterm.Success.Printfln("Successfully exported to targetDirectory: %s", targetDirectory)
 		}
-		pterm.Success.Printfln("uninstall of %q successful", chart.ReleaseName)
 	}
-	pterm.Success.Println("(Helm) Uninstall() - Successfully uninstalled charts")
-	return nil
 }
 
 // Docs generates helm documentation using `helm-doc` tool.
 func (Helm) Docs() error {
+	magetoolsutils.CheckPtermDebug()
 	binary, err := req.ResolveBinaryByInstall("helm-docs", "github.com/norwoodj/helm-docs/cmd/helm-docs@latest")
 	if err != nil {
 		return err
@@ -306,6 +175,8 @@ func (Helm) Docs() error {
 		err := sh.Run(binary,
 			"--chart-search-root", chart.ChartPath,
 			"--output-file", "README.md",
+			// NOTE: using default layout, but can change here if we wanted.
+			// "--template-files", filepath.Join("magefiles", "helm", "README.md.gotmpl"),
 		)
 		if err != nil {
 			return fmt.Errorf("helm-docs failed: %w", err)

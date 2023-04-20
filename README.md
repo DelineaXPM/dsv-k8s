@@ -71,8 +71,7 @@ Since there's a mix of users for this repo, here's where to go for getting up an
 | Who                                                               | Where do I start?                                           |
 | ----------------------------------------------------------------- | ----------------------------------------------------------- |
 | 👉 I just want to install the helm charts against my own cluster. | Clone, and use `helm install` against the charts directory. |
-| 👉 I want to test against a disposable local kubernetes first.    | Use the [local-kubernetes](docs/local-kubernetes.md) guide. |
-| 👉 I'm a contributor/developer.                                   | Use the [setup-developer](docs/setup-developer.md) guide.   |
+| 👉 I'm a contributor/developer and want to test/build locally     | Use the [setup-developer](docs/setup-developer.md) guide.   |
 | 👉 I'm a contributor and need to create a release.                | Use the [release](docs/release.md) guide.                   |
 
 ### Build
