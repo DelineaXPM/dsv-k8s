@@ -10,8 +10,12 @@ replicaCount: 1
 
 image:
   repository: docker.io/delineaxpm/dsv-k8s
+  # -- pullPolicy is the image pull policy.
+  # If running locally built images, you'll want to set to Never to ensure local loaded images are used.
+  # @default -- IfNotPresent
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # -- Overrides the image tag whose default is the chart appVersion.
+  # @default -- the current app version/chart version
   tag: ''
   # -- Entrypoint is the path to the binary. Since the container image could contain multiple binaries, this makes sure it's correctly mapped to the binary.
   entrypoint: /app/dsv-syncer

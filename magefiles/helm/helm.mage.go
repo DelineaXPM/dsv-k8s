@@ -84,8 +84,8 @@ func (Helm) Init() error {
 // 🚀 Install installs or upgrades the helm charts for any charts listed in constants.HelmChartsList.
 func (Helm) Install() {
 	magetoolsutils.CheckPtermDebug()
-	if os.Getenv("KUBECONFIG") != ".cache/config" {
-		pterm.Warning.Printfln("KUBECONFIG is not set to .cache/config. Make sure direnv/env variables loading if you want to keep the project changes from changing your user KUBECONFIG.")
+	if os.Getenv("KUBECONFIG") != constants.Kubeconfig {
+		pterm.Warning.Printfln("KUBECONFIG is not set to %s. Make sure direnv/env variables loading if you want to keep the project changes from changing your user KUBECONFIG.", constants.Kubeconfig)
 	}
 	for _, chart := range constants.HelmChartsList {
 		pterm.Info.Printfln("Installing chart: %s", chart.ReleaseName)
@@ -117,7 +117,7 @@ func (Helm) Install() {
 func (Helm) Uninstall() {
 	magetoolsutils.CheckPtermDebug()
 	if os.Getenv("KUBECONFIG") != ".cache/config" {
-		pterm.Warning.Printfln("KUBECONFIG is not set to .cache/config. Make sure direnv/env variables loading if you want to keep the project changes from changing your user KUBECONFIG.")
+		pterm.Warning.Printfln("KUBECONFIG is not set to %s. Make sure direnv/env variables loading if you want to keep the project changes from changing your user KUBECONFIG.", constants.Kubeconfig)
 	}
 	for _, chart := range constants.HelmChartsList {
 		pterm.Info.Printfln("Uninstalling: %s", chart.ReleaseName)
@@ -137,7 +137,7 @@ func (Helm) Uninstall() {
 // 💾 Render outputs the Kubernetes manifests from the helm template for debugging purposes.
 func (Helm) Render() {
 	magetoolsutils.CheckPtermDebug()
-	if os.Getenv("KUBECONFIG") != ".cache/config" {
+	if os.Getenv("KUBECONFIG") != constants.Kubeconfig {
 		pterm.Warning.Printfln("KUBECONFIG is not set to .cache/config. Make sure direnv/env variables loading if you want to keep the project changes from changing your user KUBECONFIG.")
 	}
 	for _, chart := range constants.HelmChartsList {

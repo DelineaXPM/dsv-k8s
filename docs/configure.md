@@ -17,14 +17,14 @@ You can place your temporary config in `.cache/credentials.json` as this is igno
 {
   "app1": {
     "credentials": {
-      "clientId": "93d866d4-635f-4d4e-9ce3-0ef7f879f319",
+      "clientId": "",
       "clientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxx-xxxxx"
     },
     "tenant": "mytenant"
   },
   "default": {
     "credentials": {
-      "clientId": "64241412-3934-4aed-af26-95b1eaba0e6a",
+      "clientId": "",
       "clientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxx-xxxxx"
     },
     "tenant": "mytenant"

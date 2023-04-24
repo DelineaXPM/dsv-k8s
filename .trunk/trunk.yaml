@@ -26,6 +26,12 @@ actions:
       run: mod vendor
       triggers:
         - files: [go.mod]
+    - id: helm-lint
+      runtime: go
+      description: run helm lint on pre-push
+      run: 'helm lint --quiet --strict charts/*; echo "✔️ helm lint"'
+      triggers:
+        - git_hooks: [pre-push]
 runtimes:
   # definitions:
   # - type: go

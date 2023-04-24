@@ -104,8 +104,9 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 	log.Info().Msgf("success loading keypair for TLS: [public: '%s', private: '%s']", cfg.CertFile, cfg.KeyFile)
 
 	server := http.Server{
-		Addr:      cfg.ServerAddress,
-		TLSConfig: tlsConfig, // optional
+		Addr:              cfg.ServerAddress,
+		TLSConfig:         tlsConfig, // optional
+		ReadHeaderTimeout: 5 * time.Second,
 		Handler: http.HandlerFunc(
 			func(w http.ResponseWriter, request *http.Request) {
 				defer request.Body.Close()
@@ -135,7 +136,12 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 									Status:  metav1.StatusFailure,
 								},
 							}
-							log.Info().Msgf("[ERROR] %s", message)
+							log.Error().
+								Err(err).
+								Str("action", action).
+								Str("reason", string(reason)).
+								Msg("failure")
+
 						}
 
 						var secret corev1.Secret
@@ -152,7 +158,10 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 							errorOut("unable to marshal v1.AdmissionReview response")
 						} else {
 							w.WriteHeader(http.StatusOK)
-							w.Write(response)
+							_, err := w.Write(response)
+							if err != nil {
+								fail("unable to write v1.AdmissionReview response", metav1.StatusReasonInternalError, err)
+							}
 						}
 						log.Info().
 							Str("secretname", secret.Name).

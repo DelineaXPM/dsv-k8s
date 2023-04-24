@@ -1,3 +1,9 @@
 ✨ Deployed: {{ include "dsv.fullname" . }}
 
 📂 Namepsace: {{ .Release.Namespace }}
+
+{{- if .Values.configmap }}
+⚙️ ConfigMap created: {{ include "dsv.fullname" . }}-configmap
+{{ else }}
+➖ no configmap detected, defaults used for logging level and any other configmap values
+{{ end }}
