@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/constants"
@@ -89,6 +90,11 @@ func (Helm) Install() {
 	}
 	for _, chart := range constants.HelmChartsList {
 		pterm.Info.Printfln("Installing chart: %s", chart.ReleaseName)
+		sourceValuesFile := filepath.Join(constants.CacheChartsDirectory, chart.ReleaseName, "values.yaml")
+		if err := Checkfile(sourceValuesFile); err != nil {
+			pterm.Warning.Printfln("validation of values file threw some errors, might run into issues if this wasn't expected")
+		}
+
 		if err :=
 			invokeHelm("upgrade",
 				chart.ReleaseName,
@@ -98,7 +104,7 @@ func (Helm) Install() {
 				"--atomic",  // if set, the installation process deletes the installation on failure. The --wait flag will be set automatically if --atomic is used
 				// "--replace", // re-use the given name, only if that name is a deleted release which remains in the history. This is unsafe in production
 				"--wait", // waits, those atomic already runs this
-				"--values", filepath.Join(constants.CacheChartsDirectory, chart.ReleaseName, "values.yaml"),
+				"--values",
 				"--timeout", constants.HelmTimeout,
 				"--force",             // force resource updates through a replacement strategy
 				"--wait-for-jobs",     // will wait until all Jobs have been completed before marking the release as successful
@@ -185,5 +191,55 @@ func (Helm) Docs() error {
 	}
 	pterm.Success.Println("(Helm) Docs() - Successfully generated readmes for charts")
 
+	return nil
+}
+
+// checkfile confirms the cached values file is correctly set to allow loading images locally.
+func Checkfile(file string) error {
+	b, err := os.ReadFile(file)
+	if err != nil {
+		pterm.Error.Printfln("❌ Error reading file %q %v", file, err)
+		return err
+	}
+	re := regexp.MustCompile(`repository:\s+dsv-k8s`) //nolint:varnamelen // standard prefix, can update golangcilint config
+	match := re.Find(b)
+	if match != nil {
+		pterm.Success.Printfln("✅ %s is configured to use local image", file)
+	} else {
+		re = regexp.MustCompile(`repository:\s+[^\n]*`)
+		match = re.Find(b)
+		if match != nil {
+			pterm.Error.Printfln("❌ %s: not configured to use local image: %q", file, match)
+		} else {
+			pterm.Error.Printfln("❌ %s: not configured to use local image: repository not found", file)
+		}
+	}
+
+	re = regexp.MustCompile(`pullPolicy:\s+Never`)
+	match = re.Find(b)
+	if match != nil {
+		pterm.Success.Printfln("✅ %s is configured with pullPolicy of Never", file)
+	} else {
+		re = regexp.MustCompile(`pullPolicy:\s+\w*`)
+		match = re.Find(b)
+		if match != nil {
+			pterm.Error.Printfln("❌ %s: not configured with pullPolicy: Never: %q", file, match)
+		} else {
+			pterm.Error.Printfln("❌ %s:  not configured with pullPolicy: Never: pullPolicy not found", file)
+		}
+	}
+	re = regexp.MustCompile(`tag:\s+[']?latest[']?`)
+	match = re.Find(b)
+	if match != nil {
+		pterm.Success.Printfln("✅ %s is configured with pullPolicy of Never", file)
+	} else {
+		re = regexp.MustCompile(`tag:\s+[']?.*[']?`)
+		match = re.Find(b)
+		if match != nil {
+			pterm.Error.Printfln("❌ %s: not configured with tag: latest %q", file, match)
+		} else {
+			pterm.Error.Printfln("❌ %s: not configured with tag: Never, tag not found", file)
+		}
+	}
 	return nil
 }

@@ -141,7 +141,6 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 								Str("action", action).
 								Str("reason", string(reason)).
 								Msg("failure")
-
 						}
 
 						var secret corev1.Secret
