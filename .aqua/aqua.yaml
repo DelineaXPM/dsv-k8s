@@ -13,7 +13,7 @@ packages:
   - name: magefile/mage@v1.14.0
     tags: ['release', 'test', 'scan', 'lint']
   - name: charmbracelet/glow@v1.5.0
-  - name: goreleaser/goreleaser@v1.15.2
+  - name: goreleaser/goreleaser@v1.17.2
     tags: ['release']
   - name: mvdan/gofumpt@v0.4.0
   - name: anchore/syft@v0.73.0

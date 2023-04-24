@@ -37,3 +37,13 @@ func (Job) Redeploy() {
 		// k8s.K8s{}.Logs, // use chained command
 	)
 }
+
+// RebuildImages runs the build and minikube load commands so the new source is able to be run by `job:redeploy`.
+func (Job) RebuildImages() {
+	pterm.DefaultSection.Println("(Job) RebuildImages()")
+	mg.SerialDeps(
+		BuildAll,
+		minikube.Minikube{}.LoadImages,
+	)
+	pterm.Success.Printfln("RebuildImages() complete. Run `mage job:redeploy` to redeploy the new images.")
+}

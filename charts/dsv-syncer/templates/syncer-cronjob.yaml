@@ -1,3 +1,4 @@
+{{ $fullname := include "dsv.fullname" . }}
 {{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" -}}
 apiVersion: batch/v1
 {{- else -}}
@@ -29,7 +30,12 @@ spec:
             volumeMounts:
               - name: credentials
                 readOnly: true
-                mountPath: /home/dsv/credentials
+                mountPath: /home/nonroot/credentials
+            {{- with .Values.configmap }}
+            envFrom:
+              - configMapRef:
+                  name: {{ $fullname }}-configmap
+            {{- end }}
           restartPolicy: OnFailure
           serviceAccountName: {{ include "dsv.serviceAccountName" . }}
           securityContext:

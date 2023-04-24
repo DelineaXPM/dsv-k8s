@@ -10,7 +10,7 @@ replicaCount: 1
 
 image:
   repository: docker.io/delineaxpm/dsv-k8s
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ''
   # -- Entrypoint is the path to the binary. Since the container image could contain multiple binaries, this makes sure it's correctly mapped to the binary.
@@ -39,8 +39,22 @@ podSecurityContext:
   {}
   # fsGroup: 2000
 
+# -- securityContext is the security context for the controller.
+# This uses chainguard static nonroot based image.
+# Reference: https://edu.chainguard.dev/chainguard/chainguard-images/reference/static/overview/
 securityContext:
-  {}
+  # -- readOnlyRootFilesystem is the read only root file system flag.
+  # @default -- true
+  readOnlyRootFilesystem: true
+  # -- runAsNonRoot is the run as non root flag.
+  # @default -- true
+  runAsNonRoot: true
+  # -- runAsUser is the run as user.
+  # @default -- 65532 (from chainguard static image)
+  runAsUser: 65532
+  # -- runAsGroup is the run as group.
+  # @default -- 65532 (from chainguard static image)
+  runAsGroup: 65532
   # capabilities:
   #   drop:
   #   - ALL
@@ -69,3 +83,12 @@ dsvInjectorCredentialsSecretName: dsv-injector-credentials
 # See [cronjob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax)
 # @default - every minute, ie '* * * * *'
 cronJobSchedule: '* * * * *'
+
+# -- configmap are configuration values for the app to load.
+# All of these are defaulted in the template itself and only need be set if adjusting.
+# Since the user for the container is nonroot, only edit if you know what you are doing.
+# Boolean values should be passed quoted to avoid issues.
+# @default -- {} empty.
+configmap:
+  {}
+  # DSV_DEBUG: true  # Warning: if passing boolean, use quoted string to avoid issues

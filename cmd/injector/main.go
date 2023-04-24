@@ -19,8 +19,7 @@ import (
 
 	env "github.com/caarlos0/env/v6"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/DelineaXPM/dsv-k8s/v2/internal/logger"
 )
 
 const (
@@ -32,55 +31,42 @@ const (
 
 //nolint:gochecknoglobals // ok for providing as version output
 var (
+	// Version is the descriptive version, normally the tag from which the app was built.
+	// Since git tags can be changed, use Commit instead as the most accurate version.
 	version = "dev"
-	commit  = "none"
-	date    = "unknown"
+	// Commit is the git commit hash that the build was generated from.
+	commit = "none"
+	// Date is the date the binary was produced.
+	date = "unknown"
 )
 
 // main is the entry point for the injector; creates an HTTPS listener and listing for v1.AdmissionReview requests
 func main() {
-	if err := Run(os.Args, os.Stdout); err != nil {
+	if err := Run(os.Args); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(exitFailure)
 	}
-}
-
-// InitLogger sets up the logger magic
-// By default this is only configured to do pretty console output.
-// JSON structured logs are also possible, but not in my default template layout at this time.
-func InitLogger() {
-	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
-	log.Logger = log.With().Caller().Logger().Output(zerolog.ConsoleWriter{Out: os.Stdout})
-
-	output.FormatLevel = func(i interface{}) string {
-		return strings.ToUpper(fmt.Sprintf("| %-6s|", i))
-	}
-	output.FormatMessage = func(i interface{}) string {
-		return fmt.Sprintf("%s", i)
-	}
-	output.FormatFieldName = func(i interface{}) string {
-		return fmt.Sprintf("%s:", i)
-	}
-	output.FormatFieldValue = func(i interface{}) string {
-		return strings.ToUpper(fmt.Sprintf("%s", i))
-	}
-	log.Info().Msg("logger initialized")
-
+	os.Exit(exitSuccess) // shouldn't hit this if run is invoked correctly
 }
 
 // Run contains the actual invocation code for the injector and is public to allow running integration tests with it.
-func Run(args []string, stdout io.Writer) error {
+func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
+	log := logger.New()
+	log.Info().
+		Str("version", version).
+		Str("commit", commit).
+		Str("date", date).
+		Msg("syncer version information")
 
+	// Config is the configuration for the injector.
+	// This is provided by environment variables.
 	type Config struct {
 		CertFile            string `env:"DSV_CERT"  envDefault:"${HOME}/tls/cert.pem" envExpand:"true"`                       // Cert is the path to the public certificate file in PEM format.
 		KeyFile             string `env:"DSV_KEY" envDefault:"${HOME}/tls/key.pem" envExpand:"true"`                          // Key is the path to the private key file in PEM format.
-		CredentialsJsonFile string `env:"DSV_CREDENTIALS_JSON" envDefault:"${HOME}/credentials/config.json" envExpand:"true"` // CredentialsJsonFile is the path to the JSON formatted credentials file that is mounted as a secret.
+		CredentialsJSONFile string `env:"DSV_CREDENTIALS_JSON" envDefault:"${HOME}/credentials/config.json" envExpand:"true"` // CredentialsJSONFile is the path to the JSON formatted credentials file that is mounted as a secret.
 		ServerAddress       string `env:"DSV_SERVER_ADDRESS" envDefault:":18543"`                                             // ServerAddress is the address to listen on, e.g., 'localhost:8080' or ':8443'
 		Debug               bool   `env:"DSV_DEBUG" envDefault:"false"`                                                       // Debug enables debug logging.
 	}
-
-	// Default level for this example is info, unless debug flag is present
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	cfg := Config{}
 	err := env.Parse(&cfg)
@@ -88,18 +74,25 @@ func Run(args []string, stdout io.Writer) error {
 		log.Error().Err(err).Msg("unable to parse environment variables")
 	}
 	if cfg.Debug {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		logger.EnableDebug()
 		log.Info().Msg("debug logging enabled")
 	}
+	log.Info().Strs("args", args).Msg("starting syncer, args passed, but not used, as environment variables are used instead")
 
-	credentials, err := config.GetCredentials(cfg.CredentialsJsonFile)
+	log.Info().
+		Str("version", version).
+		Str("commit", commit).
+		Str("date", date).
+		Msg("syncer version information")
+
+	credentials, err := config.GetCredentials(cfg.CredentialsJSONFile)
 	if err != nil {
-		log.Error().Err(err).Str("credential-json", cfg.CredentialsJsonFile).Msg("unable to process credentials file")
-		return fmt.Errorf("unable to process credentials file '%s': %s", cfg.CredentialsJsonFile, err)
+		log.Error().Err(err).Str("credential-json", cfg.CredentialsJSONFile).Msg("unable to process credentials file")
+		return fmt.Errorf("unable to process credentials file %q: %w", cfg.CredentialsJSONFile, err)
 	}
 	log.Info().
 		Str("credential_names", strings.Join(credentials.Names(), ", ")).
-		Str("credential_file", cfg.CredentialsJsonFile).
+		Str("credential_file", cfg.CredentialsJSONFile).
 		Msg("credentials loaded from JSON file")
 	var tlsConfig *tls.Config
 	if cert, err := tls.LoadX509KeyPair(cfg.CertFile, cfg.KeyFile); err == nil {

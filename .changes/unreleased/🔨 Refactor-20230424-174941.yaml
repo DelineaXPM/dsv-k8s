@@ -1,0 +1,5 @@
+kind: "\U0001F528 Refactor"
+body:
+  Current version, commit sha, and date of the currently used binary are noted
+  at startup of the app to help with support cases.
+time: 2023-04-24T17:49:41.433329-05:00

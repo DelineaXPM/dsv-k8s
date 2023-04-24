@@ -1,0 +1,5 @@
+kind: "\U0001F528 Refactor"
+body: |-
+  Improve the documentation for troubleshooting and onboarding based on collaboration with support.
+  - Include stern/kubectl log to file snippets to help with support requests.
+time: 2023-04-24T17:50:29.74602-05:00

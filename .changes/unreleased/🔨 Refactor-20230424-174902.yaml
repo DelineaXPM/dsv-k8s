@@ -1,0 +1,5 @@
+kind: "\U0001F528 Refactor"
+body: |-
+  Remove invocation using flags, and adjust to environment variable configuration, to support better loading of the configuration from Kubernetes config maps.
+  - User can provide config map dynamically now in Values.yaml for the charts, which results in ability to toggle on or off the debug level logging and more.
+time: 2023-04-24T17:49:02.081303-05:00
