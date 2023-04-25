@@ -43,7 +43,7 @@ var (
 	date = "unknown"
 )
 
-// Run contains the actual invocation code for the injector and is public to allow running integration tests with it.
+// Run contains the actual invocation code for the syncer and is public to allow running integration tests with it.
 func Run(args []string) error { //nolint:funlen // ok for Run
 	log := logger.New()
 	log.Info().
