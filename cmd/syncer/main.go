@@ -52,7 +52,7 @@ func Run(args []string) error { //nolint:funlen // ok for Run
 		Str("date", date).
 		Msg("syncer version information")
 
-	// Config is the configuration for the injector.
+	// Config is the configuration for the syncer.
 	// This is provided by environment variables.
 	type Config struct {
 		Namespace           string `env:"DSV_NAMESPACE"`                                                                      // DSV_NAMESPACE is the namespace for secrets to sync. "" (the default) by default includes all namespaces.
