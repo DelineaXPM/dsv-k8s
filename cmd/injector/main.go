@@ -78,7 +78,7 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 		logger.EnableDebug()
 		log.Info().Msg("debug logging enabled")
 	}
-	log.Info().Strs("args", args).Msg("starting syncer, args passed, but not used, as environment variables are used instead")
+	log.Info().Strs("args", args).Msg("starting injector, args passed, but not used, as environment variables are used instead")
 
 	log.Info().
 		Str("version", version).
