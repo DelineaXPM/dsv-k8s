@@ -56,7 +56,7 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 		Str("version", version).
 		Str("commit", commit).
 		Str("date", date).
-		Msg("syncer version information")
+		Msg("injector version information")
 
 	// Config is the configuration for the injector.
 	// This is provided by environment variables.
