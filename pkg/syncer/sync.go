@@ -21,12 +21,12 @@ import (
 func Sync(config k8s.Config, namespace string, credentials config.Credentials, log zerolog.Logger) error {
 	secretsClient, err := k8s.GetSecretsClient(config, namespace)
 	if err != nil {
-		return fmt.Errorf("[ERROR] error getting a Kubernetes Client API Secrets Client: %s", err)
+		return fmt.Errorf("[ERROR] error getting a Kubernetes Client API Secrets Client: %w", err)
 	}
 	log.Debug().Msgf("getting a list of Secrets in namespace %q", namespace)
 
 	if secrets, err := secretsClient.List(context.TODO(), metav1.ListOptions{}); err != nil {
-		return fmt.Errorf("[ERROR] unable to get a list of secrets in namespace %q: %s", namespace, err)
+		return fmt.Errorf("[ERROR] unable to get a list of secrets in namespace %q: %w", namespace, err)
 	} else {
 		wg := sync.WaitGroup{}
 
