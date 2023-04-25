@@ -59,8 +59,7 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 			Err(err).
 			Str("secret_name", secret.Name).
 			Str("secret_namespace", secret.Namespace).
-			Msg("unable to patch Secret")
-
+			Msg("patch.GenerateJsonPatch")
 	} else if jsonPatch == nil {
 		log.Debug().Msgf("k8s Secret %q' did not require patching", secret.Name)
 	} else {
@@ -69,8 +68,7 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 				Err(err).
 				Str("secret_name", secret.Name).
 				Str("secret_namespace", secret.Namespace).
-				Msg("unable to patch Secret")
-
+				Msg("k8s.GetSecretsClient")
 		} else {
 			if result, err := secretsClient.Patch(
 				context.TODO(), secret.Name, types.JSONPatchType, jsonPatch, metav1.PatchOptions{},
@@ -79,8 +77,7 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 					Err(err).
 					Str("secret_name", secret.Name).
 					Str("secret_namespace", secret.Namespace).
-					Msg("unable to patch Secret")
-
+					Msg("secretsClient.Patch")
 			} else {
 				log.Debug().Msgf("patched k8s Secret %q", result.Name)
 			}
