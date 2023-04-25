@@ -17,7 +17,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	env "github.com/caarlos0/env/v6"
+	"github.com/caarlos0/env/v6"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/internal/logger"
 )
@@ -72,6 +72,7 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 	err := env.Parse(&cfg)
 	if err != nil {
 		log.Error().Err(err).Msg("unable to parse environment variables")
+		return fmt.Errorf("fatal issue, as unabale to parse the required environment variables: %w", err)
 	}
 	if cfg.Debug {
 		logger.EnableDebug()
