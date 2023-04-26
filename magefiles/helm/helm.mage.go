@@ -104,7 +104,7 @@ func (Helm) Install() {
 				"--atomic",  // if set, the installation process deletes the installation on failure. The --wait flag will be set automatically if --atomic is used
 				// "--replace", // re-use the given name, only if that name is a deleted release which remains in the history. This is unsafe in production
 				"--wait", // waits, those atomic already runs this
-				"--values",
+				"--values", sourceValuesFile,
 				"--timeout", constants.HelmTimeout,
 				"--force",             // force resource updates through a replacement strategy
 				"--wait-for-jobs",     // will wait until all Jobs have been completed before marking the release as successful
