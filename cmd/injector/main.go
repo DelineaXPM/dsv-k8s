@@ -80,12 +80,6 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 	}
 	log.Info().Strs("args", args).Msg("starting injector, args passed, but not used, as environment variables are used instead")
 
-	log.Info().
-		Str("version", version).
-		Str("commit", commit).
-		Str("date", date).
-		Msg("syncer version information")
-
 	credentials, err := config.GetCredentials(cfg.CredentialsJSONFile)
 	if err != nil {
 		log.Error().Err(err).Str("credential-json", cfg.CredentialsJSONFile).Msg("unable to process credentials file")
@@ -101,6 +95,7 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 		log.Info().Str("cert", cfg.CertFile).Str("key", cfg.KeyFile).Msg("LoadX509KeyPair")
 	} else {
 		log.Error().Err(err).Msgf("unable to load keypair for TLS: %s", err)
+		return fmt.Errorf("unable to load keypair for TLS: %w", err)
 	}
 	log.Info().Msgf("success loading keypair for TLS: [public: '%s', private: '%s']", cfg.CertFile, cfg.KeyFile)
 

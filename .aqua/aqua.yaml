@@ -31,3 +31,5 @@ packages:
     tags: ['ci']
   - name: stern/stern@v1.23.0
   - name: tilt-dev/tilt@v0.32.0
+  - name: golangci/golangci-lint@v1.52.2
+    tags: ['lint']
