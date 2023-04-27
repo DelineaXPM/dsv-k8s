@@ -13,13 +13,13 @@ import (
 )
 
 // Inject adds to, updates or replaces the k8s Secret.Data with dsv Secret.Data (see above)
-func Inject(secret corev1.Secret, UID types.UID, credentials config.Credentials, log zerolog.Logger) (*v1.AdmissionResponse, error) {
+func Inject(secret corev1.Secret, uID types.UID, credentials config.Credentials, log zerolog.Logger) (*v1.AdmissionResponse, error) {
 	if jsonPatch, err := patch.GenerateJsonPatch(secret, credentials); err != nil {
 		log.Error().Err(err).
 			Str("secret_name", secret.Name).
 			Str("namespace", secret.Namespace).
 			Msg("unable to patch secret")
-		return nil, fmt.Errorf("unable to generate JSON patch for Secret '%s': %s", secret.Name, err)
+		return nil, fmt.Errorf("unable to generate JSON patch for Secret '%s': %w", secret.Name, err)
 	} else if jsonPatch != nil {
 		patchType := v1.PatchTypeJSONPatch
 
@@ -29,7 +29,7 @@ func Inject(secret corev1.Secret, UID types.UID, credentials config.Credentials,
 			Result: &metav1.Status{
 				Status: metav1.StatusSuccess,
 			},
-			UID:       UID,
+			UID:       uID,
 			PatchType: &patchType,
 			Patch:     jsonPatch,
 		}, nil
@@ -40,7 +40,7 @@ func Inject(secret corev1.Secret, UID types.UID, credentials config.Credentials,
 			Result: &metav1.Status{
 				Status: metav1.StatusSuccess,
 			},
-			UID: UID,
+			UID: uID,
 		}, nil
 	}
 }

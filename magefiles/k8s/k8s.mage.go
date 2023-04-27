@@ -15,7 +15,6 @@ import (
 	"github.com/magefile/mage/sh"
 	"github.com/pterm/pterm"
 	"github.com/sheldonhull/magetools/pkg/magetoolsutils"
-	mtu "github.com/sheldonhull/magetools/pkg/magetoolsutils"
 )
 
 // k8s contains commands for kubectl and other kubernetes related commands.
@@ -23,7 +22,7 @@ type K8s mg.Namespace
 
 // Init copies the k8 yaml manifest files from the examples directory to the cache directory for editing and linking in integration testing.
 func (K8s) Init() error {
-	mtu.CheckPtermDebug()
+	magetoolsutils.CheckPtermDebug()
 	pterm.DefaultHeader.Println("(K8s) Init()")
 	// Create the cache directory if it doesn't exist.
 	if _, err := os.Stat(constants.CacheManifestDirectory); os.IsNotExist(err) {
@@ -59,7 +58,7 @@ func (K8s) Init() error {
 
 // Apply applies a kubernetes manifest.
 func (K8s) Apply(manifest string) error {
-	mtu.CheckPtermDebug()
+	magetoolsutils.CheckPtermDebug()
 	pterm.DefaultHeader.Println("(K8s) Apply()")
 	return sh.Run(
 		"kubectl",
@@ -76,7 +75,7 @@ func (K8s) Apply(manifest string) error {
 
 // Apply applies a kubernetes manifest.
 func (K8s) Delete(manifest string) {
-	mtu.CheckPtermDebug()
+	magetoolsutils.CheckPtermDebug()
 	pterm.DefaultHeader.Println("(K8s) Delete()")
 	if err := sh.Run(
 		"kubectl",
@@ -93,7 +92,7 @@ func (K8s) Delete(manifest string) {
 
 // Logs streams logs until canceled for the dsv syncing jobs, based on the label `dsv.delinea.com: syncer`.
 func (K8s) Logs() error {
-	mtu.CheckPtermDebug()
+	magetoolsutils.CheckPtermDebug()
 	if _, err := exec.LookPath("stat"); err != nil {
 		pterm.Error.Printfln("install stern tool manually (see .devcontainer/Dockerfile for install command) to run this")
 		return errors.New("stern tool not installed yet")
@@ -173,5 +172,4 @@ func (K8s) OutputSecret() {
 			}
 		}
 	}
-	return
 }

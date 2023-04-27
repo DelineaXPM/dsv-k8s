@@ -56,7 +56,7 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 			Msg("possible patch complete")
 	}()
 
-	if jsonPatch, err := patch.GenerateJsonPatch(secret, credentials); err != nil {
+	if jsonPatch, err := patch.GenerateJsonPatch(secret, credentials); err != nil { //nolint:nestif // known issue, but will would be refactoring for the future
 		log.Error().
 			Err(err).
 			Str("secret_name", secret.Name).
