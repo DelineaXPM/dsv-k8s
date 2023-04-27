@@ -99,23 +99,22 @@ func (Helm) Install() {
 			pterm.Debug.Println("debug flag enabled for helm")
 			debugHelm = "--debug=true" // enable verbose output
 		}
-		if err :=
-			invokeHelm("upgrade",
-				chart.ReleaseName,
-				chart.ChartPath,
-				"--namespace", constants.KubectlNamespace,
-				"--install", // install if not already installed
-				"--atomic",  // if set, the installation process deletes the installation on failure. The --wait flag will be set automatically if --atomic is used
-				// "--replace", // re-use the given name, only if that name is a deleted release which remains in the history. This is unsafe in production
-				"--wait", // waits, those atomic already runs this
-				"--values", sourceValuesFile,
-				"--timeout", constants.HelmTimeout,
-				"--force",             // force resource updates through a replacement strategy
-				"--wait-for-jobs",     // will wait until all Jobs have been completed before marking the release as successful
-				"--dependency-update", // update dependencies if they are missing before installing the chart
-				debugHelm,
-				// NOTE: Can pass credentials/certs etc in. NOT ADDED YET - "--set-file", "sidecar.configFile=config.yaml",
-			); err != nil {
+		if err := invokeHelm("upgrade",
+			chart.ReleaseName,
+			chart.ChartPath,
+			"--namespace", constants.KubectlNamespace,
+			"--install", // install if not already installed
+			"--atomic",  // if set, the installation process deletes the installation on failure. The --wait flag will be set automatically if --atomic is used
+			// "--replace", // re-use the given name, only if that name is a deleted release which remains in the history. This is unsafe in production
+			"--wait", // waits, those atomic already runs this
+			"--values", sourceValuesFile,
+			"--timeout", constants.HelmTimeout,
+			"--force",             // force resource updates through a replacement strategy
+			"--wait-for-jobs",     // will wait until all Jobs have been completed before marking the release as successful
+			"--dependency-update", // update dependencies if they are missing before installing the chart
+			debugHelm,
+			// NOTE: Can pass credentials/certs etc in. NOT ADDED YET - "--set-file", "sidecar.configFile=config.yaml",
+		); err != nil {
 			pterm.Warning.Printfln("failed to install chart: %s, err: %v", chart.ReleaseName, err)
 		} else {
 			pterm.Success.Printfln("successfully installed chart: %s", chart.ReleaseName)
@@ -131,12 +130,11 @@ func (Helm) Uninstall() {
 	}
 	for _, chart := range constants.HelmChartsList {
 		pterm.Info.Printfln("Uninstalling: %s", chart.ReleaseName)
-		if err :=
-			invokeHelm("uninstall",
-				chart.ReleaseName,
-				"--wait",  // waits, those atomic already runs this
-				"--debug", // enable verbose output
-			); err != nil {
+		if err := invokeHelm("uninstall",
+			chart.ReleaseName,
+			"--wait",  // waits, those atomic already runs this
+			"--debug", // enable verbose output
+		); err != nil {
 			pterm.Warning.Printfln("failed to uninstall: %s, err: %v", chart.ReleaseName, err)
 		} else {
 			pterm.Success.Printfln("Successfully uninstalled: %s", chart.ReleaseName)

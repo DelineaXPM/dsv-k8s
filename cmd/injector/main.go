@@ -160,7 +160,8 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 						}
 						log.Info().
 							Str("secretname", secret.Name).
-							Msgf("took %s", time.Since(start))
+							Dur("duration", time.Since(start)).
+							Msg("injection complete")
 					}
 				}
 			},

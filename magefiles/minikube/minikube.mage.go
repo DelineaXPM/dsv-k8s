@@ -121,7 +121,12 @@ func (Minikube) LoadImages() {
 	mtu.CheckPtermDebug()
 	// for _, chart := range constants.HelmChartsList {
 	// Load image into minikube
-	if err := sh.Run("minikube", "image", "load", "--profile", constants.KindClusterName, fmt.Sprintf("%s:latest", constants.DockerImageNameLocal)); err != nil {
+	if err := sh.Run("minikube",
+		"--profile", constants.KindClusterName,
+		"image", "load",
+		"--overwrite", // minikube CLI docs causing strife, wasting time in my life.... ensure this is here or problems ensure in your local testing :-)
+		fmt.Sprintf("%s:latest", constants.DockerImageNameLocal),
+	); err != nil {
 		pterm.Error.Printfln("unable to load image into minikube: %v", err)
 	}
 	pterm.Success.Printfln("image loaded into minikube: %s", constants.DockerImageNameLocal)

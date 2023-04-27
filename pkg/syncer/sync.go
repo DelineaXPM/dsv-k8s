@@ -61,7 +61,10 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 			Str("secret_namespace", secret.Namespace).
 			Msg("patch.GenerateJsonPatch")
 	} else if jsonPatch == nil {
-		log.Debug().Msgf("k8s Secret %q' did not require patching", secret.Name)
+		log.Debug().
+			Str("secret_name", secret.Name).
+			Str("secret_namespace", secret.Namespace).
+			Msg("GenerateJsonPatch no patching required")
 	} else {
 		if secretsClient, err := k8s.GetSecretsClient(config, secret.Namespace); err != nil {
 			log.Error().
