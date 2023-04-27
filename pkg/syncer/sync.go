@@ -23,7 +23,7 @@ func Sync(config k8s.Config, namespace string, credentials config.Credentials, l
 	if err != nil {
 		return fmt.Errorf("[ERROR] error getting a Kubernetes Client API Secrets Client: %w", err)
 	}
-	log.Debug().Msgf("getting a list of Secrets in namespace %q", namespace)
+	log.Debug().Str("namespace", namespace).Msg("getting a list of secrets")
 
 	if secrets, err := secretsClient.List(context.TODO(), metav1.ListOptions{}); err != nil {
 		return fmt.Errorf("[ERROR] unable to get a list of secrets in namespace %q: %w", namespace, err)

@@ -94,7 +94,11 @@ func (Helm) Install() {
 		if err := Checkfile(sourceValuesFile); err != nil {
 			pterm.Warning.Printfln("validation of values file threw some errors, might run into issues if this wasn't expected")
 		}
-
+		debugHelm := "--debug=false"
+		if mg.Verbose() {
+			pterm.Debug.Println("debug flag enabled for helm")
+			debugHelm = "--debug=true" // enable verbose output
+		}
 		if err :=
 			invokeHelm("upgrade",
 				chart.ReleaseName,
@@ -109,7 +113,7 @@ func (Helm) Install() {
 				"--force",             // force resource updates through a replacement strategy
 				"--wait-for-jobs",     // will wait until all Jobs have been completed before marking the release as successful
 				"--dependency-update", // update dependencies if they are missing before installing the chart
-				"--debug",             // enable verbose output
+				debugHelm,
 				// NOTE: Can pass credentials/certs etc in. NOT ADDED YET - "--set-file", "sidecar.configFile=config.yaml",
 			); err != nil {
 			pterm.Warning.Printfln("failed to install chart: %s, err: %v", chart.ReleaseName, err)

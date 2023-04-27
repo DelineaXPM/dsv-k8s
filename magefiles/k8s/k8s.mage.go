@@ -2,16 +2,19 @@
 package k8s
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/constants"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/pterm/pterm"
+	"github.com/sheldonhull/magetools/pkg/magetoolsutils"
 	mtu "github.com/sheldonhull/magetools/pkg/magetoolsutils"
 )
 
@@ -96,19 +99,79 @@ func (K8s) Logs() error {
 		return errors.New("stern tool not installed yet")
 	}
 	pterm.DefaultHeader.Println("(K8s) Logs()")
-	pterm.Warning.Printfln("if you run into log output issues, just try running:\n\n\t\tkubectl logs  --context %s --namespace %s  --selector 'dsv-filter-name in (dsv-syncer, dsv-injector)' --follow --prefix\n", constants.KindContextName, constants.KubectlNamespace)
-	pterm.Warning.Println("query without selector:\n\n\tstern --kubeconfig .cache/config --namespace dsv  --timestamps . ")
-	pterm.Debug.Println(
-		"Manually run stern with the following:\n\n\t",
+	pterm.Info.Printfln("if you run into log output issues, just try running:\n\n\t\tkubectl logs  --context %s --namespace %s  --selector 'dsv-filter-name in (dsv-syncer, dsv-injector)' --follow --prefix\n", constants.KindContextName, constants.KubectlNamespace)
+	pterm.Info.Println("🔍 query without selector:\n\n\tstern --kubeconfig .cache/config --namespace dsv  --timestamps . ")
+	pterm.Info.Println(
+		"🔍 Manually run stern with the following:\n\n\t",
 		"stern",
 		"--namespace", constants.KubectlNamespace,
 		"--timestamps",
 		"--selector", "dsv-filter-name in (dsv-syncer, dsv-injector)",
 	)
+
+	pterm.Info.Println(
+		"🔍 Manually run stern againt entire cluster with following:\n\n\t",
+		"stern",
+		"--all-namespaces",
+		"--timestamps",
+		".",
+	)
+	pterm.DefaultHeader.Println("kubectl output first")
+	_ = sh.RunV("kubectl",
+		"logs",
+		"--kubeconfig", constants.Kubeconfig,
+		"--context", constants.KindContextName,
+		"--namespace", constants.KubectlNamespace,
+		"--cluster", constants.KindContextName,
+		"--selector", "dsv-filter-name in (dsv-syncer, dsv-injector)",
+		// "--follow",
+		"--since=5m",
+		"--prefix",
+	)
+	pterm.DefaultHeader.Println("stern streaming output")
 	return sh.RunV(
 		"stern",
 		"--namespace", constants.KubectlNamespace,
 		"--timestamps",
 		"--selector", "dsv-filter-name in (dsv-syncer, dsv-injector)",
 	)
+}
+
+// 🔍 OutputSecret outputs the base64 decoded values for local minikube style testing.
+func (K8s) OutputSecret() {
+	magetoolsutils.CheckPtermDebug()
+	for _, secretname := range []string{"user-domain-pass", "user-domain", "pass-domain"} {
+		response, err := sh.Output(
+			"kubectl",
+			"--kubeconfig", constants.Kubeconfig,
+			"--context", constants.KindContextName,
+			"--namespace", constants.KubectlNamespace,
+			"--cluster", constants.KindContextName,
+			"get",
+			"secret", secretname,
+			//"-o", "jsonpath='{.data.password}'",
+			"-o", `go-template={{.data.password}}`,
+			"--ignore-not-found",
+		)
+		if err != nil {
+			pterm.Warning.Printfln("not able to find this %q: %v", secretname, err)
+		} else {
+			cleanedoutput := strings.TrimSpace(response)
+			b, err := base64.StdEncoding.DecodeString(cleanedoutput)
+			if err != nil {
+				pterm.Warning.Printfln("issue decoding string: %v", err)
+				pterm.Debug.Printfln(
+					"kubectl --kubeconfig %s --context %s --namespace %s --cluster %s get secret %s -o go-template='{{.data.password}}' --ignore-not-found",
+					constants.Kubeconfig,
+					constants.KindContextName,
+					constants.KubectlNamespace,
+					constants.KindContextName,
+					secretname,
+				)
+			} else {
+				pterm.Info.Printfln("🔑 [only for local testing] %q: %q", secretname, string(b)) // ♥️ nested if statements 😀
+			}
+		}
+	}
+	return
 }

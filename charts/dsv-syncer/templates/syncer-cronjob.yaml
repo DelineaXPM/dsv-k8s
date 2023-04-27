@@ -6,7 +6,7 @@ apiVersion: batch/v1beta1
 {{- end }}
 kind: CronJob
 metadata:
-  name: {{ include "dsv.fullname" . }}
+  name: {{ .Chart.Name }}
   labels:
     {{- include "dsv.labels" . | nindent 4 }}
 spec:

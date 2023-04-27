@@ -144,7 +144,7 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 						if err := json.Unmarshal(review.Request.Object.Raw, &secret); err != nil {
 							log.Error().Err(err).Msg("unable to unmarshal the Secret from the v1.AdmissionReview")
 							fail("unable to unmarshal the Secret from the v1.AdmissionReview", metav1.StatusReasonBadRequest, err)
-						} else if review.Response, err = injector.Inject(secret, review.Request.UID, *credentials); err != nil {
+						} else if review.Response, err = injector.Inject(secret, review.Request.UID, *credentials, log); err != nil {
 							log.Error().Err(err).Msg("calling injector.Inject")
 							fail("calling injector.Inject", metav1.StatusReasonInvalid, err)
 						}

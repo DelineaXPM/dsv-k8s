@@ -128,6 +128,31 @@ func (Minikube) LoadImages() {
 	// }
 }
 
+// 💾 RemoveImages removes the images both local and docker registered from the minikube cluster.
+func (Minikube) RemoveImages() {
+	mtu.CheckPtermDebug()
+	// for _, chart := range constants.HelmChartsList {
+	// Load image into minikube
+	if err := sh.Run("minikube", "image", "rm", "--profile", constants.KindClusterName, fmt.Sprintf("%s:latest", constants.DockerImageNameLocal)); err != nil {
+		pterm.Error.Printfln("image not rm from minikube: %v", err)
+	}
+	if err := sh.Run("minikube", "image", "rm", "--profile", constants.KindClusterName, constants.DockerImageQualified); err != nil {
+		pterm.Warning.Printfln("image not rm from minikube: %v", err)
+	}
+	pterm.Success.Printfln("image removed from minikube: %s", constants.DockerImageNameLocal)
+	// }
+}
+
+// 🔍 ListImages provides a list of the minikube loaded images
+func (Minikube) ListImages() {
+	mtu.CheckPtermDebug()
+	pterm.DefaultSection.Println("(Minikube) ListImages()")
+	if err := sh.RunV("minikube", "image", "ls", "--profile", constants.KindClusterName); err != nil {
+		pterm.Error.Printfln("images not listed from minikube: %v", err)
+	}
+	pterm.Success.Printfln("images listed from minikube")
+}
+
 // 🗑️ Destroy tears down the Kind cluster.
 func (Minikube) Destroy() error {
 	mtu.CheckPtermDebug()

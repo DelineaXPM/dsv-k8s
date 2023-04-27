@@ -104,6 +104,6 @@ func Run(args []string) error { //nolint:funlen // ok for Run
 	); err != nil {
 		log.Fatal().Msgf("[ERROR] unable to sync Secrets: %s", err)
 	}
-	log.Info().Msgf("processing took %s", time.Since(start))
+	log.Info().Dur("duration", time.Since(start)).Msg("syncer processing complete")
 	return nil
 }

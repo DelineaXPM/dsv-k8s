@@ -30,10 +30,11 @@ func (Job) Init() {
 func (Job) Redeploy() {
 	pterm.DefaultSection.Println("(Job) Redeploy()")
 	mg.SerialDeps(
+		minikube.Minikube{}.LoadImages, // just be sure in case forget to load local images that the latest is always used
 		helm.Helm{}.Uninstall,
 		mg.F(k8s.K8s{}.Delete, constants.CacheManifestDirectory),
+		helm.Helm{}.Install, // this should take place first so the creation of the manifests can benefit from the resulting injector/syncer
 		mg.F(k8s.K8s{}.Apply, constants.CacheManifestDirectory),
-		helm.Helm{}.Install,
 		// k8s.K8s{}.Logs, // use chained command
 	)
 }

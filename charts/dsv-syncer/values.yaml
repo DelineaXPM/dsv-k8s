@@ -12,9 +12,11 @@ image:
   repository: docker.io/delineaxpm/dsv-k8s
   # -- pullPolicy is the image pull policy.
   # If running locally built images, you'll want to set to Never to ensure local loaded images are used.
+  # Local testing use: `Never`.
   # @default -- IfNotPresent
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
+  # Local Testing: Use `latest`.
   # @default -- the current app version/chart version
   tag: ''
   # -- Entrypoint is the path to the binary. Since the container image could contain multiple binaries, this makes sure it's correctly mapped to the binary.

@@ -50,7 +50,6 @@ lint:
     - gofumpt@0.3.1
     - renovate@35.53.0
     - golangci-lint@SYSTEM
-    - gofmt@1.19.3
     - git-diff-check
     - taplo@0.7.0
     - markdownlint@0.33.0
