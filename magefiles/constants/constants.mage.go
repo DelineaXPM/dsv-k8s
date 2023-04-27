@@ -52,3 +52,10 @@ const (
 	// SternFilter is the filter for dsv-filter-name for streaming logs easily.
 	SternFilter = "dsv-syncer, dsv-injector"
 )
+
+const (
+	// MinikubeCPU is the CPU count for minikube.
+	MinikubeCPU    = "2"
+	// MinikubeMemory is the memory for minikube.
+	MinikubeMemory = "2048"
+)
