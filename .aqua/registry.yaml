@@ -1,0 +1,12 @@
+---
+packages:
+  - type: go_install
+    name: mage-select
+    path: github.com/iwittkau/mage-select
+    link: github.com/iwittkau/mage-select
+    description: CLI frontend for mage based on promptui.
+    search_words:
+      - mage
+      - module
+      - go
+      - prompt

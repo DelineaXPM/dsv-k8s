@@ -50,7 +50,9 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 	start := time.Now()
 	defer func() {
 		log.Debug().
-			Dur("duration", time.Since(start)).Str("secret_name", secret.Name).
+			Dur("duration", time.Since(start)).
+			Str("secret_name", secret.Name).
+			Bool("patched", true).
 			Msg("possible patch complete")
 	}()
 
@@ -59,30 +61,38 @@ func pp(secret corev1.Secret, credentials config.Credentials, config k8s.Config,
 			Err(err).
 			Str("secret_name", secret.Name).
 			Str("secret_namespace", secret.Namespace).
+			Bool("patched", false).
 			Msg("patch.GenerateJsonPatch")
 	} else if jsonPatch == nil {
 		log.Debug().
 			Str("secret_name", secret.Name).
 			Str("secret_namespace", secret.Namespace).
-			Msg("GenerateJsonPatch no patching required")
+			Bool("patched", false).
+			Msg("GenerateJsonPatch")
 	} else {
 		if secretsClient, err := k8s.GetSecretsClient(config, secret.Namespace); err != nil {
 			log.Error().
 				Err(err).
 				Str("secret_name", secret.Name).
 				Str("secret_namespace", secret.Namespace).
+				Bool("patched", false).
 				Msg("k8s.GetSecretsClient")
 		} else {
-			if result, err := secretsClient.Patch(
+			if _, err := secretsClient.Patch(
 				context.TODO(), secret.Name, types.JSONPatchType, jsonPatch, metav1.PatchOptions{},
 			); err != nil {
 				log.Error().
 					Err(err).
 					Str("secret_name", secret.Name).
 					Str("secret_namespace", secret.Namespace).
+					Bool("patched", true).
 					Msg("secretsClient.Patch")
 			} else {
-				log.Debug().Msgf("patched k8s Secret %q", result.Name)
+				log.Info().
+					Str("secret_name", secret.Name).
+					Str("secret_namespace", secret.Namespace).
+					Bool("patched", true).
+					Msg("patch successful")
 			}
 		}
 	}

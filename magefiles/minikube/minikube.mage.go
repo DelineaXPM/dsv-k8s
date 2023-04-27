@@ -138,33 +138,32 @@ func (Minikube) LoadImages() {
 // 💾 RemoveImages removes the images both local and docker registered from the minikube cluster.
 func (Minikube) RemoveImages() {
 	mtu.CheckPtermDebug()
-	var output  string
-    // var err error
-    var elapsed time.Duration
+	var output string
+	// var err error
+	var elapsed time.Duration
 
+	for {
+		// Run the docker rmi command and capture the output
 
-    for {
-        // Run the docker rmi command and capture the output
-
-		 cmd := exec.Command("minikube", "image", "rm","--profile", constants.KindClusterName, fmt.Sprintf("%s:latest", constants.DockerImageNameLocal))
-		 out, err := cmd.CombinedOutput()
-		 output = string(out)
-		 if err != nil {
+		cmd := exec.Command("minikube", "image", "rm", "--profile", constants.KindClusterName, fmt.Sprintf("%s:latest", constants.DockerImageNameLocal))
+		out, err := cmd.CombinedOutput()
+		output = string(out)
+		if err != nil {
 			pterm.Error.Printfln("image not rm from minikube: %v", err)
 		}
-        // Check if the output contains the image name
-        if !strings.Contains(output, "docker.io/library/dsv-k8s:latest") {
+		// Check if the output contains the image name
+		if !strings.Contains(output, "docker.io/library/dsv-k8s:latest") {
 			pterm.Success.Printfln("image unloaded")
-            break
-        }
+			break
+		}
 
-        // If the image is still being unloaded, print a progress message
-        pterm.Info.Printf("Still waiting for image to unload (elapsed time: %s)\n", elapsed.Round(time.Second))
+		// If the image is still being unloaded, print a progress message
+		pterm.Info.Printf("Still waiting for image to unload (elapsed time: %s)\n", elapsed.Round(time.Second))
 
-        // Wait for 3 seconds before trying again
-        time.Sleep(3 * time.Second)
-        elapsed += 3 * time.Second
-    }
+		// Wait for 3 seconds before trying again
+		time.Sleep(3 * time.Second)
+		elapsed += 3 * time.Second
+	}
 
 	// for _, chart := range constants.HelmChartsList {
 	// Load image into minikube

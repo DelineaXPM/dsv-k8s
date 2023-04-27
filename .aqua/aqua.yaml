@@ -1,14 +1,20 @@
 ---
 # aqua - Declarative CLI Version Manager
 # https://aquaproj.github.io/
+checksum:
+  enabled: false
+  require_checksum: false
 registries:
   - type: standard
     ref: v3.148.0 # renovate: depName=aquaproj/aqua-registry
+  - name: local
+    type: local
+    path: registry.yaml
 packages:
   - name: miniscruff/changie@v1.12.0
     tags: ['release']
   - name: golang/go@go1.20.3
-    tags: ['release', 'test', 'scan', 'lint']
+    tags: ['first', 'release', 'test', 'scan', 'lint']
   - name: direnv/direnv@v2.32.2
   - name: magefile/mage@v1.14.0
     tags: ['release', 'test', 'scan', 'lint']
@@ -33,3 +39,7 @@ packages:
   - name: tilt-dev/tilt@v0.32.0
   - name: golangci/golangci-lint@v1.52.2
     tags: ['lint']
+  - name: mage-select
+    version: v1.4.2
+    registry: local
+    tags: ['goinstall']
