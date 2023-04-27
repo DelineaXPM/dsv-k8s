@@ -71,7 +71,7 @@
   "containerEnv": {
     "ENABLE_NONROOT_DOCKER": "true",
     "GITHUB_OATH_TOKEN": "${localEnv:GITHUB_OATH_TOKEN}",
-    "CGO_ENABLED": "false",
+    "CGO_ENABLED": "false"
   },
   "remoteEnv": {
     "ENABLE_NONROOT_DOCKER": "true"
