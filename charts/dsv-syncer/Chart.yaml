@@ -1,7 +1,24 @@
 ---
 apiVersion: v2
 name: dsv-syncer
-description: A Helm chart for the Delinea DevOps Secrets Vault (DSV) Kubernetes Synchronizer Job.
+description: |
+  A Helm chart for the Delinea DevOps Secrets Vault (DSV) Kubernetes Synchronizer Job.
+
+  ```shell
+  NAMESPACE='dsv'
+  IMAGE_REPOSITORY='docker.io/delineaxpm/dsv-k8s'
+  IMAGE_TAG='v1.2.0' # use latest for test, but pin to a specific version for production
+
+  helm install
+      --namespace $NAMESPACE
+      --create-namespace \
+      --set image.repository=${IMAGE_REPOSITORY} \
+      --set image.tag=${IMAGE_TAG} \
+      --atomic \
+      --timeout "5m" \
+      --debug \
+      dsv-syncer ./charts/dsv-syncer
+  ```
 keywords:
   - Delinea
   - DevOps
@@ -9,7 +26,7 @@ keywords:
   - secrets
   - vault
 type: application
-version: 0.1.3
+version: v1.2.0
 appVersion: latest
 maintainers:
   - name: Sheldon Hull

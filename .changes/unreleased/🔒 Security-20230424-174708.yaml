@@ -1,3 +1,0 @@
-kind: "\U0001F512 Security"
-body: Improve the base image to use Chainguard's static nonroot image.
-time: 2023-04-24T17:47:08.207006-05:00

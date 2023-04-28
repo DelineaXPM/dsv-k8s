@@ -1,6 +1,0 @@
-kind: "\U0001F916 CI & Build"
-body:
-  Add checks for local development that validate the values files in `.cache/charts`
-  are set to use locally available images, latest tag, and pullPolicy Never for correct
-  local experience.
-time: 2023-04-24T18:56:21.955099-05:00

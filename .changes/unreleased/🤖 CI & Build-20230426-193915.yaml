@@ -1,6 +1,0 @@
-kind: "\U0001F916 CI & Build"
-body: "Improve the mage tasks for minikube to load images, remove test images, list
-  images, and more.\nAdd the missing `--overwrite` tag to the `mage minikube:loadimages`
-  task, which probably accounts for a few hours of a certain developer having a less
-  than stellar debugging experience. \U0001F600"
-time: 2023-04-26T19:39:15.291727-05:00

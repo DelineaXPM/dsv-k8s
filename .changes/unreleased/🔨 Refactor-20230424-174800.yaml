@@ -1,5 +1,0 @@
-kind: "\U0001F528 Refactor"
-body: |-
-  Improve output to be structured json logs.
-  This means tooling such as Datadog and others that support ingestion of json structured logs can automatically parse into queryable format with no extra effort.
-time: 2023-04-24T17:48:00.439283-05:00
