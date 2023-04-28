@@ -55,7 +55,7 @@ const (
 
 const (
 	// MinikubeCPU is the CPU count for minikube.
-	MinikubeCPU    = "2"
+	MinikubeCPU = "2"
 	// MinikubeMemory is the memory for minikube.
 	MinikubeMemory = "2048"
 )
