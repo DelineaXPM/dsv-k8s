@@ -76,16 +76,22 @@ func Init() error { //nolint:deadcode // Not dead, it's alive.
 		return nil
 	}
 
-	pterm.DefaultSection.Println("Aqua install")
-	if err := sh.RunV("aqua", "install"); err != nil {
-		return err
+	pterm.DefaultSection.Println("Aqua install (any first packages)")
+	if err := sh.RunV("aqua", "install", "--tags", "first"); err != nil {
+		pterm.Warning.Printfln("aqua install failed, continuing: %v", err)
 	}
+	pterm.Success.Println("aqua install --tags first complete")
+	pterm.DefaultSection.Println("Aqua install remaining tools")
+	if err := sh.RunV("aqua", "install"); err != nil {
+		pterm.Warning.Printfln("aqua install failed, continuing: %v", err)
+	}
+	pterm.Success.Println("aqua install complete")
 	// These can run in parallel as different toolchains.
-	mg.Deps(
+	mg.SerialDeps(
 		(InstallTrunk),
 		(TrunkInit),
 	)
-
+	pterm.Info.Printfln("Initializing .cache/ directory with copies of Kubernetes YAML + Helm charts.\nUse this to edit your local configurations for minikube based testing")
 	mg.Deps(
 		k8s.K8s{}.Init,
 		helm.Helm{}.Init,
@@ -96,17 +102,20 @@ func Init() error { //nolint:deadcode // Not dead, it's alive.
 // InstallTrunk installs trunk.io tooling if it isn't already found.
 func InstallTrunk() error {
 	magetoolsutils.CheckPtermDebug()
+	pterm.DefaultSection.Println("InstallTrunk()")
 	if runtime.GOOS == "windows" {
 		pterm.Warning.Println("InstallTrunk() trunk.io not supported on windows, skipping")
 		return nil
 	}
 	_, err := exec.LookPath("trunk")
-	if err != nil && os.IsNotExist(err) {
+	if err != nil {
+		// if os.IsNotExist(err) {
 		pterm.Warning.Printfln("unable to resolve aqua cli tool, please install for automated project tooling setup: https://aquaproj.github.io/docs/tutorial-basics/quick-start#install-aqua")
 		_, err := script.Exec("curl https://get.trunk.io -fsSL").Exec("bash -s -- -y").Stdout()
 		if err != nil {
 			return err
 		}
+		// }
 	} else {
 		pterm.Success.Printfln("trunk.io already installed, skipping")
 	}

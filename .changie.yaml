@@ -53,9 +53,24 @@ newlines:
   endOfVersion: 0
 
 replacements:
+  # chart versions align with the release and get bumped by changie for us on `changie merge`.
   - path: 'charts/dsv-injector/Chart.yaml'
     find: 'version: .*'
     replace: 'version: {{.Version}}'
   - path: 'charts/dsv-syncer/Chart.yaml'
     find: 'version: .*'
     replace: 'version: {{.Version}}'
+  # use pinned versions in the chart install examples as a best practice
+  - path: 'charts/dsv-injector/Chart.yaml'
+    find: "IMAGE_TAG='.*'"
+    replace: "IMAGE_TAG='{{.Version}}'"
+  - path: 'charts/dsv-syncer/Chart.yaml'
+    find: "IMAGE_TAG='.*'"
+    replace: "IMAGE_TAG='{{.Version}}'"
+  # use pinned versions in the chart default values as a best practice
+  - path: 'charts/dsv-injector/values.yaml'
+    find: 'tag: .*'
+    replace: 'tag: {{.Version}}'
+  - path: 'charts/dsv-syncer/values.yaml'
+    find: 'tag: .*'
+    replace: 'tag: {{.Version}}'

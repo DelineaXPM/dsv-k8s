@@ -152,21 +152,44 @@ local_resource(
   auto_init=True,
   labels=["setup"],
 )
+
+local_resource(
+  "job:rebuildimages",
+  cmd="mage job:rebuildimages",
+  trigger_mode=TRIGGER_MODE_AUTO,
+  # Only accepts real paths, not file globs.
+  deps=[
+    'internal/'
+    ,'cmd/'
+    ,'pkg/'
+   ],
+  resource_deps=['job:init'],
+  auto_init=False,
+  labels=["deploy"],
+)
+
 local_resource(
   "job:redeploy",
   cmd="mage job:redeploy",
-  trigger_mode=TRIGGER_MODE_MANUAL,
+  trigger_mode=TRIGGER_MODE_AUTO,
   deps=['.cache/'],
-  resource_deps=['minikube:init'],
-  auto_init=True,
+  resource_deps=[
+    "job:init",
+    "job:rebuildimages"
+  ],
+  auto_init=False,
   labels=["deploy"],
 )
+
 local_resource(
   "k8s:logs",
   serve_cmd="mage k8s:logs",
   trigger_mode=TRIGGER_MODE_MANUAL,
   deps=['.cache/'],
   auto_init=True,
+  resource_deps=[
+    "job:init"
+  ],
   labels=["logs"],
 )
 local_resource(

@@ -30,10 +30,21 @@ func (Job) Init() {
 func (Job) Redeploy() {
 	pterm.DefaultSection.Println("(Job) Redeploy()")
 	mg.SerialDeps(
+		minikube.Minikube{}.LoadImages, // just be sure in case forget to load local images that the latest is always used
 		helm.Helm{}.Uninstall,
 		mg.F(k8s.K8s{}.Delete, constants.CacheManifestDirectory),
+		helm.Helm{}.Install, // this should take place first so the creation of the manifests can benefit from the resulting injector/syncer
 		mg.F(k8s.K8s{}.Apply, constants.CacheManifestDirectory),
-		helm.Helm{}.Install,
 		// k8s.K8s{}.Logs, // use chained command
 	)
+}
+
+// RebuildImages runs the build and minikube load commands so the new source is able to be run by `job:redeploy`.
+func (Job) RebuildImages() {
+	pterm.DefaultSection.Println("(Job) RebuildImages()")
+	mg.SerialDeps(
+		BuildAll,
+		minikube.Minikube{}.LoadImages,
+	)
+	pterm.Success.Printfln("RebuildImages() complete. Run `mage job:redeploy` to redeploy the new images.")
 }

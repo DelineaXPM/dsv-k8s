@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:ubuntu
+FROM mcr.microsoft.com/devcontainers/base:bullseye
 # BUILD ARGS FROM DEVCONTAINER JSON
 ARG DEVCONTAINER_USER
 ARG GOPATH

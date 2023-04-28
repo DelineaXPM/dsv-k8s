@@ -4,6 +4,8 @@ package minikube
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/constants"
@@ -23,6 +25,8 @@ func createCluster() error {
 		"start",
 		"--profile", constants.KindClusterName,
 		"--namespace", constants.KubectlNamespace,
+		"--cpus", constants.MinikubeCPU,
+		"--memory", constants.MinikubeMemory,
 	}
 	// if os.Getenv("KIND_SETUP_CONFIG") != "" {
 	// 	pterm.Info.Printfln("KIND_SETUP_CONFIG: %s", os.Getenv("KIND_SETUP_CONFIG"))
@@ -111,9 +115,77 @@ func (Minikube) Init() error {
 	// if err := sh.Run("kind", "load", "docker-image", "quay.io/delinea/dsv-k8s:latest"); err != nil {
 	// 	return fmt.Errorf("kind load docker-image: %w", err)
 	// }.
-	dspin.SuccessPrinter.Println("(Kind) Init()")
+	dspin.SuccessPrinter.Println("(Minikube) Init()")
 	_ = dspin.Stop()
 	return nil
+}
+
+// 💾 LoadImages loads the images into the minikube cluster.
+func (Minikube) LoadImages() {
+	mtu.CheckPtermDebug()
+	// for _, chart := range constants.HelmChartsList {
+	// Load image into minikube
+	if err := sh.Run("minikube",
+		"--profile", constants.KindClusterName,
+		"image", "load",
+		"--overwrite", // minikube CLI docs causing strife, wasting time in my life.... ensure this is here or problems ensure in your local testing :-)
+		fmt.Sprintf("%s:latest", constants.DockerImageNameLocal),
+	); err != nil {
+		pterm.Error.Printfln("unable to load image into minikube: %v", err)
+	}
+	pterm.Success.Printfln("image loaded into minikube: %s", constants.DockerImageNameLocal)
+	// }
+}
+
+// 💾 RemoveImages removes the images both local and docker registered from the minikube cluster.
+func (Minikube) RemoveImages() {
+	mtu.CheckPtermDebug()
+	var output string
+	// var err error
+	var elapsed time.Duration
+
+	for {
+		// Run the docker rmi command and capture the output
+
+		cmd := exec.Command("minikube", "image", "rm", "--profile", constants.KindClusterName, fmt.Sprintf("%s:latest", constants.DockerImageNameLocal))
+		out, err := cmd.CombinedOutput()
+		output = string(out)
+		if err != nil {
+			pterm.Error.Printfln("image not rm from minikube: %v", err)
+		}
+		// Check if the output contains the image name
+		if !strings.Contains(output, "docker.io/library/dsv-k8s:latest") {
+			pterm.Success.Printfln("image unloaded")
+			break
+		}
+
+		// If the image is still being unloaded, print a progress message
+		pterm.Info.Printf("Still waiting for image to unload (elapsed time: %s)\n", elapsed.Round(time.Second))
+
+		// Wait for 3 seconds before trying again
+		time.Sleep(3 * time.Second)
+		elapsed += 3 * time.Second
+	}
+
+	// for _, chart := range constants.HelmChartsList {
+	// Load image into minikube
+	// debug output  "--logtostderr",
+
+	if err := sh.Run("minikube", "image", "rm", "--profile", constants.KindClusterName, constants.DockerImageQualified); err != nil {
+		pterm.Warning.Printfln("image not rm from minikube: %v", err)
+	}
+	pterm.Success.Printfln("image removed from minikube: %s", constants.DockerImageNameLocal)
+	// }
+}
+
+// 🔍 ListImages provides a list of the minikube loaded images
+func (Minikube) ListImages() {
+	mtu.CheckPtermDebug()
+	pterm.DefaultSection.Println("(Minikube) ListImages()")
+	if err := sh.RunV("minikube", "image", "ls", "--profile", constants.KindClusterName); err != nil {
+		pterm.Error.Printfln("images not listed from minikube: %v", err)
+	}
+	pterm.Success.Printfln("images listed from minikube")
 }
 
 // 🗑️ Destroy tears down the Kind cluster.
@@ -127,6 +199,6 @@ func (Minikube) Destroy() error {
 		pterm.Warning.Printfln("default context might not be setup correct to new context: %v", err)
 	}
 
-	pterm.Success.Println("(Kind) Destroy()")
+	pterm.Success.Println("(Minikube) Destroy()")
 	return nil
 }

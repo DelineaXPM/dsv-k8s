@@ -17,13 +17,13 @@ type HelmCharts struct {
 var HelmChartsList = []HelmCharts{
 	{
 		ReleaseName: "dsv-syncer",
-		ChartPath:   "./charts/dsv-syncer",
+		ChartPath:   filepath.Join(ChartsDirectory, "dsv-syncer"),
 		Namespace:   "dsv",
 		Values:      filepath.Join(CacheDirectory, "dsv-syncer", "values.yaml"),
 	},
 	{
 		ReleaseName: "dsv-injector",
-		ChartPath:   "./charts/dsv-injector",
+		ChartPath:   filepath.Join(ChartsDirectory, "dsv-injector"),
 		Namespace:   "dsv",
 		Values:      filepath.Join(CacheDirectory, "dsv-injector", "values.yaml"),
 	},

@@ -71,7 +71,7 @@
   "containerEnv": {
     "ENABLE_NONROOT_DOCKER": "true",
     "GITHUB_OATH_TOKEN": "${localEnv:GITHUB_OATH_TOKEN}",
-    "CGO_ENABLED": "false",
+    "CGO_ENABLED": "false"
   },
   "remoteEnv": {
     "ENABLE_NONROOT_DOCKER": "true"
@@ -109,10 +109,12 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest",
       "dockerDashComposeVersion": "v2",
-      "username": "vscode"
+      "username": "vscode",
+      "enableNonRootDocker": "true",
+      "moby": "true"
     },
-     "ghcr.io/devcontainers/features/sshd:1": {
-        "version": "latest"
+    "ghcr.io/devcontainers/features/sshd:1": {
+      "version": "latest"
     }
   }
 }

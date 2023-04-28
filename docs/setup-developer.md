@@ -1,29 +1,21 @@
 # Setup Developer
 
-## Dive In
+> Important: All the core local workflow tasks to build and deploy to minikube are wrapped up in mage tasks
+>
+> Try `mage` by itself to list.
+> Use `mage job:*` tasks to help simplify the process.
 
-- [devcontainer/codespaces](devcontainer.md)
-- [Kubernetes](local-kubernetes.md)
-- [Project Setup](setup-project.md)
+1. [Setup developer tooling](setup-project.md)
+2. [Create DSV Credentials for Testing](configure.md)
+3. [Configure The Manifests](configure.md#update-manifests)
+4. Once credentials are configured in `.cache/dsv-injector/values.yaml`
+   1. 1st time: `mage job:init`.
+   2. 1st time/Anytime You updated Go code: `mage job:rebuildimages`.
+   3. Any time you want to redeploy the kubernetes & helm charts to minikube: `mage job:redeploy`.
 
-## Other Dev Tools
+As always, the source of truth is `mage` so if the task names in the doc don't work, check the CLI for the proper commands.
 
-Use Stern to easily stream cross namespace logs with the `dsv-filter-selector` by running:
+## Reference
 
-Aqua installs this automatically, but if you want to do this manually grab from github releases like this
-
-```shell
-$(curl -fSSl https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64 -o ./stern) && sudo chmod +x ./stern && sudo mv ./stern /usr/local/bin
-```
-
-> Or use `brew install stern` or aqua.
-
-While `mage k8s:logs` will run this for you, manually you can invoke like this:
-
-```shell
-# For all pods in the namespace run
-stern --kubeconfig .cache/config --namespace dsv --timestamps .
-
-# For pods with the selector run
-stern --kubeconfig .cache/config --namespace dsv --timestamps --selector 'dsv-filter-name in (dsv-syncer, dsv-injector)'
-```
+- Optional: [devcontainer/codespaces](devcontainer.md)
+- Local Kubernetes Overview: [Kubernetes](local-kubernetes.md)

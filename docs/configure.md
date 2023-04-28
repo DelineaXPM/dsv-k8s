@@ -17,20 +17,22 @@ You can place your temporary config in `.cache/credentials.json` as this is igno
 {
   "app1": {
     "credentials": {
-      "clientId": "93d866d4-635f-4d4e-9ce3-0ef7f879f319",
+      "clientId": "",
       "clientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxx-xxxxx"
     },
     "tenant": "mytenant"
   },
   "default": {
     "credentials": {
-      "clientId": "64241412-3934-4aed-af26-95b1eaba0e6a",
+      "clientId": "",
       "clientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxx-xxxxx"
     },
     "tenant": "mytenant"
   }
 }
 ```
+
+### Update Manifests
 
 This would be referenced by a Kubernetes secret with annontations like:
 
@@ -44,6 +46,9 @@ metadata:
     dsv.delinea.com/credentials: app1
     dsv.delinea.com/set-secret: 'k8s:sync:test'
 ```
+
+If using the provided examples, you can edit: `.cache/manifests` and adjust the secrets to map.
+You can use all of the provided manifests to test the different behavior, or just deploy one if desired.
 
 ## Configuring Credentials in Kubernetes To Talk to DSV
 

@@ -3,11 +3,10 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
-	"flag"
 	"fmt"
-	"io/ioutil"
-	"log"
+	"io"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -17,95 +16,162 @@ import (
 	v1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/caarlos0/env/v6"
+
+	"github.com/DelineaXPM/dsv-k8s/v2/internal/logger"
+)
+
+const (
+	// ExitFailure is exit code sent for failed task.
+	exitFailure = 1
+	// ExitSuccess is exit code sent for running without any error.
+	exitSuccess = 0
+)
+
+//nolint:gochecknoglobals // ok for providing as version output
+var (
+	// Version is the descriptive version, normally the tag from which the app was built.
+	// Since git tags can be changed, use Commit instead as the most accurate version.
+	version = "dev"
+	// Commit is the git commit hash that the build was generated from.
+	commit = "none"
+	// Date is the date the binary was produced.
+	date = "unknown"
 )
 
 // main is the entry point for the injector; creates an HTTPS listener and listing for v1.AdmissionReview requests
 func main() {
-	var certFile, keyFile, credentialsFile string
+	if err := Run(os.Args); err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(exitFailure)
+	}
+	os.Exit(exitSuccess) // shouldn't hit this if run is invoked correctly
+}
 
-	flag.StringVar(&certFile, "cert", "tls/cert.pem", "the path of the public certificate file in PEM format")
-	flag.StringVar(&keyFile, "key", "tls/key.pem", "the path of the private key file in PEM format")
-	flag.StringVar(
-		&credentialsFile,
-		"credentials",
-		"credentials/config.json",
-		"the path of JSON formatted credentials file",
-	)
+// Run contains the actual invocation code for the injector and is public to allow running integration tests with it.
+func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
+	log := logger.New()
+	log.Info().
+		Str("version", version).
+		Str("commit", commit).
+		Str("date", date).
+		Msg("injector version information")
 
-	server := new(http.Server)
+	// Config is the configuration for the injector.
+	// This is provided by environment variables.
+	type Config struct {
+		CertFile            string `env:"DSV_CERT"  envDefault:"${HOME}/tls/cert.pem" envExpand:"true"`                       // Cert is the path to the public certificate file in PEM format.
+		KeyFile             string `env:"DSV_KEY" envDefault:"${HOME}/tls/key.pem" envExpand:"true"`                          // Key is the path to the private key file in PEM format.
+		CredentialsJSONFile string `env:"DSV_CREDENTIALS_JSON" envDefault:"${HOME}/credentials/config.json" envExpand:"true"` // CredentialsJSONFile is the path to the JSON formatted credentials file that is mounted as a secret.
+		ServerAddress       string `env:"DSV_SERVER_ADDRESS" envDefault:":18543"`                                             // ServerAddress is the address to listen on, e.g., 'localhost:8080' or ':8443'
+		Debug               bool   `env:"DSV_DEBUG" envDefault:"false"`                                                       // Debug enables debug logging.
+	}
 
-	flag.StringVar(&server.Addr, "address", ":18543", "the address to listen on, e.g., 'localhost:8080' or ':8443'")
-	flag.Parse()
-
-	credentials, err := config.GetCredentials(credentialsFile)
+	cfg := Config{}
+	err := env.Parse(&cfg)
 	if err != nil {
-		log.Fatalf("unable to process credentials file '%s': %s", credentialsFile, err)
+		log.Error().Err(err).Msg("unable to parse environment variables")
+		return fmt.Errorf("fatal issue, as unabale to parse the required environment variables: %w", err)
 	}
-	log.Printf("[INFO] success loading %d credential sets: [%s] from '%s'",
-		len(*credentials),
-		strings.Join(credentials.Names(), ", "),
-		credentialsFile,
-	)
+	if cfg.Debug {
+		logger.EnableDebug()
+		log.Info().Msg("debug logging enabled")
+	}
+	log.Info().Strs("args", args).Msg("starting injector, args passed, but not used, as environment variables are used instead")
 
-	if cert, err := tls.LoadX509KeyPair(certFile, keyFile); err == nil {
-		server.TLSConfig = &tls.Config{Certificates: []tls.Certificate{cert}}
+	credentials, err := config.GetCredentials(cfg.CredentialsJSONFile)
+	if err != nil {
+		log.Error().Err(err).Str("credential-json", cfg.CredentialsJSONFile).Msg("unable to process credentials file")
+		return fmt.Errorf("unable to process credentials file %q: %w", cfg.CredentialsJSONFile, err)
+	}
+	log.Info().
+		Str("credential_names", strings.Join(credentials.Names(), ", ")).
+		Str("credential_file", cfg.CredentialsJSONFile).
+		Msg("credentials loaded from JSON file")
+	var tlsConfig *tls.Config
+	if cert, err := tls.LoadX509KeyPair(cfg.CertFile, cfg.KeyFile); err == nil {
+		tlsConfig = &tls.Config{Certificates: []tls.Certificate{cert}}
+		log.Info().Str("cert", cfg.CertFile).Str("key", cfg.KeyFile).Msg("LoadX509KeyPair")
 	} else {
-		log.Fatalf("unable to load keypair for TLS: %s", err)
+		log.Error().Err(err).Msgf("unable to load keypair for TLS: %s", err)
+		return fmt.Errorf("unable to load keypair for TLS: %w", err)
 	}
-	log.Printf("[INFO] success loading keypair for TLS: [public: '%s', private: '%s']", certFile, keyFile)
+	log.Info().Msgf("success loading keypair for TLS: [public: '%s', private: '%s']", cfg.CertFile, cfg.KeyFile)
 
-	server.Handler = http.HandlerFunc(
-		func(w http.ResponseWriter, request *http.Request) {
-			defer request.Body.Close()
+	server := http.Server{
+		Addr:              cfg.ServerAddress,
+		TLSConfig:         tlsConfig, // optional
+		ReadHeaderTimeout: 5 * time.Second,
+		Handler: http.HandlerFunc(
+			func(w http.ResponseWriter, request *http.Request) {
+				defer request.Body.Close()
 
-			errorOut := func(message string) {
-				log.Printf("[ERROR] %s: %s", message, err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}
-
-			if body, err := ioutil.ReadAll(request.Body); err != nil {
-				errorOut("error reading v1.AdmissionReview request")
-			} else {
-				review := new(v1.AdmissionReview)
-				start := time.Now()
-
-				if err := json.Unmarshal(body, review); err != nil {
-					errorOut("unable to unmarshal v1.AdmissionReview")
-				} else {
-					fail := func(action string, reason metav1.StatusReason, err error) {
-						message := fmt.Sprintf("%s: %s", action, err)
-						review.Response = &v1.AdmissionResponse{
-							UID:     review.Request.UID,
-							Allowed: true,
-							Result: &metav1.Status{
-								Message: message,
-								Reason:  reason,
-								Status:  metav1.StatusFailure,
-							},
-						}
-						log.Printf("[ERROR] %s", message)
-					}
-
-					var secret corev1.Secret
-
-					if err := json.Unmarshal(review.Request.Object.Raw, &secret); err != nil {
-						fail("unable to unmarshal the Secret from the v1.AdmissionReview", metav1.StatusReasonBadRequest, err)
-					} else if review.Response, err = injector.Inject(secret, review.Request.UID, *credentials); err != nil {
-						fail("calling injector.Inject", metav1.StatusReasonInvalid, err)
-					}
-
-					if response, err := json.Marshal(review); err != nil {
-						errorOut("unable to marshal v1.AdmissionReview response")
-					} else {
-						w.WriteHeader(http.StatusOK)
-						w.Write(response)
-					}
-					log.Printf("[INFO] processing Secret '%s' took %s", secret.Name, time.Since(start))
+				errorOut := func(message string) {
+					log.Error().Err(err).Msg(message)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
 				}
-			}
-		},
-	)
 
-	log.Printf("[INFO] listening for v1.AdmissionReview requests on '%s'", server.Addr)
-	log.Fatalf("[FATAL] %s", server.ListenAndServeTLS("", ""))
+				if body, err := io.ReadAll(request.Body); err != nil {
+					errorOut("error reading v1.AdmissionReview request")
+				} else {
+					review := new(v1.AdmissionReview)
+					start := time.Now()
+
+					if err := json.Unmarshal(body, review); err != nil {
+						errorOut("unable to unmarshal v1.AdmissionReview")
+					} else {
+						fail := func(action string, reason metav1.StatusReason, err error) {
+							message := fmt.Sprintf("%s: %s", action, err)
+							review.Response = &v1.AdmissionResponse{
+								UID:     review.Request.UID,
+								Allowed: true,
+								Result: &metav1.Status{
+									Message: message,
+									Reason:  reason,
+									Status:  metav1.StatusFailure,
+								},
+							}
+							log.Error().
+								Err(err).
+								Str("action", action).
+								Str("reason", string(reason)).
+								Msg("failure")
+						}
+
+						var secret corev1.Secret
+
+						if err := json.Unmarshal(review.Request.Object.Raw, &secret); err != nil {
+							log.Error().Err(err).Msg("unable to unmarshal the Secret from the v1.AdmissionReview")
+							fail("unable to unmarshal the Secret from the v1.AdmissionReview", metav1.StatusReasonBadRequest, err)
+						} else if review.Response, err = injector.Inject(secret, review.Request.UID, *credentials, log); err != nil {
+							log.Error().Err(err).Msg("calling injector.Inject")
+							fail("calling injector.Inject", metav1.StatusReasonInvalid, err)
+						}
+
+						if response, err := json.Marshal(review); err != nil {
+							errorOut("unable to marshal v1.AdmissionReview response")
+						} else {
+							w.WriteHeader(http.StatusOK)
+							_, err := w.Write(response)
+							if err != nil {
+								fail("unable to write v1.AdmissionReview response", metav1.StatusReasonInternalError, err)
+							}
+						}
+						log.Info().
+							Str("secretname", secret.Name).
+							Dur("duration", time.Since(start)).
+							Msg("injection complete")
+					}
+				}
+			},
+		),
+	}
+
+	log.Info().Msg("listening for v1.AdmissionReview requests")
+	if err := server.ListenAndServeTLS("", ""); err != nil {
+		log.Error().Err(err).Msg("failure with ListenAndServeTLS")
+		return fmt.Errorf("failure with ListenAndServeTLS: %w", err)
+	}
+	return nil
 }

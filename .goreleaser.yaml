@@ -18,9 +18,9 @@ builds:
     mod_timestamp: '{{ .CommitTimestamp }}'
     ldflags:
       - -s -w
-      - -X main.version={{ .Summary }}
+      - -X main.version={{ .Tag }}
       - -X main.commit={{ .FullCommit }}
-      - -X main.date={{ .Timestamp }}
+      - -X main.date={{ .Now.Format "2006-01-02T15:04:05Z07:00" }} #RFC3339
       - -X main.builtBy=goreleaser
     goos: [linux]
     goarch:
@@ -31,9 +31,9 @@ builds:
     mod_timestamp: '{{ .CommitTimestamp }}'
     ldflags:
       - -s -w
-      - -X main.version={{ .Summary }}
+      - -X main.version={{ .Tag }}
       - -X main.commit={{ .FullCommit }}
-      - -X main.date={{ .Timestamp }}
+      - -X main.date={{ .Now.Format "2006-01-02T15:04:05Z07:00" }} #RFC3339
       - -X main.builtBy=goreleaser
     goos: [linux]
     goarch:
@@ -88,7 +88,7 @@ dockers:
     use: buildx
     build_flag_templates:
       - --platform=linux/amd64
-      - --label=org.opencontainers.image.created={{.Date}}
+      - --label=org.opencontainers.image.created={{ .Now.Format "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.version={{.Version}}
@@ -104,7 +104,7 @@ dockers:
     use: buildx
     build_flag_templates:
       - --platform=linux/amd64
-      - --label=org.opencontainers.image.created={{.Date}}
+      - --label=org.opencontainers.image.created={{ .Now.Format "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.version={{.Version}}

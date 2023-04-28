@@ -1,0 +1,9 @@
+---
+{{- if .Values.configmap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dsv.fullname" . }}-configmap
+data:
+{{- toYaml .Values.configmap | nindent 2 -}}
+{{- end }}
