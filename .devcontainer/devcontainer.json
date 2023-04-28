@@ -73,10 +73,10 @@
     "CGO_ENABLED": "0",
     "GOPATH": "/home/vscode/go",
     "PATH": "/home/vscode/go/bin:/home/vscode/.local/share/aquaproj-aqua/bin:/home/vscode/go/bin:${containerEnv:PATH}"
-
   },
   "remoteEnv": {
-  //  "ENABLE_NONROOT_DOCKER": "true"
+    "PATH": "/home/vscode/go/bin:/home/vscode/.local/share/aquaproj-aqua/bin:/home/vscode/go/bin:${containerEnv:PATH}"
+    //  "ENABLE_NONROOT_DOCKER": "true"
   },
   "initializeCommand": [
     ".devcontainer/init"
