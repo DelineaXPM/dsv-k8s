@@ -7,7 +7,7 @@ require (
 	github.com/bitfield/script v0.21.4
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/magefile/mage v1.14.0
-	github.com/mattbaird/jsonpatch v0.0.0-20200820163806-098863c1fc24
+	github.com/mattbaird/jsonpatch v0.0.0-20230413205102-771768614e91
 	github.com/pterm/pterm v0.12.59
 	github.com/rs/zerolog v1.29.1
 	github.com/sheldonhull/magetools v1.0.0
