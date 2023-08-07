@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "DelineaXPM/renovate-config"
+    "DelineaXPM/renovate-config:security"
   ],
   "packageRules": [
     {
@@ -29,11 +29,5 @@
       ],
       "enabled": false
     }
-  ],
-  "enabled": false,
-  "vulnerabilityAlerts": {
-    "enabled": true,
-    "semanticCommitType": "security",
-    "prCreation": "immediate"
-  }
+  ]
 }
