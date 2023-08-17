@@ -110,7 +110,7 @@
       "version": "latest",
       "dockerDashComposeVersion": "v2",
       "username": "vscode",
-      "enableNonRootDocker": "true",
+      "enableNonRootDocker": "false",
       "moby": "true"
     },
     "ghcr.io/devcontainers/features/sshd:1": {
