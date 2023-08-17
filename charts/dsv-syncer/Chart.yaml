@@ -9,14 +9,14 @@ description: |
   IMAGE_REPOSITORY='docker.io/delineaxpm/dsv-k8s'
   IMAGE_TAG='v1.2.0' # use latest for test, but pin to a specific version for production
 
-  helm install
-      --namespace $NAMESPACE
+  helm install \
+      --namespace $NAMESPACE \
       --create-namespace \
       --set image.repository=${IMAGE_REPOSITORY} \
       --set image.tag=${IMAGE_TAG} \
       --atomic \
       --timeout "5m" \
-      --debug \
+      --debug \ # optional --values ./myvaluesfile/values.yaml \
       dsv-syncer ./charts/dsv-syncer
   ```
 keywords:
