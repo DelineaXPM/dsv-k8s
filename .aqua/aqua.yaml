@@ -33,7 +33,7 @@ packages:
     version: v1.25.2
   - name: helm/helm@v3.11.1
   - name: DelineaXPM/dsv-cli@v1.40.1
-  - name: kubernetes/minikube@v1.29.0
+  - name: kubernetes/minikube@v1.31.2
     tags: ['ci']
   - name: stern/stern@v1.23.0
   - name: tilt-dev/tilt@v0.32.0
