@@ -21,7 +21,7 @@ RUN mkdir -p /home/$DEVCONTAINER_USER/.minikube \
   && mkdir -p /home/$DEVCONTAINER_USER/go \
   && sudo chown $DEVCONTAINER_USER /home/$DEVCONTAINER_USER/go \
   && /bin/bash -c 'set -euo pipefail && curl https://get.trunk.io -fsSL | bash -s -- -y' \
-  && /bin/bash -c 'set -euo pipefail && curl -sSfL https://raw.githubusercontent.com/aquaproj/aqua-installer/v1.0.0/aqua-installer | bash'
+  && /bin/bash -c 'set -euo pipefail && curl -sSfL https://raw.githubusercontent.com/aquaproj/aqua-installer/v2.1.1/aqua-installer | bash'
 
 
 VOLUME [ "/var/lib/docker" ]
