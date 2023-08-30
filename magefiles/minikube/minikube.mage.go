@@ -25,8 +25,8 @@ func createCluster() error {
 		"start",
 		"--profile", constants.KindClusterName,
 		"--namespace", constants.KubectlNamespace,
-		"--cpus", constants.MinikubeCPU,
-		"--memory", constants.MinikubeMemory,
+		// "--cpus", constants.MinikubeCPU,
+		// "--memory", constants.MinikubeMemory,
 	}
 	// if os.Getenv("KIND_SETUP_CONFIG") != "" {
 	// 	pterm.Info.Printfln("KIND_SETUP_CONFIG: %s", os.Getenv("KIND_SETUP_CONFIG"))
