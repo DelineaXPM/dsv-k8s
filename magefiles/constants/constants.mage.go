@@ -25,6 +25,9 @@ const (
 
 	// CacheChartsDirectory is the directory where the cached helm values file is copied to.
 	CacheChartsDirectory = ".cache/charts"
+
+	// CacheCredentialFile is the path to the credential file for the project, which is cached locally.
+	CacheCredentialFile = ".cache/credentials.json" //nolint:gosec // this is a test project and this directory is excluded from source
 )
 
 const (

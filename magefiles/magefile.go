@@ -17,6 +17,8 @@ import (
 	_ "github.com/DelineaXPM/dsv-k8s/v2/magefiles/kind"
 	// mage:import
 	_ "github.com/DelineaXPM/dsv-k8s/v2/magefiles/minikube"
+	// mage:import
+	_ "github.com/DelineaXPM/dsv-k8s/v2/magefiles/vault"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/pterm/pterm"

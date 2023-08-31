@@ -3,7 +3,16 @@
 This focuses on the DSV configuration required to use with Kubernetes.
 This applies to both local testing Kubernetes and your own seperate cluster.
 
-## JSON Credentials for Helm Install
+## Help Getting Started
+
+Run `mage dsv:setupdsv` to create the required DSV configuration for testing.
+This requires you to have already run `dsv init` in the project and runs against the profile you specified in `.env`.
+You should ensure `direnv allow` has been run and the `.env` file is loaded.
+Your `zsh` terminal should warn you if you didn't create the `.env` file.
+
+## Manually Creating (Prior Method Before Automation)
+
+### JSON Credentials for Helm Install
 
 The configuration requires a JSON formatted list of Client Credential and Tenant mappings.
 
@@ -34,7 +43,7 @@ You can place your temporary config in `.cache/credentials.json` as this is igno
 
 ### Update Manifests
 
-This would be referenced by a Kubernetes secret with annontations like:
+This would be referenced by a Kubernetes secret with annotations like:
 
 ```yaml
 ---
@@ -44,7 +53,7 @@ metadata:
   name: user-domain-pass
   annotations:
     dsv.delinea.com/credentials: app1
-    dsv.delinea.com/set-secret: 'k8s:sync:test'
+    dsv.delinea.com/set-secret: 'tests:dsv-k8s'
 ```
 
 If using the provided examples, you can edit: `.cache/manifests` and adjust the secrets to map.
@@ -60,7 +69,7 @@ Create the role that will allow creating a client for programmatic access
 
 ```shell
 dsv role create --name 'k8s' --desc 'test profile for k8s'
-dsv secret create --path 'k8s:sync:test' --data '{"password": "admin","username": "admin"}'
+dsv secret create --path 'tests:dsv-k8s' --data '{"password": "admin","username": "admin"}'
 ```
 
 Create a policy that allows the local user to read the secret, modify this to the correct user/group mapping:

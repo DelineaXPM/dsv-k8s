@@ -82,8 +82,8 @@ func (Helm) Init() error {
 }
 
 // 🚀 Install uses Helm to
-// 🚀 Install installs or upgrades the helm charts for any charts listed in constants.HelmChartsList.
-func (Helm) Install() {
+// 🚀 Install installs/upgrades the helm charts for charts listed in constants.HelmChartsList.
+func (Helm) Install() error {
 	magetoolsutils.CheckPtermDebug()
 	if os.Getenv("KUBECONFIG") != constants.Kubeconfig {
 		pterm.Warning.Printfln("KUBECONFIG is not set to %s. Make sure direnv/env variables loading if you want to keep the project changes from changing your user KUBECONFIG.", constants.Kubeconfig)
@@ -99,6 +99,9 @@ func (Helm) Install() {
 			pterm.Debug.Println("debug flag enabled for helm")
 			debugHelm = "--debug=true" // enable verbose output
 		}
+		if _, err := os.Stat(constants.CacheCredentialFile); os.IsNotExist(err) {
+			return fmt.Errorf("credentials file: %s doesn't exist, so skipping", constants.CacheCredentialFile)
+		}
 		if err := invokeHelm("upgrade",
 			chart.ReleaseName,
 			chart.ChartPath,
@@ -112,6 +115,8 @@ func (Helm) Install() {
 			"--force",             // force resource updates through a replacement strategy
 			"--wait-for-jobs",     // will wait until all Jobs have been completed before marking the release as successful
 			"--dependency-update", // update dependencies if they are missing before installing the chart
+			"--set-file", fmt.Sprintf("credentialsJson=%s", constants.CacheCredentialFile),
+
 			debugHelm,
 			// NOTE: Can pass credentials/certs etc in. NOT ADDED YET - "--set-file", "sidecar.configFile=config.yaml",
 		); err != nil {
@@ -120,6 +125,7 @@ func (Helm) Install() {
 			pterm.Success.Printfln("successfully installed chart: %s", chart.ReleaseName)
 		}
 	}
+	return nil
 }
 
 // Uninstall uninstalls all the charts listed in constants.HelmChartsList.
@@ -211,9 +217,9 @@ func Checkfile(file string) error {
 		re = regexp.MustCompile(`repository:\s+[^\n]*`)
 		match = re.Find(b)
 		if match != nil {
-			pterm.Error.Printfln("❌ %s: not configured to use local image: %q", file, match)
+			pterm.Warning.Printfln("❌ %s: not configured to use local image: %q (this is fine if you are't building as a developer with changes)", file, match)
 		} else {
-			pterm.Error.Printfln("❌ %s: not configured to use local image: repository not found", file)
+			pterm.Warning.Printfln("❌ %s: not configured to use local image: repository not found", file)
 		}
 	}
 
@@ -225,9 +231,9 @@ func Checkfile(file string) error {
 		re = regexp.MustCompile(`pullPolicy:\s+\w*`)
 		match = re.Find(b)
 		if match != nil {
-			pterm.Error.Printfln("❌ %s: not configured with pullPolicy: Never: %q", file, match)
+			pterm.Warning.Printfln("❌ %s: not configured with pullPolicy: Never: %q (this fine if you aren't building locally and just using docker image)", file, match)
 		} else {
-			pterm.Error.Printfln("❌ %s:  not configured with pullPolicy: Never: pullPolicy not found", file)
+			pterm.Warning.Printfln("❌ %s:  not configured with pullPolicy: Never: pullPolicy not found", file)
 		}
 	}
 	re = regexp.MustCompile(`tag:\s+[']?latest[']?`)
@@ -238,9 +244,9 @@ func Checkfile(file string) error {
 		re = regexp.MustCompile(`tag:\s+[']?.*[']?`)
 		match = re.Find(b)
 		if match != nil {
-			pterm.Error.Printfln("❌ %s: not configured with tag: latest %q", file, match)
+			pterm.Warning.Printfln("❌ %s: not configured with tag: latest (this is fine if using docker image in cloud) %q", file, match)
 		} else {
-			pterm.Error.Printfln("❌ %s: not configured with tag: Never, tag not found", file)
+			pterm.Warning.Printfln("❌ %s: not configured with tag: Never, tag not found", file)
 		}
 	}
 	return nil
