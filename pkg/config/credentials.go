@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/DelineaXPM/dsv-sdk-go/v2/vault"
@@ -26,7 +26,7 @@ func GetCredentials(credentialsFilePath string) (*Credentials, error) {
 
 // GetCredentialsFromFile parses the credentialsFile and returns the resulting Credentials object
 func GetCredentialsFromFile(credentialsFile *os.File) (*Credentials, error) {
-	if contents, err := os.ReadAll(credentialsFile); err != nil {
+	if contents, err := io.ReadAll(credentialsFile); err != nil {
 		return nil, fmt.Errorf("unable to read configuration file '%s': %w", credentialsFile.Name(), err)
 	} else {
 		return MakeCredentials(contents)
