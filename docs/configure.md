@@ -10,6 +10,14 @@ This requires you to have already run `dsv init` in the project and runs against
 You should ensure `direnv allow` has been run and the `.env` file is loaded.
 Your `zsh` terminal should warn you if you didn't create the `.env` file.
 
+The order:
+
+- `mage dsv:setupdsv`
+- `mage dsv:createsecret`
+- `mage dsv:convertClientToCredentials`
+
+To tear down and recreate with new secret, just run `mage dsv:destroy`
+
 ## Manually Creating (Prior Method Before Automation)
 
 ### JSON Credentials for Helm Install

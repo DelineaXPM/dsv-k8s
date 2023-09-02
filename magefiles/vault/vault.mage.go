@@ -14,15 +14,22 @@ import (
 )
 
 // DSV is the namespace for mage tasks related to DSV, such as client credential creation.
-type DSV mg.Namespace
+type (
+	DSV               mg.Namespace
+	ClientCredentials struct {
+		ClientID string `json:"clientId"`     //nolint:tagliatelle // json tag required as is
+		Secret   string `json:"clientSecret"` //nolint:tagliatelle // json tag required as is
+	}
+)
 
 var (
 	dsvprofilename  = os.Getenv("DSV_PROFILE_NAME")
 	rolename        = "dsv-k8s-tests"
+	secretpath      = fmt.Sprintf("tests:%s", "dsv-k8s")
 	policyname      = fmt.Sprintf("secrets:%s", secretpath)
 	policysubjects  = fmt.Sprintf("roles:%s", rolename)
 	policyresources = fmt.Sprintf("secrets:%s:<.*>", secretpath)
-	secretpath      = fmt.Sprintf("tests:%s", "dsv-k8s")
+
 	// secretpathclient = fmt.Sprintf("clients:%s", secretpath)
 	desc           = "a secret for testing operation of with dsv-k8s"
 	clientcredfile = filepath.Join(constants.CacheDirectory, fmt.Sprintf("%s.json", rolename))
@@ -57,9 +64,11 @@ func (DSV) SetupDSV() error {
 		pterm.Error.Println("DSV_PROFILE_NAME is not set and this is required to automate the setup of the test credentials")
 		return fmt.Errorf("DSV_PROFILE_NAME is required: %w", err)
 	}
-	pterm.Warning.Println("WIP: initial creation to help with future testing setup, may need refinement")
 	logger := pterm.DefaultLogger.WithLevel(pterm.LogLevelInfo).WithCaller(true)
-
+	if _, err := os.Stat(clientcredfile); err == nil {
+		logger.Error("client credentials already exist, please run `mage vault:destroy` to remove and try again")
+		return fmt.Errorf("tear down existing test credentials before recreate to avoid conflicts")
+	}
 	// dsv role create
 	logger.Info("creating role", logger.Args("rolename", rolename))
 
@@ -96,11 +105,6 @@ func (DSV) SetupDSV() error {
 		logger.Warn("unable to create client credentials", logger.Args("clientcredname", clientcredname))
 	}
 	logger.Info("created client credentials", logger.Args("clientcredname", clientcredname))
-
-	type ClientCredentials struct {
-		ClientID string `json:"clientId"`     //nolint:tagliatelle // json tag required as is
-		Secret   string `json:"clientSecret"` //nolint:tagliatelle // json tag required as is
-	}
 
 	b, err := os.ReadFile(clientcredfile)
 	if err != nil {
@@ -218,4 +222,43 @@ func (DSV) ConvertClientToCredentials() error {
 	}
 
 	return nil
+}
+
+// 🗑️ Destroy tears down the test credentials hard setup by this automation only
+func (DSV) Destroy() {
+	// if .cache/credentials.json exists, then read and get the clientid. use this as input for the client delete
+	var clientcredid string
+	if _, err := os.Stat(clientcredfile); err == nil {
+		// file exists
+		b, err := os.ReadFile(clientcredfile)
+		if err != nil {
+			pterm.Warning.Println("unable to read client credentials file, this may be expected if already deleted")
+		}
+		var clientcred ClientCredentials
+		err = json.Unmarshal(b, &clientcred)
+		if err != nil {
+			pterm.Warning.Println("unable to unmarshal client credentials file, this may be expected if already deleted")
+		}
+		clientcredid = clientcred.ClientID
+		// run dsv client delete against the test credentials, warn only on error
+		if err := sh.RunV("dsv", "client", "delete", "--client-id", clientcredid, "--profile", dsvprofilename, "--force"); err != nil {
+			pterm.Warning.Println("unable to delete client credentials, this may be expected if already deleted")
+		}
+	}
+
+	// run dsv policy delete against the test role, warn only on error
+	if err := sh.RunV("dsv", "policy", "delete", "--path", policyname, "--profile", dsvprofilename, "--force"); err != nil {
+		pterm.Warning.Println("unable to delete policy, this may be expected if already deleted")
+	}
+	// run dsv role delete against the test role, warn only on error
+	if err := sh.RunV("dsv", "role", "delete", "--name", rolename, "--profile", dsvprofilename, "--force"); err != nil {
+		pterm.Warning.Println("unable to delete role, this may be expected if already deleted")
+	}
+
+	// remove the test secret with force, and warn only on error
+	if err := sh.RunV("dsv", "secret", "delete", "--path", testsecretkey, "--profile", dsvprofilename, "--force"); err != nil {
+		pterm.Warning.Println("unable to delete secret, this may be expected if already deleted")
+	}
+
+	_ = sh.Rm(clientcredfile)
 }

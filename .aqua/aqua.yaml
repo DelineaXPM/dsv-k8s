@@ -32,7 +32,6 @@ packages:
   - name: kubernetes/kubectl
     version: v1.25.2
   - name: helm/helm@v3.11.1
-  - name: DelineaXPM/dsv-cli@v1.40.1
   - name: kubernetes/minikube@v1.31.2
     tags: ['ci']
   - name: stern/stern@v1.23.0
@@ -43,3 +42,4 @@ packages:
     version: v1.4.2
     registry: local
     tags: ['goinstall']
+  - name: DelineaXPM/dsv-cli@v1.40.5

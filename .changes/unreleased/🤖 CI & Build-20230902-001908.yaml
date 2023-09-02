@@ -1,0 +1,4 @@
+kind: "\U0001F916 CI & Build"
+body: |
+  Improve mage tasks with secret setup and tear down for better development support and troubleshooting.
+time: 2023-09-02T00:19:08.498047478Z
