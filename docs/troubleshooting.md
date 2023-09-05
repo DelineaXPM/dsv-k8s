@@ -1,5 +1,22 @@
 # Troubleshooting
 
+## Supporting Alternative TLD
+
+If you are using an alternative TLD, such as `https://{mytenant}.secretsvaultcloud.eu`, try adding the tld to the credentials file.
+
+```json
+{
+  "default": {
+    "credentials": {
+      "clientId": "",
+      "clientSecret": ""
+    },
+    "tenant": "mytenant",
+    "tld": "eu"
+  }
+}
+```
+
 ## Obtaining Logs
 
 For both customers and development, stern allows easier debugging by providing a stream of the logs for both syncer & injector in one workflow.

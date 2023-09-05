@@ -20,7 +20,7 @@ import (
 // k8s contains commands for kubectl and other kubernetes related commands.
 type K8s mg.Namespace
 
-// Init copies the k8 yaml manifest files from the examples directory to the cache directory for editing and linking in integration testing.
+// Init copies the k8 yaml manifest files from the examples directory to the cache directory.
 func (K8s) Init() error {
 	magetoolsutils.CheckPtermDebug()
 	pterm.DefaultHeader.Println("(K8s) Init()")
@@ -148,7 +148,6 @@ func (K8s) OutputSecret() {
 			"--cluster", constants.KindContextName,
 			"get",
 			"secret", secretname,
-			//"-o", "jsonpath='{.data.password}'",
 			"-o", `go-template={{.data.password}}`,
 			"--ignore-not-found",
 		)

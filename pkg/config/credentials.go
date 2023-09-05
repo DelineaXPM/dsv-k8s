@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/DelineaXPM/dsv-sdk-go/v2/vault"
@@ -17,7 +17,7 @@ type Credentials map[string]struct {
 // GetCredentials opens the credentialsFile and calls GetCredentialsFromFile on the resulting file
 func GetCredentials(credentialsFilePath string) (*Credentials, error) {
 	if credentialsFile, err := os.Open(credentialsFilePath); err != nil {
-		return nil, fmt.Errorf("unable to open configuration file '%s': %s", credentialsFilePath, err)
+		return nil, fmt.Errorf("unable to open configuration file '%s': %w", credentialsFilePath, err)
 	} else {
 		defer credentialsFile.Close()
 		return GetCredentialsFromFile(credentialsFile)
@@ -26,18 +26,18 @@ func GetCredentials(credentialsFilePath string) (*Credentials, error) {
 
 // GetCredentialsFromFile parses the credentialsFile and returns the resulting Credentials object
 func GetCredentialsFromFile(credentialsFile *os.File) (*Credentials, error) {
-	if contents, err := ioutil.ReadAll(credentialsFile); err != nil {
-		return nil, fmt.Errorf("unable to read configuration file '%s': %s", credentialsFile.Name(), err)
+	if contents, err := io.ReadAll(credentialsFile); err != nil {
+		return nil, fmt.Errorf("unable to read configuration file '%s': %w", credentialsFile.Name(), err)
 	} else {
 		return MakeCredentials(contents)
 	}
 }
 
-func MakeCredentials(credentialJson []byte) (*Credentials, error) {
+func MakeCredentials(credentialJSON []byte) (*Credentials, error) {
 	credentials := new(Credentials)
 
-	if err := json.Unmarshal(credentialJson, credentials); err != nil {
-		return nil, fmt.Errorf("unable to unmarhal configuration: %s", err)
+	if err := json.Unmarshal(credentialJSON, credentials); err != nil {
+		return nil, fmt.Errorf("unable to unmarshal configuration: %w", err)
 	} else {
 		return credentials, nil
 	}

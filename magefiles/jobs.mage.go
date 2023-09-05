@@ -26,7 +26,7 @@ func (Job) Init() {
 	)
 }
 
-// Redeploy removes kubernetes resources and helm charts and then you can issue a chained command for k8s:logs to opt to stream logs.
+// Redeploy removes k8s resources, helm uninstall, and then runs k8s apply and helm install.
 func (Job) Redeploy() {
 	pterm.DefaultSection.Println("(Job) Redeploy()")
 	mg.SerialDeps(

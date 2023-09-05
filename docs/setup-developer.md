@@ -15,6 +15,11 @@
 
 As always, the source of truth is `mage` so if the task names in the doc don't work, check the CLI for the proper commands.
 
+## Optional
+
+If you are using codespaces, most of the tooling should be ready out of the box as long as you open `zsh` terminal.
+Run `tilt up` and then you can invoke much of this (including watch the logs stream) from the terminal.
+
 ## Reference
 
 - Optional: [devcontainer/codespaces](devcontainer.md)

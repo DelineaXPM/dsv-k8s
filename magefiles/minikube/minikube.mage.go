@@ -25,8 +25,8 @@ func createCluster() error {
 		"start",
 		"--profile", constants.KindClusterName,
 		"--namespace", constants.KubectlNamespace,
-		"--cpus", constants.MinikubeCPU,
-		"--memory", constants.MinikubeMemory,
+		// "--cpus", constants.MinikubeCPU,
+		// "--memory", constants.MinikubeMemory,
 	}
 	// if os.Getenv("KIND_SETUP_CONFIG") != "" {
 	// 	pterm.Info.Printfln("KIND_SETUP_CONFIG: %s", os.Getenv("KIND_SETUP_CONFIG"))
@@ -147,7 +147,13 @@ func (Minikube) RemoveImages() {
 	for {
 		// Run the docker rmi command and capture the output
 
-		cmd := exec.Command("minikube", "image", "rm", "--profile", constants.KindClusterName, fmt.Sprintf("%s:latest", constants.DockerImageNameLocal))
+		cmd := exec.Command( //nolint:gosec // this is a local command being built
+			"minikube",
+			"image",
+			"rm",
+			"--profile", constants.KindClusterName,
+			fmt.Sprintf("%s:latest", constants.DockerImageNameLocal),
+		)
 		out, err := cmd.CombinedOutput()
 		output = string(out)
 		if err != nil {
@@ -163,7 +169,7 @@ func (Minikube) RemoveImages() {
 		pterm.Info.Printf("Still waiting for image to unload (elapsed time: %s)\n", elapsed.Round(time.Second))
 
 		// Wait for 3 seconds before trying again
-		time.Sleep(3 * time.Second)
+		time.Sleep(3 * time.Second) //nolint:gomnd // no need to make a constant
 		elapsed += 3 * time.Second
 	}
 

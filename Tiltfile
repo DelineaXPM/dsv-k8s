@@ -175,7 +175,7 @@ local_resource(
   deps=['.cache/'],
   resource_deps=[
     "job:init",
-    "job:rebuildimages"
+    # "job:rebuildimages"
   ],
   auto_init=False,
   labels=["deploy"],
