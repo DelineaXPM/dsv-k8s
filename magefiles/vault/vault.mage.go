@@ -194,14 +194,14 @@ func (DSV) ConvertClientToCredentials() error {
 	}{
 		Default: struct {
 			Credentials struct {
-				ClientID     string `json:"clientId"`
-				ClientSecret string `json:"clientSecret"`
+				ClientID     string `json:"clientId"`     //nolint:tagliatelle // json tag required as is
+				ClientSecret string `json:"clientSecret"` //nolint:tagliatelle // json tag required as is
 			} `json:"credentials"`
 			Tenant string `json:"tenant"`
 		}{
 			Credentials: struct {
-				ClientID     string `json:"clientId"`
-				ClientSecret string `json:"clientSecret"`
+				ClientID     string `json:"clientId"`     //nolint:tagliatelle // json tag required as is
+				ClientSecret string `json:"clientSecret"` //nolint:tagliatelle // json tag required as is
 			}{
 				ClientID:     data.ClientID,
 				ClientSecret: data.ClientSecret,
