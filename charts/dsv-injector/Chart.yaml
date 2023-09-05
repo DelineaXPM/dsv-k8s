@@ -8,7 +8,7 @@ description: |
   NAMESPACE='dsv'
   CREDENTIALS_JSON_FILE='.cache/credentials.json' # replace with your credentials file
   IMAGE_REPOSITORY='docker.io/delineaxpm/dsv-k8s'
-  IMAGE_TAG='v1.2.0' # use latest for test, but pin to a specific version for production
+  IMAGE_TAG='v1.2.1' # use latest for test, but pin to a specific version for production
 
   helm install \
       --namespace $NAMESPACE \
@@ -29,7 +29,7 @@ keywords:
   - secrets
   - vault
 type: application
-version: v1.2.0
+version: v1.2.1
 appVersion: latest
 maintainers:
   - name: Sheldon Hull
