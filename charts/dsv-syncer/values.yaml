@@ -21,6 +21,7 @@ image:
   tag: v1.2.1
   # -- Entrypoint is the path to the binary. Since the container image could contain multiple binaries, this makes sure it's correctly mapped to the binary.
   entrypoint: /app/dsv-syncer
+  args: ['-environment', 'foo']
 
 imagePullSecrets: []
 nameOverride: ''
