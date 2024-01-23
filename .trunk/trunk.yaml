@@ -2,7 +2,7 @@ version: 0.1
 plugins:
   sources:
     - id: trunk
-      ref: v1.2.1
+      ref: v1.4.2
       uri: https://github.com/trunk-io/plugins
 actions:
   enabled:
@@ -35,11 +35,11 @@ actions:
         - git_hooks: [pre-push]
 runtimes:
   enabled:
-    - go@1.20.3
+    - go@1.21.0
     - node@18.12.1
     - python@3.10.8
 cli:
-  version: 1.15.0
+  version: 1.19.0
 lint:
   threshold:
     - linters: [gitleaks]
@@ -48,34 +48,34 @@ lint:
     - cspell
     - gofmt
   enabled:
-    - checkov@2.4.9
+    - checkov@3.1.69
     - gokart@0.5.1
-    - osv-scanner@1.3.6
-    - terrascan@1.18.3
-    - trivy@0.44.1
-    - trufflehog@3.54.3
+    - osv-scanner@1.6.1
+    - terrascan@1.18.11
+    - trivy@0.48.3
+    - trufflehog@3.63.11
     - gofumpt@0.5.0
-    - renovate@36.81.0
+    - renovate@37.146.0
     - golangci-lint@SYSTEM
     - git-diff-check
     - taplo@0.8.1
-    - markdownlint@0.36.0
-    - prettier@3.0.3
-    - actionlint@1.6.25
+    - markdownlint@0.38.0
+    - prettier@3.2.4
+    - actionlint@1.6.26
     - hadolint@2.12.0
-    - gitleaks@8.18.0
+    - gitleaks@8.18.1
     - shellcheck@0.9.0
     - shfmt@3.6.0
-    - yamllint@1.32.0
-    - svgo@3.0.2
+    - yamllint@1.33.0
+    - svgo@3.2.0
     - prettier@2.8.3
     - git-diff-check
     - taplo@0.8.1
     - yamllint@1.29.0
-    - actionlint@1.6.25
+    - actionlint@1.6.26
     - gitleaks@8.15.3
     - hadolint@2.12.0
-    - markdownlint@0.36.0
+    - markdownlint@0.38.0
     - shellcheck@0.9.0
     - shfmt@3.6.0
 
