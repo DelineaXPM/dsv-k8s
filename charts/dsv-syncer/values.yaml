@@ -84,7 +84,7 @@ resources:
   #   memory: 128Mi
 
 # -- dsvInjectorCredentialsSecretName is the name of thecredentialsJson secret from the dsv-injector
-dsvInjectorCredentialsSecretName: dsv-injector-credentials
+dsvInjectorCredentialsSecretName: dsv-injector-credentials #checkov:skip=CKV_SECRET_6: this is a secret name and not an embedded secret
 
 # -- cronJobSchedule controls when the syncer runs; five asterisks means "every minute".
 # See [cronjob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax)
