@@ -1,4 +1,3 @@
-
 #
 # Helpers - stuff that's shared between make files
 # Written Originally by https://github.com/cloudposse/build-harness/blob/master/Makefile.helpers, Apache License 2.0
@@ -26,6 +25,9 @@ define assert-unset
 	@$(if $($1),$(error $(1) should not be defined in $(@)),)
 endef
 
+warn:
+	@printf "\e[33m🚨 make is deprecated, all automation excepting install-host for debugging have been moved to mage. Future changes should be made to mage.\e[0m\n"
+
 test/assert-set:
 	$(call assert-set,PATH)
 	@echo assert-set PASS
@@ -37,21 +39,21 @@ test/assert-unset:
 test/assert: test/assert-set test/assert-unset
 	@exit 0
 
-default:: $(DEFAULT_HELP_TARGET)
+default:: warn $(DEFAULT_HELP_TARGET)
 	@exit 0
 
 ## Help screen
-help:
+help: warn
 	@printf "Available targets:\n\n"
 	@$(SELF) -s help/generate | grep -E "\w($(HELP_FILTER))"
 
 ## Display help for all targets
-help/all:
+help/all: warn
 	@printf "Available targets:\n\n"
 	@$(SELF) -s help/generate
 
 ## This help short screen
-help/short:
+help/short: warn
 	@printf "Available targets:\n\n"
 	@$(SELF) -s help/generate MAKEFILE_LIST="Makefile $(BUILD_HARNESS_PATH)/Makefile.helpers"
 

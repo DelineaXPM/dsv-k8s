@@ -43,9 +43,9 @@ SECRET_FILE := ".artifacts/secret.yaml"
 
 .PHONY: clean-image clean-injector clean-syncer clean image install-injector
 		install-syncer install-image install-host install release uninstall-injector
-		uninstall-syncer uninstall init lint fix addsecret
+		uninstall-syncer uninstall init lint fix addsecret warn help/all help/short
 
-all: binaries image
+all: warn help/all
 
 ifeq ($(OS),Windows_NT)
 INJECTOR_BIN:=$(INJECTOR_NAME).exe
@@ -84,6 +84,8 @@ init::
 	(kind get clusters) && kubectl cluster-info --context kind-kind
 	trunk install --ci
 	python3 -m pip install pre-commit --user && pre-commit install || echo "❌ pre-commit failing to install"
+
+
 
 ## 🧪 Apply a secret to test the sync and injection using default context
 addsecret:
@@ -193,6 +195,3 @@ ifndef TRANSLATE_COLON_NOTATION
 %:
 	@$(SELF) -s $(subst :,/,$@) TRANSLATE_COLON_NOTATION=false
 endif
-
-
-

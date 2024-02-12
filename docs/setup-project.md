@@ -9,13 +9,17 @@ While the majority of this is cross-platform, the automatically linting and some
 
 ## Overview
 
-- Make: Makefiles provide core automation from the original project.
-  This has slowly been phased out for the more robust Mage tasks.
-  Most of your usage won't touch Make.
 - Mage: Mage is a Go based automation alternative to Make and provides newer functionality for local Kind cluster setup, Go development tooling/linting, and more.
-  Use [aqua](#aqua) to automaticall install, or run `go install github.com/magefile/mage@latest`.
+  Use [aqua](#aqua) to automatically install.
 - Run `mage` to list all available tasks, and `mage init` to setup developer tooling.
   Get more detail on a task, if it's available by running `mage -h init`.
+
+- Make: Makefiles provide core automation from the original project.
+  - This has slowly been phased out for the more robust Mage tasks.
+    Most of your usage won't touch Make.
+    The only usage that _might_ use this is the local cert based setup for debugger.
+    This hasn't been used in years by current maintainers, as log streaming from mage/tilt UI have been primary method.
+  - For anything other than running the debugger, use `mage` commands which have been regularly improved and tested and move any new automation to the magefiles.
 
 ## Initial Setup
 
