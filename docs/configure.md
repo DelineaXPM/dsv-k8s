@@ -26,6 +26,8 @@ The configuration requires a JSON formatted list of Client Credential and Tenant
 
 The name of the credential (such as `app1` or `default`) is used for matching the annontated credential to the right credentials file to use to connect to the connect tenant.
 
+By default, the `tld` is set to `.com` but you can change it by changing `tld` field to `eu` (for example: `"tld": "eu"`).
+
 You can place your temporary config in `.cache/credentials.json` as this is ignored by git, so that you can run the helm install command manually if you aren't doing local development.
 
 <img src="assets/info-markup-default-creds.svg">
@@ -37,7 +39,8 @@ You can place your temporary config in `.cache/credentials.json` as this is igno
       "clientId": "",
       "clientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxx-xxxxx"
     },
-    "tenant": "mytenant"
+    "tenant": "mytenant",
+    "tld": "eu"
   },
   "default": {
     "credentials": {
@@ -62,6 +65,8 @@ metadata:
   annotations:
     dsv.delinea.com/credentials: app1
     dsv.delinea.com/set-secret: 'tests:dsv-k8s'
+data:
+  dummy_value: ""
 ```
 
 If using the provided examples, you can edit: `.cache/manifests` and adjust the secrets to map.
