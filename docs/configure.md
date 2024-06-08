@@ -26,6 +26,9 @@ The configuration requires a JSON formatted list of Client Credential and Tenant
 
 The name of the credential (such as `app1` or `default`) is used for matching the annontated credential to the right credentials file to use to connect to the connect tenant.
 
+> [!WARNING]
+> If you have a different top level domain, for example `eu` instead of `.com` then look at the [section on supporting alternative tld for guidance](troubleshooting.md#supporting-alternative-tld).
+
 You can place your temporary config in `.cache/credentials.json` as this is ignored by git, so that you can run the helm install command manually if you aren't doing local development.
 
 <img src="assets/info-markup-default-creds.svg">
