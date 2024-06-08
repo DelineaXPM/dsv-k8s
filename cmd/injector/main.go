@@ -38,9 +38,11 @@ var (
 	commit = "none"
 	// Date is the date the binary was produced.
 	date = "unknown"
+	// buildName is the build name for easier confirmation on local builds that a build has changed.
+	buildName = "unknown"
 )
 
-// main is the entry point for the injector; creates an HTTPS listener and listing for v1.AdmissionReview requests
+// main is the entry point for the injector. It creates an HTTPS listener and listing for v1.AdmissionReview requests
 func main() {
 	if err := Run(os.Args); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -56,6 +58,7 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 		Str("version", version).
 		Str("commit", commit).
 		Str("date", date).
+		Str("buildName", buildName).
 		Msg("injector version information")
 
 	// Config is the configuration for the injector.

@@ -117,7 +117,7 @@ local_resource(
   cmd="zsh -l -c \"mage -f -l\"",
   trigger_mode=TRIGGER_MODE_AUTO,
   auto_init=True,
-  deps=['magefiles/*.go'],
+  deps=['magefiles/**/*.go'],
   labels=["startup"]
 )
 local_resource(
@@ -211,6 +211,30 @@ local_resource(
 local_resource(
   "minikube:destroy",
   cmd="mage minikube:destroy",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  deps=[],
+  auto_init=False,
+  labels=["setup"],
+)
+local_resource(
+  "minikube:listimages",
+  cmd="mage minikube:listimages",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  deps=[],
+  auto_init=False,
+  labels=["setup"],
+)
+local_resource(
+  "minikube:removeimages",
+  cmd="mage minikube:removeimages",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  deps=[],
+  auto_init=False,
+  labels=["setup"],
+)
+local_resource(
+  "minikube:loadimages",
+  cmd="mage minikube:loadimages",
   trigger_mode=TRIGGER_MODE_MANUAL,
   deps=[],
   auto_init=False,

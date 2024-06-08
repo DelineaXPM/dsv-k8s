@@ -209,15 +209,16 @@ func Checkfile(file string) error {
 		pterm.Error.Printfln("❌ Error reading file %q %v", file, err)
 		return err
 	}
-	re := regexp.MustCompile(`repository:\s+dsv-k8s`) //nolint:varnamelen // standard prefix, can update golangcilint config
+	escapedRepositoryMatch := regexp.QuoteMeta(constants.DockerImageNameLocal)
+	re := regexp.MustCompile(fmt.Sprintf(`repository:\s+%s`, escapedRepositoryMatch)) //nolint:varnamelen // standard prefix, can update golangcilint config
 	match := re.Find(b)
 	if match != nil {
-		pterm.Success.Printfln("✅ %s is configured to use local image", file)
+		pterm.Success.Printfln("✅ %s is configured to use local image  [expected: %s]", file, constants.DockerImageNameLocal)
 	} else {
 		re = regexp.MustCompile(`repository:\s+[^\n]*`)
 		match = re.Find(b)
 		if match != nil {
-			pterm.Warning.Printfln("❌ %s: not configured to use local image: %q (this is fine if you are't building as a developer with changes)", file, match)
+			pterm.Warning.Printfln("❌ %s: not configured to use local image: %q [expected: %s] (this is fine if you are't building as a developer with changes)", file, match, escapedRepositoryMatch)
 		} else {
 			pterm.Warning.Printfln("❌ %s: not configured to use local image: repository not found", file)
 		}
@@ -226,7 +227,7 @@ func Checkfile(file string) error {
 	re = regexp.MustCompile(`pullPolicy:\s+Never`)
 	match = re.Find(b)
 	if match != nil {
-		pterm.Success.Printfln("✅ %s is configured with pullPolicy of Never", file)
+		pterm.Success.Printfln("✅ %s is configured with pullPolicy of Never [expected: Never]", file)
 	} else {
 		re = regexp.MustCompile(`pullPolicy:\s+\w*`)
 		match = re.Find(b)
@@ -239,7 +240,7 @@ func Checkfile(file string) error {
 	re = regexp.MustCompile(`tag:\s+[']?latest[']?`)
 	match = re.Find(b)
 	if match != nil {
-		pterm.Success.Printfln("✅ %s is configured with pullPolicy of Never", file)
+		pterm.Success.Printfln("✅ %s is configured with tag of %s [expected: latest]", file, match)
 	} else {
 		re = regexp.MustCompile(`tag:\s+[']?.*[']?`)
 		match = re.Find(b)

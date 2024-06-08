@@ -1,0 +1,3 @@
+kind: "\U0001F916 CI & Build"
+body: Add a buildName metadata to binary so easy to see if caching issue with container loading. Handle `dev.local/dsv-k8s` as standard image name to better reflect standard approach I've been using. Improve validation checks. Goreleaser upgrade schema and more. Lots of quality of life improvements for dev, and aqua updates.
+time: 2024-06-08T00:27:54.636538807Z

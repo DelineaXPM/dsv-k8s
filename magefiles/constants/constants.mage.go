@@ -43,7 +43,7 @@ const (
 	// DockerImageQualified is the qualified path of the image in Docker Hub.
 	DockerImageQualified = "docker.io/delineaxpm/dsv-k8s"
 	// DockerImageNameLocal is the name of the built image to run locally and load with minikube/kind.
-	DockerImageNameLocal = "dsv-k8s"
+	DockerImageNameLocal = "dev.local/dsv-k8s"
 )
 
 const (

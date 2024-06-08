@@ -1,4 +1,5 @@
 ---
+version: 2
 project_name: dsv-k8s
 dist: .artifacts/goreleaser
 env:
@@ -7,6 +8,7 @@ env:
   - GITEA_TOKEN=''
   - LOCAL_DEBUGGING=false # set to make this quick and bypass extra effort builds like archiving zip
   - CGO_ENABLED=0
+  - BUILD_NAME='{{ if index .Env "BUILD_NAME" }}{{ .Env.BUILD_NAME }}{{else}}""{{end}}'
 before:
   hooks:
     - go mod download
@@ -22,6 +24,7 @@ builds:
       - -X main.commit={{ .FullCommit }}
       - -X main.date={{ .Now.Format "2006-01-02T15:04:05Z07:00" }} #RFC3339
       - -X main.builtBy=goreleaser
+      - -X main.buildName={{ .Env.BUILD_NAME }}
     goos: [linux]
     goarch:
       - amd64
@@ -49,7 +52,7 @@ checksum:
 snapshot:
   name_template: '{{ incpatch .Version }}-next'
 changelog:
-  skip: false
+  disable: true
   sort: asc
   use: github
   groups:
@@ -97,8 +100,8 @@ dockers:
   - id: local-docker-images
     goos: linux
     image_templates:
-      - '{{ .ProjectName }}:{{ .Tag }}'
-      - '{{ .ProjectName }}:latest' # This one is for dev usage so latest version, no tagged semver required in docker compose or local testing
+      - 'dev.local/{{ .ProjectName }}:{{ .Tag }}'
+      - 'dev.local/{{ .ProjectName }}:latest' # This one is for dev usage so latest version, no tagged semver required in docker compose or local testing
     skip_push: true
     dockerfile: ./docker/Dockerfile.distroless
     use: buildx
@@ -108,7 +111,6 @@ dockers:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.version={{.Version}}
-      - --label=org.opencontainers.image.version="{{ .Tag }}"
 announce:
   slack:
     enabled: true

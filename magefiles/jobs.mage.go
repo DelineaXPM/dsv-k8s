@@ -29,11 +29,16 @@ func (Job) Init() {
 // Redeploy removes k8s resources, helm uninstall, and then runs k8s apply and helm install.
 func (Job) Redeploy() {
 	pterm.DefaultSection.Println("(Job) Redeploy()")
-	mg.SerialDeps(
-		minikube.Minikube{}.LoadImages, // just be sure in case forget to load local images that the latest is always used
+
+	mg.Deps(
 		helm.Helm{}.Uninstall,
 		mg.F(k8s.K8s{}.Delete, constants.CacheManifestDirectory),
-		helm.Helm{}.Install, // this should take place first so the creation of the manifests can benefit from the resulting injector/syncer
+	)
+
+	mg.SerialDeps(
+		minikube.Minikube{}.RemoveImages,
+		minikube.Minikube{}.LoadImages, // just be sure in case forget to load local images that the latest is always used
+		helm.Helm{}.Install,            // this should take place first so the creation of the manifests can benefit from the resulting injector/syncer
 		mg.F(k8s.K8s{}.Apply, constants.CacheManifestDirectory),
 		// k8s.K8s{}.Logs, // use chained command
 	)

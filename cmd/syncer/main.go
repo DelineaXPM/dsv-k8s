@@ -41,6 +41,8 @@ var (
 	commit = "none"
 	// Date is the date the binary was produced.
 	date = "unknown"
+	// buildName is the build name for easier confirmation on local builds that a build has changed.
+	buildName = "unknown"
 )
 
 // Run contains the actual invocation code for the syncer and is public to allow running integration tests with it.
@@ -50,6 +52,7 @@ func Run(args []string) error { //nolint:funlen // ok for Run
 		Str("version", version).
 		Str("commit", commit).
 		Str("date", date).
+		Str("buildName", buildName).
 		Msg("syncer version information")
 
 	// Config is the configuration for the syncer.

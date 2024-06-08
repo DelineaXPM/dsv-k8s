@@ -22,6 +22,8 @@ github.com/aws/aws-sdk-go v1.44.119 h1:TPkpDsanBMcZaF5wHwpKhjkapRV/b7d2qdC+a+IPb
 github.com/aws/aws-sdk-go v1.44.119/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
 github.com/bitfield/script v0.22.0 h1:LA7QHuEsXMPD52YLtxWrlqCCy+9FOpzNYfsRHC5Gsrc=
 github.com/bitfield/script v0.22.0/go.mod h1:ms4w+9B8f2/W0mbsgWDVTtl7K94bYuZc3AunnJC4Ebs=
+github.com/brianvoe/gofakeit/v6 v6.28.0 h1:Xib46XXuQfmlLS2EXRuJpqcw8St6qSZz75OUo0tgAW4=
+github.com/brianvoe/gofakeit/v6 v6.28.0/go.mod h1:Xj58BMSnFqcn/fAQeSK+/PLtC5kSb7FJIq4JyGa8vEs=
 github.com/caarlos0/env/v6 v6.10.1 h1:t1mPSxNpei6M5yAeu1qtRdPAK29Nbcf/n3G7x+b3/II=
 github.com/caarlos0/env/v6 v6.10.1/go.mod h1:hvp/ryKXKipEkcuYjs9mI4bBCg+UI0Yhgm5Zu0ddvwc=
 github.com/containerd/console v1.0.3 h1:lIr7SlA5PxZyMV30bDW0MGbiOPXwc63yRuCP0ARubLw=

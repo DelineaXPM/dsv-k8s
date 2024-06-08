@@ -46,3 +46,4 @@ packages-*
 vendor/**/*.png
 
 Tiltfile.local
+.env

@@ -6,41 +6,42 @@ checksum:
   require_checksum: false
 registries:
   - type: standard
-    ref: v4.118.0 # renovate: depName=aquaproj/aqua-registry
+    ref: v4.190.0 # renovate: depName=aquaproj/aqua-registry
   - name: local
     type: local
     path: registry.yaml
 packages:
-  - name: miniscruff/changie@v1.17.0
+  - name: miniscruff/changie@v1.19.0
     tags: ['release']
-  - name: golang/go@go1.21.6
+  - name: golang/go@go1.22.4
     tags: ['first', 'release', 'test', 'scan', 'lint']
-  - name: direnv/direnv@v2.33.0
+  - name: direnv/direnv@v2.34.0
   - name: magefile/mage@v1.15.0
     tags: ['release', 'test', 'scan', 'lint']
   - name: charmbracelet/glow@v1.5.1
-  - name: goreleaser/goreleaser@v1.23.0
+  - name: goreleaser/goreleaser@v2.0.0
     tags: ['release']
-  - name: mvdan/gofumpt@v0.5.0
-  - name: anchore/syft@v0.100.0
+  - name: mvdan/gofumpt@v0.6.0
+  - name: anchore/syft@v1.5.0
     tags: ['release']
-  - name: norwoodj/helm-docs@v1.12.0
-  - name: gotestyourself/gotestsum@v1.11.0
+  - name: norwoodj/helm-docs@v1.13.1
+  - name: gotestyourself/gotestsum@v1.12.0
     tags: ['test']
   - name: c-bata/kube-prompt@v1.0.11
-  - name: kubernetes-sigs/kind@v0.20.0
+  - name: kubernetes-sigs/kind@v0.23.0
   - name: kubernetes/kubectl
     version: v1.25.2
-  - name: helm/helm@v3.13.3
-  - name: kubernetes/minikube@v1.32.0
+  - name: helm/helm@v3.15.1
+  - name: kubernetes/minikube@v1.33.1
     tags: ['ci']
-  - name: stern/stern@v1.28.0
-  - name: tilt-dev/tilt@v0.33.10
-  - name: golangci/golangci-lint@v1.55.2
+  - name: stern/stern@v1.30.0
+  - name: tilt-dev/tilt@v0.33.16
+  - name: golangci/golangci-lint@v1.59.0
     tags: ['lint']
   - name: mage-select
     version: v1.4.2
     registry: local
     tags: ['goinstall']
-  - name: DelineaXPM/dsv-cli@v1.40.5
-  - name: gitleaks/gitleaks@v8.18.1
+  - name: DelineaXPM/dsv-cli@v1.41.1
+  - name: gitleaks/gitleaks@v8.18.3
+  - name: charmbracelet/gum@v0.14.1

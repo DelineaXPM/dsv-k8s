@@ -160,13 +160,14 @@ func (Minikube) RemoveImages() {
 			pterm.Error.Printfln("image not rm from minikube: %v", err)
 		}
 		// Check if the output contains the image name
-		if !strings.Contains(output, "docker.io/library/dsv-k8s:latest") {
+		if !strings.Contains(output, constants.DockerImageNameLocal) ||
+			strings.Contains(output, fmt.Sprintf("No such image: %s", constants.DockerImageNameLocal)) {
 			pterm.Success.Printfln("image unloaded")
 			break
 		}
 
 		// If the image is still being unloaded, print a progress message
-		pterm.Info.Printf("Still waiting for image to unload (elapsed time: %s)\n", elapsed.Round(time.Second))
+		pterm.Info.Printf("Still waiting for image [%s] to unload (elapsed time: %s)\n", constants.DockerImageNameLocal, elapsed.Round(time.Second))
 
 		// Wait for 3 seconds before trying again
 		time.Sleep(3 * time.Second) //nolint:gomnd // no need to make a constant
@@ -176,10 +177,10 @@ func (Minikube) RemoveImages() {
 	// for _, chart := range constants.HelmChartsList {
 	// Load image into minikube
 	// debug output  "--logtostderr",
-
-	if err := sh.Run("minikube", "image", "rm", "--profile", constants.KindClusterName, constants.DockerImageQualified); err != nil {
-		pterm.Warning.Printfln("image not rm from minikube: %v", err)
-	}
+	// NOTE: removed this as we don't need to remove those images regularly as it's an upstream version infrequently changed and causes confusing output.
+	// if err := sh.Run("minikube", "image", "rm", "--profile", constants.KindClusterName, constants.DockerImageQualified); err != nil {
+	// 	pterm.Warning.Printfln("image not rm from minikube: %v", err)
+	// }
 	pterm.Success.Printfln("image removed from minikube: %s", constants.DockerImageNameLocal)
 	// }
 }
