@@ -7,6 +7,7 @@ toolchain go1.21.6
 require (
 	github.com/DelineaXPM/dsv-sdk-go/v2 v2.1.0
 	github.com/bitfield/script v0.22.0
+	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/magefile/mage v1.15.0
 	github.com/mattbaird/jsonpatch v0.0.0-20230413205102-771768614e91
@@ -23,7 +24,6 @@ require (
 	atomicgo.dev/keyboard v0.2.9 // indirect
 	atomicgo.dev/schedule v0.1.0 // indirect
 	github.com/aws/aws-sdk-go v1.44.119 // indirect
-	github.com/brianvoe/gofakeit/v6 v6.28.0 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -57,10 +57,10 @@ require (
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/ztrue/tracerr v0.4.0 // indirect
 	golang.org/x/mod v0.10.0 // indirect
-	golang.org/x/net v0.17.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/oauth2 v0.10.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
-	golang.org/x/term v0.15.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/term v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
