@@ -24,6 +24,7 @@ jobs:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       - uses: aquaproj/aqua-installer@fd2089d1f56724d6456f24d58605e6964deae124 # v2.3.2
         with:
+          aqua_version: v2.28.0
           enable_aqua_install: true
           aqua_opts: '--tags scan'
         env:
