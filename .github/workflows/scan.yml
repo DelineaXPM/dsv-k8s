@@ -21,8 +21,8 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: aquaproj/aqua-installer@61e2563dfe7674cbf74fe6ec212e444198a3bb00 # tag=v2.0.2
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+      - uses: aquaproj/aqua-installer@fd2089d1f56724d6456f24d58605e6964deae124 # v2.3.2
         with:
           enable_aqua_install: true
           aqua_opts: '--tags scan'
@@ -34,7 +34,7 @@ jobs:
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
       # no pinning of github managed action
       - name: Setup Golang caches
-        uses: actions/cache@v3
+        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3
         with:
           path: |
             ${HOME}/.cache/go-build
@@ -45,7 +45,7 @@ jobs:
       # This should be informational, and not block as it's experimental and no exclusion logic at this time that I've found.
       # https://go.dev/security/vuln/#feedback
       - name: govuln-scan
-        uses: elgohr/go-vulncheck-action@90e331d6e77587505906ef175d4b44a1d2cb6a63 # renovate tag=v1
+        uses: elgohr/go-vulncheck-action@e73217f293105d5418d631c4d308eb0c27943f1d # renovate tag=v1
         continue-on-error: true
       # - name: mage-vulcheck
       #   run: |
@@ -64,11 +64,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@e113c555ef0956479345cfc3ed530c938d670db0 # v2
         with:
           languages: ${{ matrix.language }}
           # If you wish to specify custom queries, you can do so here or in a config file.
@@ -81,7 +81,7 @@ jobs:
       # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
       # If this step fails, then you should remove it and run the build manually (see below)
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@e113c555ef0956479345cfc3ed530c938d670db0 # v2
 
       # ℹ️ Command-line programs to run using the OS shell.
       # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
@@ -93,6 +93,6 @@ jobs:
       #   ./location_of_script_within_repo/buildscript.sh
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@e113c555ef0956479345cfc3ed530c938d670db0 # v2
         with:
           category: '/language:${{matrix.language}}'
