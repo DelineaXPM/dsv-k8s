@@ -120,3 +120,11 @@ configmap:
   # DSV_CREDENTIALS_JSON:
   # DSV_SERVER_ADDRESS:
   # DSV_DEBUG: 'true'  # Warning: if passing boolean, use quoted string to avoid issues
+
+# -- webhookCertExpireDays specifies the number of days before the webhook certificate expires
+# @default -- 365
+webhookCertExpireDays: 365
+
+# -- recreateSelfSignedCertThreshold specifies the number of days before the self-signed certificate expires
+# @default -- 90
+recreateSelfSignedCertThreshold: 90

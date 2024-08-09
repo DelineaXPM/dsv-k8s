@@ -1,5 +1,13 @@
 {{- $tlsCert := genSelfSignedCert (include "dsv.dnsname" .) nil (list (include "dsv.dnsname" .) (include "dsv.name" .)) (default 365 .Values.webhookCertExpireDays | int) -}}
 {{- $tlsSecret := lookup "v1" "Secret" .Release.Namespace (printf "%s-tls" (include "dsv.name" .)) -}}
+{{- $recreateSelfSignedCertThreshold := default 90 .Values.recreateSelfSignedCertThreshold | int -}}
+{{- $needsRecreate := false -}}
+{{- if $tlsSecret }}
+  {{- $cert := $tlsSecret.data.cert | b64dec | fromYaml -}}
+  {{- if and $cert (lt (now | date "2006-01-02" | dateAdd (mul $recreateSelfSignedCertThreshold 24h)) ($cert | date "2006-01-02")) }}
+    {{- $needsRecreate = true -}}
+  {{- end -}}
+{{- end -}}
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
@@ -19,7 +27,7 @@ webhooks:
     clientConfig:
 {{- if eq .Values.service.type "ExternalName" }}
       caBundle: {{ .Values.caBundle }}
-{{- else if $tlsSecret }}
+{{- else if and $tlsSecret (not $needsRecreate) }}
       caBundle: {{ $tlsSecret.data.cert }}
 {{- else }}
       caBundle: {{ $tlsCert.Cert | b64enc }}
@@ -38,7 +46,7 @@ kind: Secret
 metadata:
   name: {{ include "dsv.name" . }}-tls
 data:
-{{- if $tlsSecret }}
+{{- if and $tlsSecret (not $needsRecreate) }}
   cert.pem: {{ $tlsSecret.data.cert }}
   key.pem: {{ $tlsSecret.data.key }}
 {{- else }}
