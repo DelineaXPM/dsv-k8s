@@ -2,7 +2,9 @@ package main
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"io"
 	"net/http"
@@ -96,12 +98,37 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 	if cert, err := tls.LoadX509KeyPair(cfg.CertFile, cfg.KeyFile); err == nil {
 		tlsConfig = &tls.Config{Certificates: []tls.Certificate{cert}}
 		log.Info().Str("cert", cfg.CertFile).Str("key", cfg.KeyFile).Msg("LoadX509KeyPair")
+
+		// Parse the certificate to get the expiration date
+		certData, err := os.ReadFile(cfg.CertFile)
+		if err != nil {
+			log.Error().Err(err).Msg("unable to read certificate file")
+			return fmt.Errorf("unable to read certificate file: %w", err)
+		}
+		block, _ := pem.Decode(certData)
+		if block == nil {
+			log.Error().Msg("failed to parse certificate PEM")
+			return fmt.Errorf("failed to parse certificate PEM")
+		}
+		parsedCert, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			log.Error().Err(err).Msg("failed to parse certificate")
+			return fmt.Errorf("failed to parse certificate: %w", err)
+		}
+
+		// Calculate the number of days until the certificate expires
+		daysUntilExpiry := int(time.Until(parsedCert.NotAfter).Hours() / 24)
+
+		log.Info().
+			Str("cert", cfg.CertFile).
+			Str("key", cfg.KeyFile).
+			Int("days_until_expiry", daysUntilExpiry).
+			Msg("LoadX509KeyPair")
 	} else {
 		log.Error().Err(err).Msgf("unable to load keypair for TLS: %s", err)
 		return fmt.Errorf("unable to load keypair for TLS: %w", err)
 	}
 	log.Info().Msgf("success loading keypair for TLS: [public: '%s', private: '%s']", cfg.CertFile, cfg.KeyFile)
-
 	server := http.Server{
 		Addr:              cfg.ServerAddress,
 		TLSConfig:         tlsConfig, // optional

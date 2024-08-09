@@ -2,8 +2,6 @@ module github.com/DelineaXPM/dsv-k8s/v2
 
 go 1.21
 
-toolchain go1.21.6
-
 require (
 	github.com/DelineaXPM/dsv-sdk-go/v2 v2.1.0
 	github.com/bitfield/script v0.22.0

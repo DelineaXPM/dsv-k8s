@@ -24,3 +24,17 @@
 {{ else }}
 ➖ no configmap detected, defaults used for logging level and any other configmap values
 {{ end }}
+
+
+{{- $tlsSecret := lookup "v1" "Secret" .Release.Namespace (printf "%s-tls" (include "dsv.name" .)) -}}
+{{- $recreateSelfSignedCertThreshold := default 90 .Values.recreateSelfSignedCertThreshold | int -}}
+{{- $needsRecreate := false -}}
+{{- if $tlsSecret }}
+  {{- $cert := $tlsSecret.data.cert | b64dec | fromYaml -}}
+  {{- if and $cert (lt (now | date "2006-01-02") (dateModify (now | date "2006-01-02") (printf "+%dh" (mul $recreateSelfSignedCertThreshold 24)))) }}
+    {{- $needsRecreate = true -}}
+    ❗❗❗ Cert expiration shows expiring within threshold: [$recreateSelfSignedCertThreshold] days, so will be recreated.
+  {{- else -}}
+    ✔️ Cert shows expiration greater than threshold of [$recreateSelfSignedCertThreshold].
+  {{- end -}}
+{{- end -}}

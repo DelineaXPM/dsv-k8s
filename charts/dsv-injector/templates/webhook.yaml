@@ -4,7 +4,7 @@
 {{- $needsRecreate := false -}}
 {{- if $tlsSecret }}
   {{- $cert := $tlsSecret.data.cert | b64dec | fromYaml -}}
-  {{- if and $cert (lt (now | date "2006-01-02" | dateAdd (mul $recreateSelfSignedCertThreshold 24h)) ($cert | date "2006-01-02")) }}
+  {{- if and $cert (lt (now | date "2006-01-02") (dateModify (now | date "2006-01-02") (printf "+%dh" (mul $recreateSelfSignedCertThreshold 24)))) }}
     {{- $needsRecreate = true -}}
   {{- end -}}
 {{- end -}}
