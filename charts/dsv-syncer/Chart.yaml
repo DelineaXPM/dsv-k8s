@@ -16,7 +16,7 @@ description: |
       --set image.tag=${IMAGE_TAG} \
       --atomic \
       --timeout "5m" \
-      --debug \ # optional --values ./myvaluesfile/values.yaml \
+      --debug \ # optional --values  --values .cache/charts/dsv-injector/values.yaml \
       dsv-syncer ./charts/dsv-syncer
   ```
 keywords:

@@ -3,7 +3,7 @@
 {{- $uri := trimAll "/" .Values.webhookUri -}}
 ✨ Deployed: {{ include "dsv.fullname" . }}
 
-📂 Namepsace: {{ .Release.Namespace }}
+📂 Namespace: {{ .Release.Namespace }}
 {{ if eq .Values.service.type "ExternalName" }}
 🔗 The cluster will call the webhook at {{ printf "https://%s:%d/%s" .Values.externalName $port $uri }}
 
@@ -28,13 +28,8 @@
 
 {{- $tlsSecret := lookup "v1" "Secret" .Release.Namespace (printf "%s-tls" (include "dsv.name" .)) -}}
 {{- $recreateSelfSignedCertThreshold := default 90 .Values.recreateSelfSignedCertThreshold | int -}}
-{{- $needsRecreate := false -}}
-{{- if $tlsSecret }}
-  {{- $cert := $tlsSecret.data.cert | b64dec | fromYaml -}}
-  {{- if and $cert (lt (now | date "2006-01-02") (dateModify (now | date "2006-01-02") (printf "+%dh" (mul $recreateSelfSignedCertThreshold 24)))) }}
-    {{- $needsRecreate = true -}}
-    ❗❗❗ Cert expiration shows expiring within threshold: [$recreateSelfSignedCertThreshold] days, so will be recreated.
-  {{- else -}}
-    ✔️ Cert shows expiration greater than threshold of [$recreateSelfSignedCertThreshold].
-  {{- end -}}
+{{- if eq .Values.service.type "ExternalName" }}
+ℹ️ ExternalName provided for service type, so no self signed cert will be used.
+{{- else -}}
+➕ Will generate a self signed cert with expiration of [{{ (default 365 .Values.webhookCertExpireDays | int) }}] days.
 {{- end -}}
