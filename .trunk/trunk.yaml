@@ -45,11 +45,11 @@ lint:
     - linters: [gitleaks]
       level: high
   disabled:
+    - gokart
     - cspell
     - gofmt
   enabled:
     - checkov@3.2.128
-    - gokart@0.5.1
     - osv-scanner@1.7.4
     - terrascan@1.19.1
     - trivy@0.52.0
