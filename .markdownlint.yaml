@@ -49,3 +49,4 @@ MD013: false
 MD024:
   # Only check sibling headings
   siblings_only: true
+MD034: false
