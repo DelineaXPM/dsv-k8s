@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -108,7 +109,7 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 		block, _ := pem.Decode(certData)
 		if block == nil {
 			log.Error().Msg("failed to parse certificate PEM")
-			return fmt.Errorf("failed to parse certificate PEM")
+			return errors.New("failed to parse certificate PEM")
 		}
 		parsedCert, err := x509.ParseCertificate(block.Bytes)
 		if err != nil {
@@ -117,7 +118,7 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 		}
 
 		// Calculate the number of days until the certificate expires
-		daysUntilExpiry := int(time.Until(parsedCert.NotAfter).Hours() / 24)
+		daysUntilExpiry := int(time.Until(parsedCert.NotAfter).Hours() / 24) //nolint:gomnd // ok for this calculation
 
 		log.Info().
 			Str("cert", cfg.CertFile).
