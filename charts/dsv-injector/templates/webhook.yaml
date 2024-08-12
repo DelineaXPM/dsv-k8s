@@ -8,6 +8,8 @@ metadata:
   name: {{ include "dsv.fullname" . }}
   labels:
     {{- include "dsv.labels" . | nindent 4 }}
+  annotations:
+      checksum/last-updated: {{ now | date "2006-01-02T15:04:05Z07:00" | quote }}
 webhooks:
   - name: {{ include "dsv.fullname" . }}.{{ .Release.Namespace }}.svc
     failurePolicy: Fail
@@ -17,10 +19,10 @@ webhooks:
         operations: ["CREATE"]
         resources: ["secrets"]
         scope: {{ default "*" .Values.webhookScope }}
-    clientConfig:
+    clientConfig: # Secret Reference: Not supported directly by the MutatingWebhookConfiguration API.
 {{- if eq .Values.service.type "ExternalName" }}
       caBundle: {{ .Values.caBundle }}
-{{- else if $existingTlsSecret }}
+{{ else if $existingTlsSecret }}
       caBundle: {{ $existingTlsSecret.data.cert }}
 {{- else }}
       caBundle: {{ $tlsCert.Cert | b64enc }}
@@ -38,13 +40,15 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ include "dsv.name" . }}-tls
+  annotations:
+    checksum/last-updated: {{ now | date "2006-01-02T15:04:05Z07:00" | quote }}
 data:
 {{- if $existingTlsSecret }}
-  cert.pem: {{ $existingTlsSecret.data.cert }}
-  key.pem: {{ $existingTlsSecret.data.key }}
+  tls.crt: {{ $existingTlsSecret.data.cert }}
+  tls.key: {{ $existingTlsSecret.data.key }}
 {{- else }}
-  cert.pem: {{ $tlsCert.Cert | b64enc }}
-  key.pem: {{ $tlsCert.Key | b64enc }}
+  tls.crt: {{ $tlsCert.Cert | b64enc }}
+  tls.key: {{ $tlsCert.Key | b64enc }}
 {{- end }}
-type: Opaque
+type: kubernetes.io/tls
 {{- end }}

@@ -22,6 +22,36 @@ description: |
       dsv-injector ./charts/dsv-injector
   ```
 
+  An upgrade to the existing deployment can be done with:
+
+  ```shell
+  helm upgrade \
+    --namespace $NAMESPACE \
+    --atomic \
+    --timeout "5m" \
+    --debug -v4 \
+    dsv-injector ./charts/dsv-injector
+  ```
+
+  To upgrade, ensuring that the current self signed cert that is deployed by default (if not using your own CA), run the commands below to ensure the prior hook and secret are removed so they can be recreated with the newly generated cert.
+
+  ```shell
+  kubectl --namespace $NAMESPACE delete mutatingwebhookconfiguration dsv-injector \
+  && kubectl --namespace $NAMESPACE delete secret --timeout "5m" dsv-injector-tls \
+  && helm upgrade \
+    --namespace $NAMESPACE \
+    --atomic \
+    --timeout "5m" \
+    --debug -v4 \
+    dsv-injector ./charts/dsv-injector
+  ```
+
+  To uninstall the deployment, you can run:
+
+  ```shell
+  helm uninstall --namespace $NAMESPACE dsv-injector
+  ```
+
 keywords:
   - Delinea
   - DevOps
