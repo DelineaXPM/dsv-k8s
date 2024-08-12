@@ -67,11 +67,11 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 	// Config is the configuration for the injector.
 	// This is provided by environment variables.
 	type Config struct {
-		CertFile            string `env:"DSV_CERT"  envDefault:"${HOME}/tls/tls.crt" envExpand:"true"`                        // Cert is the path to the public certificate file in PEM format. //nolint:tagalign // Incorrectly stripping tag.
-		KeyFile             string `env:"DSV_KEY" envDefault:"${HOME}/tls/tls.key" envExpand:"true"`                          // Key is the path to the private key file in PEM format.		    //nolint:tagalign // Incorrectly stripping tag.
+		CertFile            string `env:"DSV_CERT"             envDefault:"${HOME}/tls/tls.crt"             envExpand:"true"` // Cert is the path to the public certificate file in PEM format. //nolint:tagalign // Incorrectly stripping tag.
+		KeyFile             string `env:"DSV_KEY"              envDefault:"${HOME}/tls/tls.key"             envExpand:"true"` // Key is the path to the private key file in PEM format.		    //nolint:tagalign // Incorrectly stripping tag.
 		CredentialsJSONFile string `env:"DSV_CREDENTIALS_JSON" envDefault:"${HOME}/credentials/config.json" envExpand:"true"` // CredentialsJSONFile is the path to the JSON formatted credentials file that is mounted as a secret.
-		ServerAddress       string `env:"DSV_SERVER_ADDRESS" envDefault:":18543"`                                             // ServerAddress is the address to listen on, e.g., 'localhost:8080' or ':8443'
-		Debug               bool   `env:"DSV_DEBUG" envDefault:"false"`                                                       // Debug enables debug logging.
+		ServerAddress       string `env:"DSV_SERVER_ADDRESS"   envDefault:":18543"`                                           // ServerAddress is the address to listen on, e.g., 'localhost:8080' or ':8443'
+		Debug               bool   `env:"DSV_DEBUG"            envDefault:"false"`                                            // Debug enables debug logging.
 	}
 
 	cfg := Config{}
