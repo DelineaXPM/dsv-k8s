@@ -20,6 +20,8 @@ webhooks:
     clientConfig:
 {{- if eq .Values.service.type "ExternalName" }}
       caBundle: {{ .Values.caBundle }}
+{{- else if $existingTlsSecret }}
+      caBundle: {{ $existingTlsSecret.data.cert }}
 {{- else }}
       caBundle: {{ $tlsCert.Cert | b64enc }}
 {{- end }}
@@ -35,23 +37,14 @@ webhooks:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: my-tls-secret
-  annotations:
-    "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-delete-policy": before-hook-creation
-type: kubernetes.io/tls
-data:
-  tls.crt: {{ $tlsCert.Cert | b64enc }}
-  tls.key: {{ $tlsCert.Key | b64enc }}
----
-apiVersion: v1
-kind: Secret
-metadata:
   name: {{ include "dsv.name" . }}-tls
-  annotations:
-    last-modified: {{ now | quote }}
 data:
+{{- if $existingTlsSecret }}
+  cert.pem: {{ $existingTlsSecret.data.cert }}
+  key.pem: {{ $existingTlsSecret.data.key }}
+{{- else }}
   cert.pem: {{ $tlsCert.Cert | b64enc }}
   key.pem: {{ $tlsCert.Key | b64enc }}
+{{- end }}
 type: Opaque
 {{- end }}
