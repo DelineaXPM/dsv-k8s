@@ -1,6 +1,6 @@
 ✨ Deployed: {{ include "dsv.fullname" . }}
 
-📂 Namepsace: {{ .Release.Namespace }}
+📂 Namespace: {{ .Release.Namespace }}
 
 {{- if .Values.configmap }}
 ⚙️ ConfigMap created: {{ include "dsv.fullname" . }}-configmap

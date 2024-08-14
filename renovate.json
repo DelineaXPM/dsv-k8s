@@ -1,13 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "DelineaXPM/renovate-config:security"
-  ],
+  "extends": ["DelineaXPM/renovate-config:security"],
   "packageRules": [
     {
-      "matchManagers": [
-        "gomod"
-      ],
+      "matchManagers": ["gomod"],
       "matchPackageNames": [
         "helm.sh/helm/v3",
         "github.com/mittwald/go-helm-client"
@@ -16,17 +12,10 @@
       "enabled": false
     },
     {
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchPackageNames": [
-        "k8s.io/api"
-      ],
+      "matchManagers": ["gomod"],
+      "matchPackageNames": ["k8s.io/api"],
       "groupName": "risky-k8s-changes",
-      "matchUpdateTypes": [
-        "major",
-        "minor"
-      ],
+      "matchUpdateTypes": ["major", "minor"],
       "enabled": false
     }
   ]

@@ -8,7 +8,7 @@ description: |
   NAMESPACE='dsv'
   CREDENTIALS_JSON_FILE='.cache/credentials.json' # replace with your credentials file
   IMAGE_REPOSITORY='docker.io/delineaxpm/dsv-k8s'
-  IMAGE_TAG='v1.2.2' # use latest for test, but pin to a specific version for production
+  IMAGE_TAG='v1.2.3' # use latest for test, but pin to a specific version for production
 
   helm install \
       --namespace $NAMESPACE \
@@ -18,8 +18,38 @@ description: |
       --set image.tag=${IMAGE_TAG} \
       --atomic \
       --timeout "5m" \
-      --debug -v4 \ # optional --values ./myvaluesfile/values.yaml \
+      --debug -v4 \ # optional for local test iteration --values .cache/charts/dsv-injector/values.yaml \
       dsv-injector ./charts/dsv-injector
+  ```
+
+  An upgrade to the existing deployment can be done with:
+
+  ```shell
+  helm upgrade \
+    --namespace $NAMESPACE \
+    --atomic \
+    --timeout "5m" \
+    --debug -v4 \
+    dsv-injector ./charts/dsv-injector
+  ```
+
+  To upgrade, ensuring that the current self signed cert that is deployed by default (if not using your own CA), run the commands below to ensure the prior hook and secret are removed so they can be recreated with the newly generated cert.
+
+  ```shell
+  kubectl --namespace $NAMESPACE delete mutatingwebhookconfiguration dsv-injector \
+  && kubectl --namespace $NAMESPACE delete secret --timeout "5m" dsv-injector-tls \
+  && helm upgrade \
+    --namespace $NAMESPACE \
+    --atomic \
+    --timeout "5m" \
+    --debug -v4 \
+    dsv-injector ./charts/dsv-injector
+  ```
+
+  To uninstall the deployment, you can run:
+
+  ```shell
+  helm uninstall --namespace $NAMESPACE dsv-injector
   ```
 
 keywords:
@@ -29,7 +59,7 @@ keywords:
   - secrets
   - vault
 type: application
-version: v1.2.2
+version: v1.2.3
 appVersion: latest
 maintainers:
   - name: Sheldon Hull

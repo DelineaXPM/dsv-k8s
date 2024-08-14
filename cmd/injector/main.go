@@ -2,7 +2,10 @@ package main
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -64,11 +67,11 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 	// Config is the configuration for the injector.
 	// This is provided by environment variables.
 	type Config struct {
-		CertFile            string `env:"DSV_CERT"  envDefault:"${HOME}/tls/cert.pem" envExpand:"true"`                       // Cert is the path to the public certificate file in PEM format.
-		KeyFile             string `env:"DSV_KEY" envDefault:"${HOME}/tls/key.pem" envExpand:"true"`                          // Key is the path to the private key file in PEM format.
+		CertFile            string `env:"DSV_CERT"             envDefault:"${HOME}/tls/tls.crt"             envExpand:"true"` // Cert is the path to the public certificate file in PEM format. //nolint:tagalign // Incorrectly stripping tag.
+		KeyFile             string `env:"DSV_KEY"              envDefault:"${HOME}/tls/tls.key"             envExpand:"true"` // Key is the path to the private key file in PEM format.		    //nolint:tagalign // Incorrectly stripping tag.
 		CredentialsJSONFile string `env:"DSV_CREDENTIALS_JSON" envDefault:"${HOME}/credentials/config.json" envExpand:"true"` // CredentialsJSONFile is the path to the JSON formatted credentials file that is mounted as a secret.
-		ServerAddress       string `env:"DSV_SERVER_ADDRESS" envDefault:":18543"`                                             // ServerAddress is the address to listen on, e.g., 'localhost:8080' or ':8443'
-		Debug               bool   `env:"DSV_DEBUG" envDefault:"false"`                                                       // Debug enables debug logging.
+		ServerAddress       string `env:"DSV_SERVER_ADDRESS"   envDefault:":18543"`                                           // ServerAddress is the address to listen on, e.g., 'localhost:8080' or ':8443'
+		Debug               bool   `env:"DSV_DEBUG"            envDefault:"false"`                                            // Debug enables debug logging.
 	}
 
 	cfg := Config{}
@@ -96,12 +99,37 @@ func Run(args []string) error { //nolint:funlen,cyclop // ok for Run
 	if cert, err := tls.LoadX509KeyPair(cfg.CertFile, cfg.KeyFile); err == nil {
 		tlsConfig = &tls.Config{Certificates: []tls.Certificate{cert}}
 		log.Info().Str("cert", cfg.CertFile).Str("key", cfg.KeyFile).Msg("LoadX509KeyPair")
+
+		// Parse the certificate to get the expiration date
+		certData, err := os.ReadFile(cfg.CertFile)
+		if err != nil {
+			log.Error().Err(err).Msg("unable to read certificate file")
+			return fmt.Errorf("unable to read certificate file: %w", err)
+		}
+		block, _ := pem.Decode(certData)
+		if block == nil {
+			log.Error().Msg("failed to parse certificate PEM")
+			return errors.New("failed to parse certificate PEM")
+		}
+		parsedCert, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			log.Error().Err(err).Msg("failed to parse certificate")
+			return fmt.Errorf("failed to parse certificate: %w", err)
+		}
+
+		// Calculate the number of days until the certificate expires
+		daysUntilExpiry := int(time.Until(parsedCert.NotAfter).Hours() / 24) //nolint:gomnd // ok for this calculation
+
+		log.Info().
+			Str("cert", cfg.CertFile).
+			Str("key", cfg.KeyFile).
+			Int("days_until_expiry", daysUntilExpiry).
+			Msg("LoadX509KeyPair")
 	} else {
 		log.Error().Err(err).Msgf("unable to load keypair for TLS: %s", err)
 		return fmt.Errorf("unable to load keypair for TLS: %w", err)
 	}
 	log.Info().Msgf("success loading keypair for TLS: [public: '%s', private: '%s']", cfg.CertFile, cfg.KeyFile)
-
 	server := http.Server{
 		Addr:              cfg.ServerAddress,
 		TLSConfig:         tlsConfig, // optional

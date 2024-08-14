@@ -7,7 +7,7 @@ description: |
   ```shell
   NAMESPACE='dsv'
   IMAGE_REPOSITORY='docker.io/delineaxpm/dsv-k8s'
-  IMAGE_TAG='v1.2.2' # use latest for test, but pin to a specific version for production
+  IMAGE_TAG='v1.2.3' # use latest for test, but pin to a specific version for production
 
   helm install \
       --namespace $NAMESPACE \
@@ -16,7 +16,7 @@ description: |
       --set image.tag=${IMAGE_TAG} \
       --atomic \
       --timeout "5m" \
-      --debug \ # optional --values ./myvaluesfile/values.yaml \
+      --debug \ # optional --values  --values .cache/charts/dsv-injector/values.yaml \
       dsv-syncer ./charts/dsv-syncer
   ```
 keywords:
@@ -26,7 +26,7 @@ keywords:
   - secrets
   - vault
 type: application
-version: v1.2.2
+version: v1.2.3
 appVersion: latest
 maintainers:
   - name: Sheldon Hull

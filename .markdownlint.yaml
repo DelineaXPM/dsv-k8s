@@ -1,6 +1,5 @@
 ---
 #https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md002
-comment: my-markdown-linting-rules
 
 # enable all default tagged rules
 default: true
@@ -43,13 +42,11 @@ MD025: true
 # This is for maintainability and code diffs.
 # Try applying semantic line break concept for breaking up longer phrases
 # https://sembr.org/
-MD013:
-  line_length: 200
+MD013: false
 
 # MD024/no-duplicate-heading/no-duplicate-header - Multiple headings with the same content
 # This tweaks to allow nested items to have duplicate headers.
 MD024:
   # Only check sibling headings
-  allow_different_nesting: true
-  # Only check sibling headings
   siblings_only: true
+MD034: false

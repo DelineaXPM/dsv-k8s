@@ -3,7 +3,7 @@
 {{- $uri := trimAll "/" .Values.webhookUri -}}
 ✨ Deployed: {{ include "dsv.fullname" . }}
 
-📂 Namepsace: {{ .Release.Namespace }}
+📂 Namespace: {{ .Release.Namespace }}
 {{ if eq .Values.service.type "ExternalName" }}
 🔗 The cluster will call the webhook at {{ printf "https://%s:%d/%s" .Values.externalName $port $uri }}
 
@@ -24,3 +24,9 @@
 {{ else }}
 ➖ no configmap detected, defaults used for logging level and any other configmap values
 {{ end }}
+
+{{- if eq .Values.service.type "ExternalName" }}
+ℹ️ ExternalName provided for service type, so no self signed cert will be used.
+{{- else -}}
+➕ Will generate a self signed cert with expiration of [{{ (default 365 .Values.webhookCertExpireDays | int) }}] days.
+{{- end -}}
