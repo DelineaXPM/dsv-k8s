@@ -11,24 +11,34 @@ body:
 kinds:
   - label: 🤖 CI & Build
     auto: patch
+    key: ci-build
   - label: 🎉 New Product Feature
     auto: minor
+    key: new-product-feature
   - label: ⬇️ Deprecated
     auto: minor
+    key: deprecated
   - label: 🧪 Tests
     auto: patch
+    key: tests
   - label: 🔨 Refactor
     auto: patch
+    key: refactor
   - label: 🐛 Bug Fix
     auto: patch
+    key: bug-fix
   - label: 🔥 Breaking Change
     auto: minor
+    key: breaking-change
   - label: 🔒 Security
     auto: patch
+    key: security
   - label: ⬆️ Dependencies
     auto: patch
+    key: dependencies
   - label: 🔥 Major Version Change (Breaking Changes)
     auto: major
+    key: major-version-change
 newlines:
   afterChange: 0
   afterChangelogHeader: 1
