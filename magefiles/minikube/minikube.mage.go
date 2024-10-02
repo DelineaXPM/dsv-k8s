@@ -2,6 +2,7 @@
 package minikube
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/constants"
+	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/helm"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
@@ -36,6 +38,20 @@ func createCluster() error {
 		"minikube",
 		minikubeArgs...,
 	); err != nil {
+		return err
+	}
+	return nil
+}
+
+// invokeMinikubeCaptureStdErr runs a minikube command and returns the error if any.
+func invokeMinikubeCaptureStdErr(args ...string) error {
+	cmd := exec.Command("minikube", args...)
+	var stderr bytes.Buffer
+	var stdout bytes.Buffer
+	cmd.Stderr = &stderr // Capture stderr
+	cmd.Stdout = &stdout
+	err := cmd.Run()
+	if err != nil {
 		return err
 	}
 	return nil
@@ -131,58 +147,68 @@ func (Minikube) LoadImages() {
 		"--overwrite", // minikube CLI docs causing strife, wasting time in my life.... ensure this is here or problems ensure in your local testing :-)
 		fmt.Sprintf("%s:latest", constants.DockerImageNameLocal),
 	); err != nil {
-		pterm.Error.Printfln("unable to load image into minikube: %v", err)
+		pterm.Warning.Printfln("unable to load image into minikube: %v", err)
+	} else {
+		pterm.Success.Printfln("image loaded into minikube: %s", constants.DockerImageNameLocal)
 	}
-	pterm.Success.Printfln("image loaded into minikube: %s", constants.DockerImageNameLocal)
-	// }
+
+	if err := invokeMinikubeCaptureStdErr(
+		"--profile", constants.KindClusterName,
+		"image", "load",
+		"--overwrite", // minikube CLI docs causing strife, wasting time in my life.... ensure this is here or problems ensure in your local testing :-)
+		fmt.Sprintf("%s:latest", constants.DockerImageQualified),
+	); err != nil {
+		pterm.Error.Printfln("unable to load image into minikube: %v", err)
+	} else {
+		pterm.Success.Printfln("image loaded into minikube: %s", constants.DockerImageQualified)
+	}
 }
 
 // 💾 RemoveImages removes the images both local and docker registered from the minikube cluster.
 func (Minikube) RemoveImages() {
 	mtu.CheckPtermDebug()
+	mg.SerialDeps(
+		helm.Helm{}.Uninstall,
+		Minikube{}.ListImages,
+	)
 	var output string
 	// var err error
 	var elapsed time.Duration
 
-	for {
+	for _, image := range []string{constants.DockerImageNameLocal, constants.DockerImageQualified} {
 		// Run the docker rmi command and capture the output
-
+		simpleImageName := strings.ReplaceAll(image, "docker.io/", "")
 		cmd := exec.Command( //nolint:gosec // this is a local command being built
 			"minikube",
 			"image",
 			"rm",
 			"--profile", constants.KindClusterName,
-			fmt.Sprintf("%s:latest", constants.DockerImageNameLocal),
+			simpleImageName,
 		)
+
 		out, err := cmd.CombinedOutput()
 		output = string(out)
 		if err != nil {
 			pterm.Error.Printfln("image not rm from minikube: %v", err)
 		}
-		// Check if the output contains the image name
-		if !strings.Contains(output, constants.DockerImageNameLocal) ||
-			strings.Contains(output, fmt.Sprintf("No such image: %s", constants.DockerImageNameLocal)) {
-			pterm.Success.Printfln("image unloaded")
-			break
+
+		if strings.Contains(output, fmt.Sprintf("No such image: %s", simpleImageName)) {
+			pterm.Debug.Println("no such image detected:", simpleImageName)
+			pterm.Success.Println("image unloaded:", simpleImageName)
+			continue
+		} else if strings.Contains(output, simpleImageName) {
+			pterm.Debug.Println(output)
+			pterm.Info.Printfln("waiting for image [%s] to unload (elapsed time: %s)", simpleImageName, elapsed.Round(time.Second))
 		}
-
 		// If the image is still being unloaded, print a progress message
-		pterm.Info.Printf("Still waiting for image [%s] to unload (elapsed time: %s)\n", constants.DockerImageNameLocal, elapsed.Round(time.Second))
-
 		// Wait for 3 seconds before trying again
 		time.Sleep(3 * time.Second) //nolint:gomnd // no need to make a constant
 		elapsed += 3 * time.Second
 	}
 
-	// for _, chart := range constants.HelmChartsList {
-	// Load image into minikube
-	// debug output  "--logtostderr",
-	// NOTE: removed this as we don't need to remove those images regularly as it's an upstream version infrequently changed and causes confusing output.
-	// if err := sh.Run("minikube", "image", "rm", "--profile", constants.KindClusterName, constants.DockerImageQualified); err != nil {
-	// 	pterm.Warning.Printfln("image not rm from minikube: %v", err)
-	// }
-	pterm.Success.Printfln("image removed from minikube: %s", constants.DockerImageNameLocal)
-	// }
+	mg.SerialDeps(
+		Minikube{}.ListImages,
+	)
 }
 
 // 🔍 ListImages provides a list of the minikube loaded images
@@ -198,7 +224,7 @@ func (Minikube) ListImages() {
 // 🗑️ Destroy tears down the Kind cluster.
 func (Minikube) Destroy() error {
 	mtu.CheckPtermDebug()
-	if err := sh.Run("minikube", "delete", "--profile", constants.KindClusterName); err != nil {
+	if err := invokeMinikubeCaptureStdErr("delete", "--profile", constants.KindClusterName); err != nil {
 		pterm.Error.Printfln("minikube delete error: %v", err)
 		return err
 	}

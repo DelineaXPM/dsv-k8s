@@ -145,7 +145,7 @@ linters:
     - funlen #OVERRIDE: ok using for bot, lots of quick long commands i worked on
     - cyclop #OVERRIDE: ok using for bot, lots of quick long commands i worked on
     - gocognit #OVERRIDE: ok using for bot, lots of quick long commands i worked on
-
+    - perfsprint
 run:
   timeout: 5m
   build-tags:

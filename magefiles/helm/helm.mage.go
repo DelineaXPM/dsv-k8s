@@ -2,8 +2,10 @@
 package helm
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -128,6 +130,19 @@ func (Helm) Install() error {
 	return nil
 }
 
+// invokeHelmCaptureStdErr runs a Helm command and returns the error if any.
+func invokeHelmCaptureStdErr(args ...string) error {
+	cmd := exec.Command("helm", args...)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr // Capture stderr
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Uninstall uninstalls all the charts listed in constants.HelmChartsList.
 func (Helm) Uninstall() {
 	magetoolsutils.CheckPtermDebug()
@@ -136,12 +151,26 @@ func (Helm) Uninstall() {
 	}
 	for _, chart := range constants.HelmChartsList {
 		pterm.Info.Printfln("Uninstalling: %s", chart.ReleaseName)
-		if err := invokeHelm("uninstall",
+
+		// Check if the release exists
+		err := invokeHelmCaptureStdErr("status", chart.ReleaseName)
+		if err != nil {
+			pterm.Warning.Printfln("%v", err)
+			if strings.Contains(err.Error(), "not found") {
+				pterm.Warning.Printfln("release '%s' does not exist, skipping uninstall.", chart.ReleaseName)
+				continue
+			}
+			pterm.Error.Printfln("Failed to check status of release '%s': %v", chart.ReleaseName, err)
+			continue
+		}
+
+		// Proceed to uninstall if it exists
+		if err := invokeHelmCaptureStdErr("uninstall",
 			chart.ReleaseName,
 			"--wait",  // waits, those atomic already runs this
 			"--debug", // enable verbose output
 		); err != nil {
-			pterm.Warning.Printfln("failed to uninstall: %s, err: %v", chart.ReleaseName, err)
+			pterm.Warning.Printfln("Failed to uninstall: %s, err: %v", chart.ReleaseName, err)
 		} else {
 			pterm.Success.Printfln("Successfully uninstalled: %s", chart.ReleaseName)
 		}

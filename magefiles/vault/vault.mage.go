@@ -66,7 +66,7 @@ func (DSV) SetupDSV() error {
 	}
 	logger := pterm.DefaultLogger.WithLevel(pterm.LogLevelInfo).WithCaller(true)
 	if _, err := os.Stat(clientcredfile); err == nil {
-		logger.Error("client credentials already exist, please run `mage vault:destroy` to remove and try again")
+		logger.Error("client credentials already exist, please run `mage dsv:destroy` to remove and try again")
 		return fmt.Errorf("tear down existing test credentials before recreate to avoid conflicts")
 	}
 	// dsv role create

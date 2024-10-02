@@ -1,0 +1,3 @@
+kind: ci-build
+body: Improve mage tasks and linting with fixes. Less issues with err output on cleanup now, and also load the docker version of images into minikube setup proactively.
+time: 2024-10-02T23:40:44.31027171Z
