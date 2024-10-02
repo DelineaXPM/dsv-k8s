@@ -45,3 +45,10 @@ packages:
   - name: DelineaXPM/dsv-cli@v1.41.1
   - name: gitleaks/gitleaks@v8.18.4
   - name: charmbracelet/gum@v0.14.3
+  - name: cli/cli@v2.58.0
+    tags:
+      - release
+  - name: miniscruff/changie@v1.21.0
+  - name: mikefarah/yq@v4.44.3
+    tags:
+      - release
