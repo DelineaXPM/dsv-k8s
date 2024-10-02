@@ -7,7 +7,7 @@ description: |
   ```shell
   NAMESPACE='dsv'
   IMAGE_REPOSITORY='docker.io/delineaxpm/dsv-k8s'
-  IMAGE_TAG='v1.2.3' # use latest for test, but pin to a specific version for production
+  IMAGE_TAG='v1.2.4' # use latest for test, but pin to a specific version for production
 
   helm install \
       --namespace $NAMESPACE \
@@ -26,7 +26,7 @@ keywords:
   - secrets
   - vault
 type: application
-version: v1.2.3
+version: v1.2.4
 appVersion: latest
 maintainers:
   - name: Sheldon Hull
