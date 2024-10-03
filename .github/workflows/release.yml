@@ -29,6 +29,7 @@ jobs:
           aqua_version: v2.28.0
           enable_aqua_install: true
           aqua_opts: '--tags release'
+          policy_allow: true
         env:
           AQUA_LOG_LEVEL: debug
           AQUA_OPTS: ''
