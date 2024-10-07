@@ -1,6 +1,6 @@
 # dsv-injector
 
-![Version: v1.2.3](https://img.shields.io/badge/Version-v1.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: v1.2.4](https://img.shields.io/badge/Version-v1.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 A Helm chart for the Delinea DevOps Secrets Vault (DSV) Injector Mutating Webhook.
 
@@ -8,7 +8,7 @@ A Helm chart for the Delinea DevOps Secrets Vault (DSV) Injector Mutating Webhoo
 NAMESPACE='dsv'
 CREDENTIALS_JSON_FILE='.cache/credentials.json' # replace with your credentials file
 IMAGE_REPOSITORY='docker.io/delineaxpm/dsv-k8s'
-IMAGE_TAG='v1.2.3' # use latest for test, but pin to a specific version for production
+IMAGE_TAG='v1.2.4' # use latest for test, but pin to a specific version for production
 
 helm install \
     --namespace $NAMESPACE \

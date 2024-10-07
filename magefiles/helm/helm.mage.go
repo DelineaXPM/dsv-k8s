@@ -10,10 +10,10 @@ import (
 	"regexp"
 	"strings"
 
+	"al.essio.dev/pkg/shellescape"
 	"github.com/DelineaXPM/dsv-k8s/v2/magefiles/constants"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
-
 	"github.com/pterm/pterm"
 	"github.com/sheldonhull/magetools/pkg/magetoolsutils"
 	"github.com/sheldonhull/magetools/pkg/req"
@@ -104,7 +104,8 @@ func (Helm) Install() error {
 		if _, err := os.Stat(constants.CacheCredentialFile); os.IsNotExist(err) {
 			return fmt.Errorf("credentials file: %s doesn't exist, so skipping", constants.CacheCredentialFile)
 		}
-		if err := invokeHelm("upgrade",
+		helmArgs := []string{
+			"upgrade",
 			chart.ReleaseName,
 			chart.ChartPath,
 			"--namespace", constants.KubectlNamespace,
@@ -118,10 +119,12 @@ func (Helm) Install() error {
 			"--wait-for-jobs",     // will wait until all Jobs have been completed before marking the release as successful
 			"--dependency-update", // update dependencies if they are missing before installing the chart
 			"--set-file", fmt.Sprintf("credentialsJson=%s", constants.CacheCredentialFile),
-
 			debugHelm,
 			// NOTE: Can pass credentials/certs etc in. NOT ADDED YET - "--set-file", "sidecar.configFile=config.yaml",
-		); err != nil {
+		}
+
+		pterm.Debug.Println("helm", shellescape.QuoteCommand(helmArgs))
+		if err := invokeHelm(helmArgs...); err != nil {
 			pterm.Warning.Printfln("failed to install chart: %s, err: %v", chart.ReleaseName, err)
 		} else {
 			pterm.Success.Printfln("successfully installed chart: %s", chart.ReleaseName)
@@ -153,6 +156,7 @@ func (Helm) Uninstall() {
 		pterm.Info.Printfln("Uninstalling: %s", chart.ReleaseName)
 
 		// Check if the release exists
+		pterm.Debug.Println("helm", shellescape.QuoteCommand([]string{"status", chart.ReleaseName}))
 		err := invokeHelmCaptureStdErr("status", chart.ReleaseName)
 		if err != nil {
 			pterm.Warning.Printfln("%v", err)
@@ -165,11 +169,15 @@ func (Helm) Uninstall() {
 		}
 
 		// Proceed to uninstall if it exists
-		if err := invokeHelmCaptureStdErr("uninstall",
+		helmArgs := []string{
+			"uninstall",
 			chart.ReleaseName,
 			"--wait",  // waits, those atomic already runs this
 			"--debug", // enable verbose output
-		); err != nil {
+		}
+
+		pterm.Debug.Println("helm", shellescape.QuoteCommand(helmArgs))
+		if err := invokeHelmCaptureStdErr(helmArgs...); err != nil {
 			pterm.Warning.Printfln("Failed to uninstall: %s, err: %v", chart.ReleaseName, err)
 		} else {
 			pterm.Success.Printfln("Successfully uninstalled: %s", chart.ReleaseName)
@@ -191,14 +199,18 @@ func (Helm) Render() {
 			pterm.Error.Printfln("unable to create target chart directory for rendering helm template. what gives?")
 			return
 		}
-		if err := invokeHelm("template",
+		helmArgs := []string{
+			"template",
 			chart.ReleaseName,
 			chart.ChartPath,
 			"--values", filepath.Join(constants.CacheChartsDirectory, chart.ReleaseName, "values.yaml"),
 			// "--create-namespace",
 			// "--dependency-update",
 			"--output-dir", targetDirectory,
-		); err != nil {
+		}
+
+		pterm.Debug.Println("helm", shellescape.QuoteCommand(helmArgs))
+		if err := invokeHelm(helmArgs...); err != nil {
 			pterm.Warning.Printfln("failed to render template to: %s, err: %v", targetDirectory, err)
 		} else {
 			pterm.Success.Printfln("Successfully exported to targetDirectory: %s", targetDirectory)
@@ -215,12 +227,15 @@ func (Helm) Docs() error {
 	}
 	for _, chart := range constants.HelmChartsList {
 		pterm.DefaultSection.Printfln("Generating docs for %s", chart.ReleaseName)
-		err := sh.Run(binary,
+		helmArgs := []string{
 			"--chart-search-root", chart.ChartPath,
 			"--output-file", "README.md",
 			// NOTE: using default layout, but can change here if we wanted.
 			// "--template-files", filepath.Join("magefiles", "helm", "README.md.gotmpl"),
-		)
+		}
+
+		pterm.Debug.Println("helm", shellescape.QuoteCommand(helmArgs))
+		err := sh.Run(binary, helmArgs...)
 		if err != nil {
 			return fmt.Errorf("helm-docs failed: %w", err)
 		}

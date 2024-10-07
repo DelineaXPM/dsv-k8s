@@ -21,8 +21,18 @@ import (
 // Minikube contains the kind cli commands.
 type Minikube mg.Namespace
 
+// checkKubeConfig outputs a warning if the kubeconfig is not set to the local project, as this can cause confusion.
+func checkKubeConfig() {
+	mtu.CheckPtermDebug()
+	if os.Getenv("KUBECONFIG") != constants.Kubeconfig {
+		pterm.Warning.Printfln("KUBECONFIG is not set to %s, this can cause confusion, you probably haven't loaded direnv which should take care of this", constants.Kubeconfig)
+	}
+}
+
 func createCluster() error {
 	mtu.CheckPtermDebug()
+	checkKubeConfig()
+
 	minikubeArgs := []string{
 		"start",
 		"--profile", constants.KindClusterName,
@@ -45,6 +55,7 @@ func createCluster() error {
 
 // invokeMinikubeCaptureStdErr runs a minikube command and returns the error if any.
 func invokeMinikubeCaptureStdErr(args ...string) error {
+	checkKubeConfig()
 	cmd := exec.Command("minikube", args...)
 	var stderr bytes.Buffer
 	var stdout bytes.Buffer
@@ -59,6 +70,7 @@ func invokeMinikubeCaptureStdErr(args ...string) error {
 
 func updateKubeconfig() error {
 	mtu.CheckPtermDebug()
+	checkKubeConfig()
 	if _, err := os.Stat(constants.Kubeconfig); os.IsNotExist(err) {
 		if _, err := os.Create(constants.Kubeconfig); err != nil {
 			pterm.Error.Printfln("unable to create empty placeholder file: %v", err)
@@ -89,6 +101,7 @@ func updateKubeconfig() error {
 // ➕ Create creates a new Minikube cluster and populates a kubeconfig in cachedirectory.
 func (Minikube) Init() error {
 	mtu.CheckPtermDebug()
+	checkKubeConfig()
 	if err := createCluster(); err != nil {
 		return err
 	}
@@ -139,6 +152,7 @@ func (Minikube) Init() error {
 // 💾 LoadImages loads the images into the minikube cluster.
 func (Minikube) LoadImages() {
 	mtu.CheckPtermDebug()
+	checkKubeConfig()
 	// for _, chart := range constants.HelmChartsList {
 	// Load image into minikube
 	if err := sh.Run("minikube",
@@ -167,6 +181,7 @@ func (Minikube) LoadImages() {
 // 💾 RemoveImages removes the images both local and docker registered from the minikube cluster.
 func (Minikube) RemoveImages() {
 	mtu.CheckPtermDebug()
+	checkKubeConfig()
 	mg.SerialDeps(
 		helm.Helm{}.Uninstall,
 		Minikube{}.ListImages,
@@ -214,6 +229,7 @@ func (Minikube) RemoveImages() {
 // 🔍 ListImages provides a list of the minikube loaded images
 func (Minikube) ListImages() {
 	mtu.CheckPtermDebug()
+	checkKubeConfig()
 	pterm.DefaultSection.Println("(Minikube) ListImages()")
 	if err := sh.RunV("minikube", "image", "ls", "--profile", constants.KindClusterName); err != nil {
 		pterm.Error.Printfln("images not listed from minikube: %v", err)
@@ -224,6 +240,7 @@ func (Minikube) ListImages() {
 // 🗑️ Destroy tears down the Kind cluster.
 func (Minikube) Destroy() error {
 	mtu.CheckPtermDebug()
+	checkKubeConfig()
 	if err := invokeMinikubeCaptureStdErr("delete", "--profile", constants.KindClusterName); err != nil {
 		pterm.Error.Printfln("minikube delete error: %v", err)
 		return err
@@ -233,5 +250,18 @@ func (Minikube) Destroy() error {
 	}
 
 	pterm.Success.Println("(Minikube) Destroy()")
+	return nil
+}
+
+// Dashboard opens the Minikube dashboard.
+func (Minikube) Dashboard() error {
+	mtu.CheckPtermDebug()
+	checkKubeConfig()
+	if err := sh.Run("minikube", "dashboard", "--profile", constants.KindClusterName, "addons", "enable", "metrics-service"); err != nil {
+		return err
+	}
+	if err := sh.Run("minikube", "dashboard", "--profile", "dsvtest"); err != nil {
+		return err
+	}
 	return nil
 }
