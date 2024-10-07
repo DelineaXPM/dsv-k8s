@@ -38,7 +38,7 @@ actions:
     # AQUA installs helm-docs, so run as if already exists as these actions will be only for the refresh of charts/release process
     - id: helm-docs-injector
       description: run helm-docs on pre-commit when the helm charts are updated
-      run: helm-docs --chart-search-root charts/dsv-injector --output-file charts/dsv-injector/README.md
+      run: helm-docs --chart-search-root charts/dsv-injector --output-file README.md
       triggers:
         - files:
             [
@@ -48,7 +48,7 @@ actions:
         - git_hooks: [pre-commit]
     - id: helm-docs-syncer
       description: run helm-docs on pre-commit when the helm charts are updated
-      run: helm-docs --chart-search-root charts/dsv-syncer --output-file charts/dsv-syncer/README.md
+      run: helm-docs --chart-search-root charts/dsv-syncer --output-file README.md
       triggers:
         - files:
             ['charts/dsv-syncer/values.yaml', 'charts/dsv-syncer/Chart.yaml']
