@@ -6,6 +6,8 @@ plugins:
       uri: https://github.com/trunk-io/plugins
 actions:
   enabled:
+    - helm-docs-syncer
+    - helm-docs-injector
     - trunk-announce
     - trunk-cache-prune
     - trunk-upgrade-available
@@ -33,6 +35,24 @@ actions:
       run: 'helm lint --quiet charts/*'
       triggers:
         - git_hooks: [pre-push]
+    # AQUA installs helm-docs, so run as if already exists as these actions will be only for the refresh of charts/release process
+    - id: helm-docs-injector
+      description: run helm-docs on pre-commit when the helm charts are updated
+      run: helm-docs --chart-search-root charts/dsv-injector --output-file charts/dsv-injector/README.md
+      triggers:
+        - files:
+            [
+              'charts/dsv-injector/values.yaml',
+              'charts/dsv-injector/Chart.yaml',
+            ]
+        - git_hooks: [pre-commit]
+    - id: helm-docs-syncer
+      description: run helm-docs on pre-commit when the helm charts are updated
+      run: helm-docs --chart-search-root charts/dsv-syncer --output-file charts/dsv-syncer/README.md
+      triggers:
+        - files:
+            ['charts/dsv-syncer/values.yaml', 'charts/dsv-syncer/Chart.yaml']
+        - git_hooks: [pre-commit]
 runtimes:
   enabled:
     - go@1.21.0
