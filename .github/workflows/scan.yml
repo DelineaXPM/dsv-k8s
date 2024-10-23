@@ -46,7 +46,7 @@ jobs:
       # This should be informational, and not block as it's experimental and no exclusion logic at this time that I've found.
       # https://go.dev/security/vuln/#feedback
       - name: govuln-scan
-        uses: elgohr/go-vulncheck-action@e73217f293105d5418d631c4d308eb0c27943f1d # renovate tag=v1
+        uses: elgohr/go-vulncheck-action@2325facbb97c96a945c48e644308c756e1af2cba # renovate tag=v1
         continue-on-error: true
       # - name: mage-vulcheck
       #   run: |
