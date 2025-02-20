@@ -69,7 +69,8 @@ For more information on how to set up and configure DSV for use with Azure Entra
         "tenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
         "Provider": 3
     }
-}```
+}
+```
 
 ### Update Manifests
 
