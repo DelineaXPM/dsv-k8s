@@ -52,23 +52,23 @@ You can place your temporary config in `.cache/credentials.json` as this is igno
 }
 ```
 
-## AZURE Entra authentication
+### AZURE Entra authentication
 
 To use Azure Entra authentication add the "tenantId" and "Provider" paramaters.
 For more information on how to set up and configure DSV for use with Azure Entra authentication
 [dsv-sdk-go documentation](https://github.com/DelineaXPM/dsv-sdk-go/tree/main/example/azure)
 
-````json
+```json
 {
-    "default": {
-        "credentials": {
-            "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            "clientSecret": "zzzz~zzzzzz.zzzzzzzzzzzzz~zzzzzzzzzzz"
-        },
-        "tenant": "youTenantName",
-        "tenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "Provider": 3
-    }
+  "default": {
+    "credentials": {
+      "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "clientSecret": "zzzz~zzzzzz.zzzzzzzzzzzzz~zzzzzzzzzzz"
+    },
+    "tenant": "youTenantName",
+    "tenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "Provider": 3
+  }
 }
 ```
 
@@ -85,7 +85,7 @@ metadata:
   annotations:
     dsv.delinea.com/credentials: app1
     dsv.delinea.com/set-secret: 'tests:dsv-k8s'
-````
+```
 
 If using the provided examples, you can edit: `.cache/manifests` and adjust the secrets to map.
 You can use all of the provided manifests to test the different behavior, or just deploy one if desired.
