@@ -54,7 +54,7 @@ You can place your temporary config in `.cache/credentials.json` as this is igno
 
 ### AZURE Entra authentication
 
-To use Azure Entra authentication add the "tenantId" and "Provider" paramaters.
+To use Azure Entra authentication add the "tenantId" and "Provider" parameters.
 For more information on how to set up and configure DSV for use with Azure Entra authentication
 [dsv-sdk-go documentation](https://github.com/DelineaXPM/dsv-sdk-go/tree/main/example/azure)
 
