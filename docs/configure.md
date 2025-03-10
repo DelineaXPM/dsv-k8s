@@ -52,6 +52,26 @@ You can place your temporary config in `.cache/credentials.json` as this is igno
 }
 ```
 
+### AZURE Entra authentication
+
+To use Azure Entra authentication add the "tenantId" and "Provider" parameters.
+For more information on how to set up and configure DSV for use with Azure Entra authentication
+[dsv-sdk-go documentation](https://github.com/DelineaXPM/dsv-sdk-go/tree/main/example/azure)
+
+```json
+{
+  "default": {
+    "credentials": {
+      "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "clientSecret": "zzzz~zzzzzz.zzzzzzzzzzzzz~zzzzzzzzzzz"
+    },
+    "tenant": "youTenantName",
+    "tenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "Provider": 3
+  }
+}
+```
+
 ### Update Manifests
 
 This would be referenced by a Kubernetes secret with annotations like:
