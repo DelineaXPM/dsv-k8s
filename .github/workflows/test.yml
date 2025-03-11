@@ -57,7 +57,7 @@ jobs:
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
       # no pinning of github managed action
       - name: Setup Golang caches
-        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3
+        uses: actions/cache@2f8e54208210a422b2efd51efaa6bd6d7ca8920f # v3
         with:
           path: |
             ${HOME}/.cache/go-build
