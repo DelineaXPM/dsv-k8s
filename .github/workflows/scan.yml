@@ -35,7 +35,7 @@ jobs:
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
       # no pinning of github managed action
       - name: Setup Golang caches
-        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3
+        uses: actions/cache@2f8e54208210a422b2efd51efaa6bd6d7ca8920f # v3
         with:
           path: |
             ${HOME}/.cache/go-build
@@ -46,7 +46,7 @@ jobs:
       # This should be informational, and not block as it's experimental and no exclusion logic at this time that I've found.
       # https://go.dev/security/vuln/#feedback
       - name: govuln-scan
-        uses: elgohr/go-vulncheck-action@e73217f293105d5418d631c4d308eb0c27943f1d # renovate tag=v1
+        uses: elgohr/go-vulncheck-action@04c514965656cb0768b37118284fb7c9c40477db # renovate tag=v1
         continue-on-error: true
       # - name: mage-vulcheck
       #   run: |
@@ -69,7 +69,7 @@ jobs:
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@e113c555ef0956479345cfc3ed530c938d670db0 # v2
+        uses: github/codeql-action/init@b8d3b6e8af63cde30bdc382c0bc28114f4346c88 # v2
         with:
           languages: ${{ matrix.language }}
           # If you wish to specify custom queries, you can do so here or in a config file.
@@ -82,7 +82,7 @@ jobs:
       # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
       # If this step fails, then you should remove it and run the build manually (see below)
       - name: Autobuild
-        uses: github/codeql-action/autobuild@e113c555ef0956479345cfc3ed530c938d670db0 # v2
+        uses: github/codeql-action/autobuild@b8d3b6e8af63cde30bdc382c0bc28114f4346c88 # v2
 
       # ℹ️ Command-line programs to run using the OS shell.
       # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
@@ -94,6 +94,6 @@ jobs:
       #   ./location_of_script_within_repo/buildscript.sh
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@e113c555ef0956479345cfc3ed530c938d670db0 # v2
+        uses: github/codeql-action/analyze@b8d3b6e8af63cde30bdc382c0bc28114f4346c88 # v2
         with:
           category: '/language:${{matrix.language}}'
