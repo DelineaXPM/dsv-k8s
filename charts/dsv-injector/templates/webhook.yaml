@@ -1,5 +1,19 @@
 {{- $tlsCert := genSelfSignedCert (include "dsv.dnsname" .) nil (list (include "dsv.dnsname" .) (include "dsv.name" .)) (default 365 .Values.webhookCertExpireDays | int) -}}
 {{- $existingTlsSecret := lookup "v1" "Secret" .Release.Namespace (printf "%s-tls" (include "dsv.name" .)) -}}
+{{- $recreateThreshold := default 90 .Values.recreateSelfSignedCertThreshold | int -}}
+{{- $certExpireDays := default 365 .Values.webhookCertExpireDays | int -}}
+{{- $shouldRecreateCert := false -}}
+{{- if $existingTlsSecret -}}
+  {{- $certCreatedAt := index $existingTlsSecret.metadata.annotations "cert-created-at" | default "" -}}
+  {{- if $certCreatedAt -}}
+    {{- $certCreatedTime := toDate "2006-01-02T15:04:05Z07:00" $certCreatedAt -}}
+    {{- $certAgeDays := div (sub now $certCreatedTime | int64) 86400 -}}
+    {{- $maxCertAgeDays := sub $certExpireDays $recreateThreshold -}}
+    {{- if gt $certAgeDays $maxCertAgeDays -}}
+      {{- $shouldRecreateCert = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 
 ---
 apiVersion: admissionregistration.k8s.io/v1
@@ -22,8 +36,8 @@ webhooks:
     clientConfig: # Secret Reference: Not supported directly by the MutatingWebhookConfiguration API.
 {{- if eq .Values.service.type "ExternalName" }}
       caBundle: {{ .Values.caBundle }}
-{{ else if $existingTlsSecret }}
-      caBundle: {{ $existingTlsSecret.data.cert }}
+{{ else if and $existingTlsSecret (not $shouldRecreateCert) }}
+      caBundle: {{ index $existingTlsSecret.data "tls.crt" }}
 {{- else }}
       caBundle: {{ $tlsCert.Cert | b64enc }}
 {{- end }}
@@ -42,10 +56,15 @@ metadata:
   name: {{ include "dsv.name" . }}-tls
   annotations:
     checksum/last-updated: {{ now | date "2006-01-02T15:04:05Z07:00" | quote }}
+{{- if or (not $existingTlsSecret) $shouldRecreateCert }}
+    cert-created-at: {{ now | date "2006-01-02T15:04:05Z07:00" | quote }}
+{{- else if $existingTlsSecret }}
+    cert-created-at: {{ index $existingTlsSecret.metadata.annotations "cert-created-at" | default (now | date "2006-01-02T15:04:05Z07:00") | quote }}
+{{- end }}
 data:
-{{- if $existingTlsSecret }}
-  tls.crt: {{ $existingTlsSecret.data.cert }}
-  tls.key: {{ $existingTlsSecret.data.key }}
+{{- if and $existingTlsSecret (not $shouldRecreateCert) }}
+  tls.crt: {{ index $existingTlsSecret.data "tls.crt" }}
+  tls.key: {{ index $existingTlsSecret.data "tls.key" }}
 {{- else }}
   tls.crt: {{ $tlsCert.Cert | b64enc }}
   tls.key: {{ $tlsCert.Key | b64enc }}

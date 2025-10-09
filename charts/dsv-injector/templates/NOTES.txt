@@ -28,5 +28,6 @@
 {{- if eq .Values.service.type "ExternalName" }}
 ℹ️ ExternalName provided for service type, so no self signed cert will be used.
 {{- else -}}
-➕ Will generate a self signed cert with expiration of [{{ (default 365 .Values.webhookCertExpireDays | int) }}] days.
+➕ Self-signed certificate configured with expiration of [{{ (default 365 .Values.webhookCertExpireDays | int) }}] days.
+🔄 Certificate will be automatically regenerated when it has less than [{{ (default 90 .Values.recreateSelfSignedCertThreshold | int) }}] days until expiration.
 {{- end -}}
