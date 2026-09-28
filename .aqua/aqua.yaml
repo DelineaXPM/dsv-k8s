@@ -11,8 +11,6 @@ registries:
     type: local
     path: registry.yaml
 packages:
-  - name: miniscruff/changie@v1.19.1
-    tags: ['release']
   - name: golang/go@go1.26.8
     tags: ['first', 'release', 'test', 'scan', 'lint']
   - name: direnv/direnv@v2.34.0
@@ -49,6 +47,7 @@ packages:
     tags:
       - release
   - name: miniscruff/changie@v1.21.0
+    tags: ['release']
   - name: mikefarah/yq@v4.44.3
     tags:
       - release
