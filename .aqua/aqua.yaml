@@ -51,3 +51,6 @@ packages:
   - name: mikefarah/yq@v4.44.3
     tags:
       - release
+  - name: cli/cli@v2.101.0
+  - name: miniscruff/changie@v1.26.0
+  - name: mikefarah/yq@v4.53.6

@@ -1,3 +1,0 @@
-kind: tests
-body: The pkg/patch tests now actually run (TestMain never called m.Run), and a non-constant format string rejected by go vet in Go 1.24+ was fixed.
-time: 2026-09-28T17:09:48.000000000Z
