@@ -113,7 +113,7 @@ dockers:
       - --label=org.opencontainers.image.version={{.Version}}
 announce:
   slack:
-    enabled: true
+    enabled: false # webhook is dead (404), same as terraform-provider-dsv #118
     # The name of the channel that the user selected as a destination for webhook messages.
     channel: '{{ .Env.SLACK_CHANNEL }}'
     message_template: ':github: {{ .ProjectName }} {{ .Tag }} is out. {{ .ReleaseURL }}'

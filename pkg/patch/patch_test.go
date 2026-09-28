@@ -35,6 +35,7 @@ const (
 // Ensure log output doesn't pollute tests.
 func TestMain(m *testing.M) {
 	log.SetOutput(io.Discard)
+	m.Run()
 }
 
 // getCredentialAnnotationValue is a test helper function to get the credentialsAnnotationValue from either the environment variable or default to the constant value if not set.
@@ -94,7 +95,7 @@ func tp(t *testing.T, secret v1.Secret, count int, op, path, value string) []jso
 	for _, item := range ops {
 		opsDebugOutput += prettyPrintJSON(t, item.Json())
 	}
-	t.Logf(opsDebugOutput)
+	t.Log(opsDebugOutput)
 
 	// When the count of operations expected isn't matching.
 	if count != len(ops) {
