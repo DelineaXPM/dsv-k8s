@@ -6,8 +6,11 @@ name: test
 # uses: delineaxpm/github-workflows/.github/workflows/test.yml@main
 # secrets: inherit
 env:
-  DSV_K8S_TEST_CONFIG: ${{ secrets.DSV_TMG_CONFIG }}
+  # Client for role github-dsv-k8s-tests (read-only on secrets:ci:tests:dsv-k8s:*) on the DSV dev tenant.
+  # The fixture secret must stay at version 0 with password "admin" (see pkg/patch/patch_test.go).
+  DSV_K8S_TEST_CONFIG: ${{ secrets.DSV_K8S_TEST_CONFIG }}
   DSV_K8S_TEST_SECRET_PATH: ci:tests:dsv-k8s:sync-test
+  DSV_CREDENTIALS_ANNOTATION_VALUE: app1
 
 on:
   pull_request:

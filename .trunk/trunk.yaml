@@ -55,8 +55,8 @@ actions:
         - git_hooks: [pre-commit]
 runtimes:
   enabled:
-    - go@1.21.0
-    - node@18.12.1
+    - go@1.26.8
+    - node@22.16.0
     - python@3.10.8
 cli:
   version: 1.22.1
@@ -72,11 +72,11 @@ lint:
     - checkov@3.2.128
     - osv-scanner@1.7.4
     - terrascan@1.19.1
-    - trivy@0.52.0
+    - trivy@0.74.0
     - trufflehog@3.78.0
     - gofumpt@0.5.0
     - renovate@37.396.1
-    - golangci-lint@SYSTEM
+    - golangci-lint@1.64.8
     - git-diff-check
     - taplo@0.8.1
     - markdownlint@0.41.0
