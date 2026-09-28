@@ -1,3 +1,0 @@
-kind: ci-build
-body: Build releases with the Go version from go.mod instead of ~1.21; update Trunk runtimes (go 1.26.8, node 22.16.0), trivy 0.74.0 and golangci-lint 1.64.8; disable the goreleaser Slack announcement (dead webhook).
-time: 2026-09-28T17:09:48.000000000Z

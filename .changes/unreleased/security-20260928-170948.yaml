@@ -1,3 +1,0 @@
-kind: security
-body: Upgrade Go toolchain to go1.26.8 and golang.org/x/net to v0.59.0, golang.org/x/text to v0.42.0 and dsv-sdk-go to v2.3.0, resolving 38 Snyk findings (1 critical, 19 high, 17 medium, 1 low), including CVE-2026-39821 in golang.org/x/net/idna.
-time: 2026-09-28T17:09:48.000000000Z
