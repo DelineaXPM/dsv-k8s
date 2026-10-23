@@ -2,7 +2,7 @@ module github.com/DelineaXPM/dsv-k8s/v2
 
 go 1.26.0
 
-toolchain go1.26.8
+toolchain go1.26.10
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.0
@@ -70,7 +70,7 @@ require (
 	github.com/ztrue/tracerr v0.4.0 // indirect
 	golang.org/x/crypto v0.57.0 // indirect
 	golang.org/x/mod v0.41.0 // indirect
-	golang.org/x/net v0.59.0 // indirect
+	golang.org/x/net v0.60.0 // indirect
 	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/term v0.46.0 // indirect
